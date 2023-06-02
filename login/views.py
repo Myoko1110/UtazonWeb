@@ -1,11 +1,11 @@
-from django.views.generic import TemplateView
 from django.shortcuts import redirect, render
 import requests
 import logging
 import secrets
 import mysql.connector
 import datetime
-
+import config.settings as settings
+from login.functions import check_session
 
 def Login(request):
     # codeパラメーターを参照
@@ -14,11 +14,11 @@ def Login(request):
 
         # POST内容を指定
         request_postdata = {
-            'client_id': '1112974860956745798',
-            'client_secret': 'S-ZSUdeUKJWSiCD2zybhz1VcZe5m3Ihl',
+            'client_id': settings.DISCORD_CLIENT['CLIENT-ID'],
+            'client_secret': settings.DISCORD_CLIENT['CLIENT-SECRET'],
             'grant_type': 'authorization_code',
             'code': code,
-            'redirect_uri': 'http://localhost:8000/login/',
+            'redirect_uri': settings.DISCORD_CLIENT['REDIRECT'],
         }
 
         # access_tokenを取得
@@ -60,23 +60,23 @@ def Login(request):
 
         # Discordサーバーに参加しているかを確認
         for i in guilds.json():
-            if i['id'] == '1110194264324972615':
+            if i['id'] == str(settings.SERVER_ID):
                 # セッションを作成
                 session_id = f"l__{secrets.token_urlsafe(128)}"
                 session_value = f"{secrets.token_urlsafe(128)}"
 
                 config = {
-                    'user': 'root',
-                    'password': 'myon1614',
-                    'host': 'localhost',
-                    'database': 'sessions',
+                    'user': settings.DATABASES['session']['USER'],
+                    'password': settings.DATABASES['session']['PASSWORD'],
+                    'host': settings.DATABASES['session']['HOST'],
+                    'database': settings.DATABASES['session']['DATABASE'],
                 }
 
                 connection = mysql.connector.connect(**config)
 
                 # 現在時間と1ヶ月後を取得
                 now = datetime.datetime.now().replace(microsecond=0)
-                expires = now + datetime.timedelta(days=30)
+                expires = now + datetime.timedelta(days=settings.SESSION_EXPIRES)
 
                 # dbにセッションを記録
                 with connection:
@@ -92,7 +92,7 @@ def Login(request):
 
                 # 問題がなかったらcookie付与・リダイレクト
                 response = redirect('/')
-                response.set_cookie(session_id, session_value)
+                response.set_cookie(session_id, session_value, expires=settings.COOKIE_EXPIRES)
                 return response
 
         else:
@@ -101,5 +101,15 @@ def Login(request):
             return render(request, 'login.html', context=context)
 
     else:
-        context = {'err': False, 'content': 'error'}
-        return render(request, 'login.html', context=context)
+        if check_session(request):
+            # 既ログイン処理
+            return redirect('/')
+        elif check_session(request) == "Expired session":
+            # 期限切れ処理
+            context = {'err': False, 'content': 'error'}
+            return render(request, 'login.html', context=context)
+        else:
+            # 未ログイン処理
+            context = {'err': False, 'content': 'error'}
+            return render(request, 'login.html', context=context)
+
