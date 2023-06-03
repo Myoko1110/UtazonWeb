@@ -1,4 +1,5 @@
 from pathlib import Path
+import mysql.connector
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=ijf2u=)n_aom%_ph)_8p$aam9)z7j4#6r3bc$h$(p*-qk)r8q'
@@ -15,15 +16,15 @@ DISCORD_CLIENT = {
     'CLIENT-SECRET': 'S-ZSUdeUKJWSiCD2zybhz1VcZe5m3Ihl',
     'REDIRECT': 'http://localhost:8000/login/',
 }
+# Discord鯖に入っているか判定するID
+SERVER_ID = 1110194264324972615
+
 
 # 設定するcookieの有効期限
 COOKIE_EXPIRES = 31536000
 
 # DBに保存する有効期限(単位:日)
 SESSION_EXPIRES = 30
-
-# Discord鯖に入っているか判定するID
-SERVER_ID = 1110194264324972615
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {

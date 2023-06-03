@@ -1044,14 +1044,14 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <Position>2</Position>
     </column>
     <column id="301" parent="298" name="user_id">
-      <DasType>varchar(256)|0s</DasType>
+      <DasType>bigint|0s</DasType>
       <Position>3</Position>
     </column>
     <column id="302" parent="298" name="access_token">
       <DasType>varchar(256)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="303" parent="298" name="login_data">
+    <column id="303" parent="298" name="login_date">
       <DasType>datetime|0s</DasType>
       <Position>5</Position>
     </column>

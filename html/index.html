@@ -1,10 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <title>Utazon.com | うたかた鯖</title>
-	<link rel="stylesheet" href="assets/home/stylesheet.css">
-    <link rel="stylesheet" href="assets/local.css">
+	<link rel="stylesheet" href="{% static 'home/stylesheet.css' %}">
+    <link rel="stylesheet" href="{% static 'local.css' %}">
+		<link rel="icon" href="{% static 'icon.svg' %}">
 </head>
 <body>
 <div class="global-header">
