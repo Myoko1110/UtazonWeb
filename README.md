@@ -1,18 +1,12 @@
 # UtazonWeb
-Djangoを使用した
-## Get Started
-1. セッション情報やユーザー情報を保存するMySQLを設定します
-```shell
-# データベースの作成
-$ mysql -uroot -p
-mysql -> CREATE DATEBASE <DatebaseName>;
-mysql -> USE <DatebaseName>;
+ウェブでアイテムを注文できるwebアプリ
+## DBの保存情報
 
-# セッション情報保存のテーブルを作成
-mysql -> CREATE TABLE <SessionTableName> (session_id VARCHAR, session_val VARCHAR, user_id VARCHAR, access_token VARCHAR, login_date DATETIME, expires DATETIME);
+- session情報
 
-# ユーザー情報保存のテーブルを作成
-etc...
-```
-2. [Discord Developer Portal](https://discord.com/developers/applications)のApplicationsからCLIENT IDなどを取得します
-3. 
+| session_id  | session_val | user_id    | access_token    | login_date          | expires             |
+|-------------|-------------|------------|-----------------|---------------------|---------------------|
+| l__ZVkzs... | hcLTydvh... | 8860894... | dfM9RdniEcOA... | 2023-06-03 20:37:16 | 2023-07-03 20:37:16 |
+
+- user情報 作成中…
+- 販売アイテム情報 作成中…
