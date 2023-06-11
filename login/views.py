@@ -117,10 +117,10 @@ def login(request):
             return render(request, 'login.html', context=context)
 
     else:
-        if session_is_valid(request) == "Login":
+        if session_is_valid(request)[0]:
             # 既ログイン処理
             return redirect('/')
-        elif session_is_valid(request) == "Expired session":
+        elif session_is_valid(request)[1]:
             # 期限切れ処理
             context = {'err': False, 'content': 'error'}
             return render(request, 'login.html', context=context)
