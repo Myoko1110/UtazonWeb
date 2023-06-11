@@ -1,10 +1,33 @@
 import mysql.connector
 from config.settings import DATABASES
 from django.apps import AppConfig
+import logging
 
 
-def table_create():
-    print("aa")
+class LoginConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'login'
+
+    def ready(self):
+        from django.core.signals import request_started
+        request_started.connect(table_create, weak=False)
+
+
+class RunOnce:
+    def __init__(self, func):
+        self.func = func
+        self.has_run = False
+
+    def __call__(self, *args, **kwargs):
+
+        # 一回だけ実行
+        if not self.has_run:
+            self.has_run = True
+            return self.func(*args, **kwargs)
+
+
+@RunOnce
+def table_create(sender, **kwargs):
     config = {
         'user': DATABASES['session']['USER'],
         'password': DATABASES['session']['PASSWORD'],
@@ -22,7 +45,7 @@ def table_create():
             result = cursor.fetchone()
 
             # なかったら作成
-            if 'session' not in result:
+            if result is None or 'session' not in result:
                 sql = """CREATE TABLE `session` (
                                         session_id VARCHAR(256),
                                         session_val VARCHAR(256),
@@ -31,14 +54,6 @@ def table_create():
                                         login_date DATETIME,
                                         expires DATETIME)"""
                 cursor.execute(sql)
+                logging.info(f"{config['database']}にtable「session」を作成しました")
             cursor.close()
         cnx.commit()
-
-
-class LoginConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'login'
-
-    def ready(self):
-        from django.core.signals import request_started
-        request_started.connect(table_create, weak=False)
