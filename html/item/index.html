@@ -29,7 +29,7 @@
             </div>
             <div class="nav-belt__search">
 	            <form>
-		            <select class="nav-belt__search-select">
+		            <select class="nav-belt__search-select" name="category">
 			            <option>すべて</option>
 			            <option>建築ブロック</option>
 			            <option>装飾ブロック</option>
@@ -40,7 +40,7 @@
 			            <option>戦闘</option>
 			            <option>醸造</option>
 		            </select>
-	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com">
+	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com" name="search">
 		            <label class="nav-belt__search-label">
 			            <input class="nav-belt__search-submit" type="submit" value="">
 			            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960"><path d="M796 935 533 672q-30 26-69.959 40.5T378 727q-108.162 0-183.081-75Q120 577 120 471t75-181q75-75 181.5-75t181 75Q632 365 632 471.15 632 514 618 554q-14 40-42 75l264 262-44 44ZM377 667q81.25 0 138.125-57.5T572 471q0-81-56.875-138.5T377 275q-82.083 0-139.542 57.5Q180 390 180 471t57.458 138.5Q294.917 667 377 667Z"/></svg>
@@ -104,8 +104,15 @@
 			</div>
 			<div class="item-about__description">
 				<div class="item-about__description-above">
-					<h1>商品名あああああああああああああああああああおうぃうえｒわああああああああああああああああああああ</h1>
-					<p>〇〇のストアを表示</p>
+					<h1>ADATA デスクトップPC用 メモリ PC4-25600 DDR4-3200MHz 288Pin 32GB × 2枚 AD4U3200732G22-DA</h1>
+					<a>〇〇のストアを表示</a>
+					<div class="item-about__star">
+						<span>4.3</span>
+						<div class="item-about__star-img" style="background-position: -2px -22px;">
+							<span style="opacity: 0;">5つ星のうち4.6</span>
+						</div>
+						<a>1000個の評価</a>
+					</div>
 				</div>
 				<div class="item-about__description-below">
 					<h1><span>$</span>1,000</h1>
@@ -147,6 +154,12 @@
 				</div>
 				<div class="item-about__description-about">
 					<h1>商品について</h1>
+					<ul>
+						<li>日本正規代理店品</li>
+						<li>日本正規代理店品</li>
+						<li>日本正規代理店品</li>
+						<li>日本正規代理店品</li>
+					</ul>
 				</div>
 			</div>
 			<div class="item-about__buy">
@@ -156,7 +169,119 @@
 				<div class="item-about__buy-point">
 					<p>ポイント:<span>100pt</span><span>(10%)</span><a>詳細はこちら</a></p>
 				</div>
+				<div class="item-about__buy-delivery">
+					<p class="item-about__buy-delivery-box">
+						<span class="item-about__buy-delivery-type">無料配送</span>
+						<span class="item-about__buy-delivery-date">6月6日火曜日</span>
+						<span class="item-about__buy-delivery-dateafter">にお届け</span>
+					</p>
+					<p class="item-about__buy-delivery-or">または 最も速い配送
+						<span class="item-about__buy-delivery-date">明日 6月8日</span>
+						にお届け
+					</p>
+				</div>
+				<div class="item-about__buy-address">
+					<svg class="item-about__buy-address-map" viewBox="0 0 210 210" xmlns="http://www.w3.org/2000/svg"><defs id="defs2" /><g><path id="path790" style="fill:none;stroke:#000000;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers;stop-color:#000000;stroke-opacity:1;stroke-dasharray:none" d="m 175.59797,93.153942 c 0,39.039728 -70.6877,95.819318 -70.6877,95.819318 0,0 -70.6877,-56.77957 -70.687702,-95.819318 2e-6,-39.039739 31.647965,-70.687702 70.687702,-70.6877 39.03974,3e-6 70.6877,31.647964 70.6877,70.6877 z" /><circle style="fill:none;stroke:#000000;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers;stop-color:#000000" id="path790-3" cx="104.60429" cy="93.153938" r="34.623932" /></g></svg>
+					<p>〇〇 - 1-0001 にお届け</p>
+				</div>
+				<div class="item-about__buy-stock">
+					<p><span class="item-about__buy-stock-in">在庫あり。</span><span class="item-about__buy-stock-out">残り2点 ご注文はお早めに</span><span><span class="item-about__buy-stock-status">在庫状況</span>について</span>
+				</div>
+				<div class="item-about__buy-order">
+					<form method="get" action="">
+						<div class="item-about__buy-order-number">
+							<p>数量:</p>
+							<input class="item-about__buy-order-number-input" type="number" value="1">
+						</div>
+						<input class="item-about__buy-order-input" type="submit" value="今すぐ買う">
+					</form>
+				</div>
 			</div>
+		</div>
+	</div>
+	<div class="review">
+		<div class="review-left">
+			<h2>カスタマーレビュー</h2>
+			<div class="review-star__box">
+				<div class="review-star" style="background-position: -390px -462px;">
+					<span style="opacity: 0">5つ星のうち4.6</span>
+				</div>
+				<p>4.6/5</p>
+			</div>
+		</div>
+		<div class="review-right">
+			<h2 class="review-right-title">上位レビュー、対象国： 日本</h2>
+			<ul class="review-list">
+				<li class="review-list__child">
+					<div class="review-list__account">
+						<img class="review-list__account-img" src="https://images-fe.ssl-images-amazon.com/images/S/amazon-avatars-global/default._CR0,0,1024,1024_SX48_.png">
+						<p>ユーザー名</p>
+					</div>
+					<div class="review-list__title">
+						<div class="review-list__title-star" style="background-position: -2px -102px;">
+							<span style="opacity: 0">5つ星のうち2</span>
+						</div>
+						<h2>不良品</h2>
+					</div>
+					<div class="review-list__value">
+						<p class="review-list__value-date">2023年4月2日に日本でレビュー済み</p>
+						<p class="review-list__value-text">3ヶ月経ってないのにメモリエラー出ました。ああああaさあああああああああああああああああああああああ！ああああああああああああああああああああああああああ<br>as</p>
+						<div class="review-list__value-use">
+							<p class="review-list__value-use-text">1人のお客様がこれが役に立ったと考えています</p>
+							<div class="review-list__value-use-btn">
+								<input type="submit" name="" value="役に立った">
+								<a>レポート</a>
+							</div>
+						</div>
+					</div>
+				</li>
+				<li class="review-list__child">
+					<div class="review-list__account">
+						<img class="review-list__account-img" src="https://images-fe.ssl-images-amazon.com/images/S/amazon-avatars-global/default._CR0,0,1024,1024_SX48_.png">
+						<p>ユーザー名</p>
+					</div>
+					<div class="review-list__title">
+						<div class="review-list__title-star" style="background-position: -2px -82px;">
+							<span style="opacity: 0">5つ星のうち2</span>
+						</div>
+						<h2>不良品</h2>
+					</div>
+					<div class="review-list__value">
+						<p class="review-list__value-date">2023年4月2日に日本でレビュー済み</p>
+						<p class="review-list__value-text">3ヶ月経ってないのにメモリエラー出ました。</p>
+						<div class="review-list__value-use">
+							<p class="review-list__value-use-text">1人のお客様がこれが役に立ったと考えています</p>
+							<div class="review-list__value-use-btn">
+								<input type="submit" name="" value="役に立った">
+								<a>レポート</a>
+							</div>
+						</div>
+					</div>
+				</li>
+				<li class="review-list__child">
+					<div class="review-list__account">
+						<img class="review-list__account-img" src="https://images-fe.ssl-images-amazon.com/images/S/amazon-avatars-global/default._CR0,0,1024,1024_SX48_.png">
+						<p>ユーザー名</p>
+					</div>
+					<div class="review-list__title">
+						<div class="review-list__title-star" style="background-position: -2px -122px;">
+							<span style="opacity: 0">5つ星のうち2</span>
+						</div>
+						<h2>不良品</h2>
+					</div>
+					<div class="review-list__value">
+						<p class="review-list__value-date">2023年4月2日に日本でレビュー済み</p>
+						<p class="review-list__value-text">3ヶ月経ってないのにメモリエラー出ました。</p>
+						<div class="review-list__value-use">
+							<p class="review-list__value-use-text">1人のお客様がこれが役に立ったと考えています</p>
+							<div class="review-list__value-use-btn">
+								<input type="submit" name="" value="役に立った">
+								<a>レポート</a>
+							</div>
+						</div>
+					</div>
+				</li>
+			</ul>
 		</div>
 	</div>
 </div>
