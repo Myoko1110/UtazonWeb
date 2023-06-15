@@ -64,4 +64,3 @@ def item(request):
     else:
         # 未ログイン処理
         return redirect('/login')
-
