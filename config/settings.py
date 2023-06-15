@@ -1,30 +1,25 @@
+import os
 from pathlib import Path
 import mysql.connector
+from dotenv import load_dotenv
 
+load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=ijf2u=)n_aom%_ph)_8p$aam9)z7j4#6r3bc$h$(p*-qk)r8q'
 DEBUG = True
 ALLOWED_HOSTS = []
 
-"""
-Utazon Settings
-"""
 
-# discord関係の設定
 DISCORD_CLIENT = {
-    'CLIENT-ID': '1112974860956745798',
-    'CLIENT-SECRET': 'S-ZSUdeUKJWSiCD2zybhz1VcZe5m3Ihl',
-    'REDIRECT': 'http://localhost:8000/login/',
+    'CLIENT-ID': os.environ["DISCORD_CLIENT_ID"],
+    'CLIENT-SECRET': os.environ["DISCORD_CLIENT_SECRET"],
+    'REDIRECT': os.environ["DISCORD_REDIRECT"],
 }
 # Discord鯖に入っているか判定するID
-SERVER_ID = 1110194264324972615
-
-
-# 設定するcookieの有効期限
-COOKIE_EXPIRES = 31536000
+SERVER_ID = os.environ["SERVER_ID"]
 
 # DBに保存する有効期限(単位:日)
-SESSION_EXPIRES = 30
+SESSION_EXPIRES = os.environ["SESSION_EXPIRES"]
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
@@ -32,10 +27,10 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }, 'session': {
-        'HOST': 'localhost',
-        'USER': 'root',
-        'PASSWORD': 'myon1614',
-        'DATABASE': 'sessions',
+        'HOST': os.environ["DATABASE_HOST"],
+        'USER': os.environ["DATABASE_USERNAME"],
+        'PASSWORD': os.environ["DATABASE_PASS"],
+        'DATABASE': os.environ["DATABASE_TABLE"],
     }
 }
 
