@@ -55,5 +55,24 @@ def table_create(sender, **kwargs):
                                         expires DATETIME)"""
                 cursor.execute(sql)
                 logging.info(f"{config['database']}にtable「session」を作成しました")
+
+                sql = "SHOW TABLES LIKE 'item'"
+                cursor.execute(sql)
+
+                # 結果を取得
+                result = cursor.fetchone()
+
+                # なかったら作成
+                if result is None or 'item' not in result:
+                    sql = """CREATE TABLE `session` (
+                                                        session_id VARCHAR(256),
+                                                        session_val VARCHAR(256),
+                                                        user_id BIGINT,
+                                                        access_token VARCHAR(256),
+                                                        login_date DATETIME,
+                                                        expires DATETIME)"""
+                    cursor.execute(sql)
+                    logging.info(f"{config['database']}にtable「item」を作成しました")
+
             cursor.close()
         cnx.commit()
