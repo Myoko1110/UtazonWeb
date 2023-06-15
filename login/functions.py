@@ -1,6 +1,6 @@
 import mysql.connector
 import datetime
-from config.settings import DATABASES
+import config.settings as settings
 
 
 def session_is_valid(request):
@@ -12,10 +12,10 @@ def session_is_valid(request):
     session = request.COOKIES
 
     config = {
-        'user': DATABASES['session']['USER'],
-        'password': DATABASES['session']['PASSWORD'],
-        'host': DATABASES['session']['HOST'],
-        'database': DATABASES['session']['DATABASE'],
+        'user': settings.DATABASES['session']['USER'],
+        'password': settings.DATABASES['session']['PASSWORD'],
+        'host': settings.DATABASES['session']['HOST'],
+        'database': settings.DATABASES['session']['DATABASE'],
     }
 
     cnx = mysql.connector.connect(**config)
@@ -28,7 +28,7 @@ def session_is_valid(request):
             for child in session:
 
                 # l__から始まるものを指定
-                if child.startswith('l__'):
+                if child.startswith('_Secure-'):
 
                     sql = "SELECT * FROM session WHERE session_id=%s"
                     cursor.execute(sql, (child,))
@@ -57,6 +57,11 @@ def session_is_valid(request):
             else:
                 cursor.close()
                 cnx.commit()
+
+                if "LOGIN_STATUS" in session and session["LOGIN_STATUS"]:
+
+                    # 期限切れの処理
+                    return [False, True, False]
 
                 # 未ログイン処理
                 return [False, False, True]

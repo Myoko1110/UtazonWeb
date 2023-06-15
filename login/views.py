@@ -66,7 +66,7 @@ def login(request):
         for i in guilds.json():
             if i['id'] == str(settings.SERVER_ID):
                 # セッションを作成
-                session_id = f'l__{secrets.token_urlsafe(128)}'
+                session_id = f'_Secure-{secrets.token_urlsafe(128)}'
                 session_value = f'{secrets.token_urlsafe(128)}'
 
                 config = {
@@ -76,7 +76,7 @@ def login(request):
                     'database': settings.DATABASES['session']['DATABASE'],
                 }
 
-                session_conn = mysql.connector.connect(**config)
+                session_cnx = mysql.connector.connect(**config)
 
                 # 現在時間と1ヶ月後を取得
                 now = datetime.datetime.now().replace(microsecond=0)
@@ -86,15 +86,15 @@ def login(request):
                 user_avatar = identify.json()['avatar']
 
                 # dbにセッションを記録
-                with session_conn:
-                    with session_conn.cursor() as cursor:
+                with session_cnx:
+                    with session_cnx.cursor() as cursor:
                         sql = """INSERT INTO `session` (
                                  `session_id`, `session_val`, `user_id`, `access_token`, `login_date`, `expires`
                                  ) VALUES (%s, %s, %s, %s, %s, %s)"""
 
                         cursor.execute(sql,
                                        (session_id, session_value, user_id, access_token, now, expires))
-                    session_conn.commit()
+                    session_cnx.commit()
                 cursor.close()
 
                 # ユーザーのアイコンを取得
@@ -108,7 +108,8 @@ def login(request):
 
                 # 問題がなかったらcookie付与・リダイレクト
                 response = redirect('/')
-                response.set_cookie(session_id, session_value, expires=settings.COOKIE_EXPIRES)
+                response.set_cookie(session_id, session_value, expires=expires)
+                response.set_cookie("LOGIN_STATUS", True, max_age=315360000)
                 return response
 
         else:
