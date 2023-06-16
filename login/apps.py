@@ -43,7 +43,6 @@ def table_create(sender, **kwargs):
 
             # 結果を取得
             result = cursor.fetchall()
-            print(result)
 
             # sessionなかったら作成
             if result is None or 'session' not in [i[0] for i in result]:
@@ -57,7 +56,6 @@ def table_create(sender, **kwargs):
                 cursor.execute(sql)
                 logging.info(f"{config['database']}にtable「session」を作成しました")
 
-            print(result is None or 'item' not in [i[0] for i in result])
             # itemなかったら作成
             if result is None or 'item' not in [i[0] for i in result]:
                 sql = """CREATE TABLE `item` (
@@ -68,8 +66,7 @@ def table_create(sender, **kwargs):
                                         review JSON,
                                         stock BIGINT,
                                         about JSON,
-                                        kind JSON,
-                                        star INT)"""
+                                        kind JSON)"""
                 cursor.execute(sql)
                 logging.info(f"{config['database']}にtable「item」を作成しました")
 
