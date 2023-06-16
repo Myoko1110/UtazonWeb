@@ -38,14 +38,15 @@ def table_create(sender, **kwargs):
     with cnx:
         with cnx.cursor() as cursor:
             # テーブルが存在するか確認
-            sql = "SHOW TABLES LIKE 'session'"
+            sql = "SHOW TABLES"
             cursor.execute(sql)
 
             # 結果を取得
-            result = cursor.fetchone()
+            result = cursor.fetchall()
+            print(result)
 
-            # なかったら作成
-            if result is None or 'session' not in result:
+            # sessionなかったら作成
+            if result is None or 'session' not in [i[0] for i in result]:
                 sql = """CREATE TABLE `session` (
                                         session_id VARCHAR(256),
                                         session_val VARCHAR(256),
@@ -56,23 +57,21 @@ def table_create(sender, **kwargs):
                 cursor.execute(sql)
                 logging.info(f"{config['database']}にtable「session」を作成しました")
 
-                sql = "SHOW TABLES LIKE 'item'"
+            print(result is None or 'item' not in [i[0] for i in result])
+            # itemなかったら作成
+            if result is None or 'item' not in [i[0] for i in result]:
+                sql = """CREATE TABLE `item` (
+                                        id BIGINT,
+                                        name VARCHAR(256),
+                                        price INT,
+                                        image JSON,
+                                        review JSON,
+                                        stock BIGINT,
+                                        about JSON,
+                                        kind JSON,
+                                        star INT)"""
                 cursor.execute(sql)
-
-                # 結果を取得
-                result = cursor.fetchone()
-
-                # なかったら作成
-                if result is None or 'item' not in result:
-                    sql = """CREATE TABLE `session` (
-                                                        session_id VARCHAR(256),
-                                                        session_val VARCHAR(256),
-                                                        user_id BIGINT,
-                                                        access_token VARCHAR(256),
-                                                        login_date DATETIME,
-                                                        expires DATETIME)"""
-                    cursor.execute(sql)
-                    logging.info(f"{config['database']}にtable「item」を作成しました")
+                logging.info(f"{config['database']}にtable「item」を作成しました")
 
             cursor.close()
         cnx.commit()
