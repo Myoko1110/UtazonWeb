@@ -80,7 +80,7 @@ def login(request):
 
                 # 現在時間と1ヶ月後を取得
                 now = datetime.datetime.now().replace(microsecond=0)
-                expires = now + datetime.timedelta(days=settings.SESSION_EXPIRES)
+                expires = now + datetime.timedelta(days=int(settings.SESSION_EXPIRES))
 
                 user_id = identify.json()['id']
                 user_avatar = identify.json()['avatar']
