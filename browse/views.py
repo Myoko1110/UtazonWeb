@@ -44,16 +44,25 @@ def item(request):
                 cursor.close()
                 cnx.commit()
 
+        # レビューを取得
         item_review = json.loads(result[4].replace("\n", "<br>"))
+
+        # レビューの平均を計算
+        if item_review:
+            item_review_av = float("{:.1f}".format(round(mean([i["star"] for i in item_review]), 1)))
+        else:
+            item_review_av = None
 
         context = {
             "item_name": result[1],
             "item_price": result[2],
             "item_point": int(result[2] * 0.1),
             "item_images": json.loads(result[3]),
+            "item_about": reversed(json.loads(result[6]).items()),
+            "item_kind": json.loads(result[7]),
             "item_review": item_review,
             "item_review_number": len(item_review),
-            "item_review_av": mean([i["star"] for i in item_review])
+            "item_review_av": item_review_av
         }
 
         # 既ログイン処理

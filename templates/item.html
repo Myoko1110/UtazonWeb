@@ -31,7 +31,7 @@
             </div>
             <div class="nav-belt__search">
 	            <form>
-		            <select class="nav-belt__search-select">
+		            <select class="nav-belt__search-select" name="category">
 			            <option>すべて</option>
 			            <option>建築ブロック</option>
 			            <option>装飾ブロック</option>
@@ -42,7 +42,7 @@
 			            <option>戦闘</option>
 			            <option>醸造</option>
 		            </select>
-	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com">
+	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com" name="search">
 		            <label class="nav-belt__search-label">
 			            <input class="nav-belt__search-submit" type="submit" value="">
 			            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960"><path d="M796 935 533 672q-30 26-69.959 40.5T378 727q-108.162 0-183.081-75Q120 577 120 471t75-181q75-75 181.5-75t181 75Q632 365 632 471.15 632 514 618 554q-14 40-42 75l264 262-44 44ZM377 667q81.25 0 138.125-57.5T572 471q0-81-56.875-138.5T377 275q-82.083 0-139.542 57.5Q180 390 180 471t57.458 138.5Q294.917 667 377 667Z"/></svg>
@@ -95,10 +95,9 @@
 		<div class="item-about">
 			<div class="item-about__img">
 				<div class="item-about__img-list">
-					<img class="item-about__img-list-img" src="https://m.media-amazon.com/images/I/61XeAxs1D0L._AC_SX679_.jpg">
-					<img class="item-about__img-list-img" src="https://m.media-amazon.com/images/I/61XeAxs1D0L._AC_SX679_.jpg">
-					<img class="item-about__img-list-img" src="https://m.media-amazon.com/images/I/61XeAxs1D0L._AC_SX679_.jpg">
-					<img class="item-about__img-list-img" src="https://m.media-amazon.com/images/I/61XeAxs1D0L._AC_SX679_.jpg">
+					{% for child in item_images %}
+					<img class="item-about__img-list-img" src="{{ child }}">
+					{% endfor %}
 				</div>
 				<div class="item-about__img-index">
 					<img class="item-about__img-index-img" src="https://m.media-amazon.com/images/I/61XeAxs1D0L._AC_SX679_.jpg">
@@ -106,12 +105,44 @@
 			</div>
 			<div class="item-about__description">
 				<div class="item-about__description-above">
-					<h1>商品名あああああああああああああああああああおうぃうえｒわああああああああああああああああああああ</h1>
-					<p>〇〇のストアを表示</p>
+					<h1>{{ item_name }}</h1>
+					<a>〇〇のストアを表示</a>
+					{% if item_review_av %}
+					<div class="item-about__star">
+						<span>{{ item_review_av }}</span>
+						{% if item_review_av >= 4.8 %}
+						<div class="item-about__star-img" style="background-position: -2px -2px;">
+						{% elif item_review_av >= 4.3  and item_review_av < 4.8 %}
+						<div class="item-about__star-img" style="background-position: -2px -42px;">
+						{% elif item_review_av >= 3.8  and item_review_av < 4.3 %}
+						<div class="item-about__star-img" style="background-position: -2px -22px;">
+						{% elif item_review_av >= 3.3  and item_review_av < 3.8 %}
+						<div class="item-about__star-img" style="background-position: -2px -82px;">
+						{% elif item_review_av >= 2.8  and item_review_av < 3.3 %}
+						<div class="item-about__star-img" style="background-position: -2px -62px;">
+						{% elif item_review_av >= 2.3  and item_review_av < 2.8 %}
+						<div class="item-about__star-img" style="background-position: -2px -122px;">
+						{% elif item_review_av >= 1.8  and item_review_av < 2.3 %}
+						<div class="item-about__star-img" style="background-position: -2px -102px;">
+						{% elif item_review_av >= 1.3  and item_review_av < 1.8 %}
+						<div class="item-about__star-img" style="background-position: -2px -162px;">
+						{% elif item_review_av >= 0.8  and item_review_av < 1.3 %}
+						<div class="item-about__star-img" style="background-position: -2px -142px;">
+						{% elif item_review_av >= 0.3  and item_review_av < 0.8 %}
+						<div class="item-about__star-img" style="background-position: -2px -202px;">
+						{% elif  item_review_av < 0.3 %}
+						<div class="item-about__star-img" style="background-position: -2px -182px;">
+						{% endif %}
+
+							<span style="opacity: 0;">5つ星のうち{{ item_review_av }}</span>
+						</div>
+						<a>{{ item_review_number }}個の評価</a>
+					</div>
+					{% endif %}
 				</div>
 				<div class="item-about__description-below">
-					<h1><span>$</span>1,000</h1>
-					<p>ポイント:<span>100pt</span><span>(10%)</span><a>詳細はこちら</a></p>
+					<h1><span>$</span>{{ item_price }}</h1>
+					<p>ポイント:<span>{{ item_point }}pt</span><span>(10%)</span><a>詳細はこちら</a></p>
 				</div>
 				<div class="item-about__description-safe">
 					<div class="item-about__description-safe-child">
@@ -129,36 +160,128 @@
 				</div>
 				<div class="item-about__description-feature">
 					<table>
+						{% for head, value in item_about %}
 						<tr>
-							<td class="item-about__description-feature-head">ブランド</td>
-							<td>〇〇</td>
+							<td class="item-about__description-feature-head">{{ head }}</td>
+							<td>{{ value }}</td>
 						</tr>
-						<tr>
-							<td class="item-about__description-feature-head">概要1</td>
-							<td>〇〇</td>
-						</tr>
-						<tr>
-							<td class="item-about__description-feature-head">概要2</td>
-							<td>〇〇</td>
-						</tr>
-						<tr>
-							<td class="item-about__description-feature-head">概要3</td>
-							<td>〇〇</td>
-						</tr>
+						{% endfor %}
 					</table>
 				</div>
 				<div class="item-about__description-about">
 					<h1>商品について</h1>
+					<ul>
+						{% for child in item_kind %}
+						<li>日本正規代理店品</li>
+						{% endfor %}
+					</ul>
 				</div>
 			</div>
 			<div class="item-about__buy">
 				<div class="item-about__buy-price">
-					<h1><span>$</span>1,000</h1>
+					<h1><span>$</span>{{ item_price }}</h1>
 				</div>
 				<div class="item-about__buy-point">
-					<p>ポイント:<span>100pt</span><span>(10%)</span><a>詳細はこちら</a></p>
+					<p>ポイント:<span>{{ item_point }}pt</span><span>(10%)</span><a>詳細はこちら</a></p>
+				</div>
+				<div class="item-about__buy-delivery">
+					<p class="item-about__buy-delivery-box">
+						<span class="item-about__buy-delivery-type">無料配送</span>
+						<span class="item-about__buy-delivery-date">6月6日火曜日</span>
+						<span class="item-about__buy-delivery-dateafter">にお届け</span>
+					</p>
+					<p class="item-about__buy-delivery-or">または 最も速い配送
+						<span class="item-about__buy-delivery-date">明日 6月8日</span>
+						にお届け
+					</p>
+				</div>
+				<div class="item-about__buy-address">
+					<svg class="item-about__buy-address-map" viewBox="0 0 210 210" xmlns="http://www.w3.org/2000/svg"><defs id="defs2" /><g><path id="path790" style="fill:none;stroke:#000000;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers;stop-color:#000000;stroke-opacity:1;stroke-dasharray:none" d="m 175.59797,93.153942 c 0,39.039728 -70.6877,95.819318 -70.6877,95.819318 0,0 -70.6877,-56.77957 -70.687702,-95.819318 2e-6,-39.039739 31.647965,-70.687702 70.687702,-70.6877 39.03974,3e-6 70.6877,31.647964 70.6877,70.6877 z" /><circle style="fill:none;stroke:#000000;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers;stop-color:#000000" id="path790-3" cx="104.60429" cy="93.153938" r="34.623932" /></g></svg>
+					<p>〇〇 - 1-0001 にお届け</p>
+				</div>
+				<div class="item-about__buy-stock">
+					<p><span class="item-about__buy-stock-in">在庫あり。</span><span class="item-about__buy-stock-out">残り2点 ご注文はお早めに</span><span><span class="item-about__buy-stock-status">在庫状況</span>について</span>
+				</div>
+				<div class="item-about__buy-order">
+					<form method="get" action="">
+						<div class="item-about__buy-order-number">
+							<p>数量:</p>
+							<input class="item-about__buy-order-number-input" type="number" value="1">
+						</div>
+						<input class="item-about__buy-order-input" type="submit" value="今すぐ買う">
+						<input class="item-about__buy-order-cart" type="submit" value="カートに入れる">
+					</form>
 				</div>
 			</div>
+		</div>
+	</div>
+	<div class="review">
+		<div class="review-left">
+			<h2>カスタマーレビュー</h2>
+			{% if item_review_av %}
+			<div class="review-star__box">
+				<div class="review-star" style="background-position: -390px -462px;">
+					<span style="opacity: 0">5つ星のうち{{ item_review_av }}</span>
+				</div>
+				<p>{{ item_review_av }}/5</p>
+			</div>
+			{% endif %}
+		</div>
+		<div class="review-right">
+			{% if item_review_av %}
+			<h2 class="review-right-title">上位レビュー、対象国： 日本</h2>
+			{% else %}
+			<h2 class="review-right-title">まだカスタマーレビューはありません</h2>
+			{% endif %}
+			<ul class="review-list">
+				{% for child in item_review %}
+				<li class="review-list__child">
+					<div class="review-list__account">
+						<img class="review-list__account-img" src="https://images-fe.ssl-images-amazon.com/images/S/amazon-avatars-global/default._CR0,0,1024,1024_SX48_.png">
+						<p>ユーザー名</p>
+					</div>
+					<div class="review-list__title">
+						{% if child.star >= 4.8 %}
+						<div class="review-list__title-star" style="background-position: -2px -2px;">
+						{% elif child.star >= 4.3  and child.star < 4.8 %}
+						<div class="review-list__title-star" style="background-position: -2px -42px;">
+						{% elif child.star >= 3.8  and child.star < 4.3 %}
+						<div class="review-list__title-star" style="background-position: -2px -22px;">
+						{% elif child.star >= 3.3  and child.star < 3.8 %}
+						<div class="review-list__title-star" style="background-position: -2px -82px;">
+						{% elif child.star >= 2.8  and child.star < 3.3 %}
+						<div class="review-list__title-star" style="background-position: -2px -62px;">
+						{% elif child.star >= 2.3  and child.star < 2.8 %}
+						<div class="review-list__title-star" style="background-position: -2px -122px;">
+						{% elif child.star >= 1.8  and child.star < 2.3 %}
+						<div class="review-list__title-star" style="background-position: -2px -102px;">
+						{% elif child.star >= 1.3  and child.star < 1.8 %}
+						<div class="review-list__title-star" style="background-position: -2px -162px;">
+						{% elif child.star >= 0.8  and child.star < 1.3 %}
+						<div class="review-list__title-star" style="background-position: -2px -142px;">
+						{% elif child.star >= 0.3  and child.star < 0.8 %}
+						<div class="review-list__title-star" style="background-position: -2px -202px;">
+						{% elif  child.star < 0.3 %}
+						<div class="review-list__title-star" style="background-position: -2px -182px;">
+						{% endif %}
+							<span style="opacity: 0">5つ星のうち{{ child.star }}</span>
+						</div>
+						<h2>{{ child.title }}</h2>
+					</div>
+					<div class="review-list__value">
+						<p class="review-list__value-date">{{ child.date.year }}年{{ child.date.month }}月{{ child.date.day }}日に日本でレビュー済み</p>
+						<p class="review-list__value-text">{{ child.value }}</p>
+						<div class="review-list__value-use">
+							<p class="review-list__value-use-text">{{ child.useful }}人のお客様がこれが役に立ったと考えています</p>
+							<div class="review-list__value-use-btn">
+								<input type="submit" name="" value="役に立った">
+								<a>レポート</a>
+							</div>
+						</div>
+					</div>
+				</li>
+				{% endfor %}
+			</ul>
 		</div>
 	</div>
 </div>
