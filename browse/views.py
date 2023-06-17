@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from login.functions import session_is_valid
+from config.functions import session_is_valid, get_userinfo_from_session, get_userinfo_from_discord
 import mysql.connector
 import json
 import config.settings as settings
@@ -9,8 +9,14 @@ from statistics import mean
 def index_view(request):
 
     if session_is_valid(request)[0]:
+        info = get_userinfo_from_session(request)
+
+        context = {
+            "session": False,
+            "info": info,
+        }
         # 既ログイン処理
-        return render(request, 'index.html', context={"session": False})
+        return render(request, 'index.html', context=context)
     elif session_is_valid(request)[1]:
         # 期限切れ処理
         return render(request, 'index.html', context={"session": False})
@@ -23,16 +29,9 @@ def item(request):
 
     item_id = request.GET.get('id')
 
-    config = {
-        'user': settings.DATABASES['session']['USER'],
-        'password': settings.DATABASES['session']['PASSWORD'],
-        'host': settings.DATABASES['session']['HOST'],
-        'database': settings.DATABASES['session']['DATABASE'],
-    }
-
     if session_is_valid(request)[0]:
 
-        cnx = mysql.connector.connect(**config)
+        cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
 
         with cnx:
             with cnx.cursor() as cursor:
@@ -46,6 +45,13 @@ def item(request):
 
         # レビューを取得
         item_review = json.loads(result[4].replace("\n", "<br>"))
+
+        # item_reviewにmc情報を追加
+        for i in item_review:
+            discord_id = i["discord_id"]
+            profile = get_userinfo_from_discord(discord_id)
+            i["mc_id"] = profile["mc_id"]
+            i["mc_uuid"] = profile["mc_uuid"]
 
         # レビューの平均を計算
         if item_review:

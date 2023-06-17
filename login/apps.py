@@ -1,5 +1,5 @@
 import mysql.connector
-from config.settings import DATABASES
+import config.settings as settings
 from django.apps import AppConfig
 import logging
 
@@ -28,47 +28,36 @@ class RunOnce:
 
 @RunOnce
 def table_create(sender, **kwargs):
-    config = {
-        'user': DATABASES['session']['USER'],
-        'password': DATABASES['session']['PASSWORD'],
-        'host': DATABASES['session']['HOST'],
-        'database': DATABASES['session']['DATABASE'],
-    }
-    cnx = mysql.connector.connect(**config)
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
     with cnx:
         with cnx.cursor() as cursor:
+
             # テーブルが存在するか確認
-            sql = "SHOW TABLES"
+            sql = """CREATE TABLE IF NOT EXISTS `session` (
+                                                    session_id VARCHAR(64) UNIQUE,
+                                                    session_val VARCHAR(256),
+                                                    discord_id BIGINT,
+                                                    access_token VARCHAR(64),
+                                                    login_date DATETIME,
+                                                    expires DATETIME)"""
             cursor.execute(sql)
 
-            # 結果を取得
-            result = cursor.fetchall()
+            sql = """CREATE TABLE IF NOT EXISTS `item` (
+                                                    id BIGINT UNIQUE,
+                                                    name VARCHAR(256),
+                                                    price INT,
+                                                    image JSON,
+                                                    review JSON,
+                                                    stock BIGINT,
+                                                    about JSON,
+                                                    kind JSON)"""
+            cursor.execute(sql)
 
-            # sessionなかったら作成
-            if result is None or 'session' not in [i[0] for i in result]:
-                sql = """CREATE TABLE `session` (
-                                        session_id VARCHAR(256),
-                                        session_val VARCHAR(256),
-                                        user_id BIGINT,
-                                        access_token VARCHAR(256),
-                                        login_date DATETIME,
-                                        expires DATETIME)"""
-                cursor.execute(sql)
-                logging.info(f"{config['database']}にtable「session」を作成しました")
-
-            # itemなかったら作成
-            if result is None or 'item' not in [i[0] for i in result]:
-                sql = """CREATE TABLE `item` (
-                                        id BIGINT,
-                                        name VARCHAR(256),
-                                        price INT,
-                                        image JSON,
-                                        review JSON,
-                                        stock BIGINT,
-                                        about JSON,
-                                        kind JSON)"""
-                cursor.execute(sql)
-                logging.info(f"{config['database']}にtable「item」を作成しました")
-
+            sql = """CREATE TABLE IF NOT EXISTS `linked` (
+                                                    mc_uuid VARCHAR(36) UNIQUE,
+                                                    discord_id BIGINT,
+                                                    link_time BIGINT,
+                                                    cart JSON)"""
+            cursor.execute(sql)
             cursor.close()
-        cnx.commit()
+            cnx.commit()

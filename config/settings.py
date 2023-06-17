@@ -15,10 +15,9 @@ DISCORD_CLIENT = {
     'CLIENT-SECRET': os.environ["DISCORD_CLIENT_SECRET"],
     'REDIRECT': os.environ["DISCORD_REDIRECT"],
 }
-# Discord鯖に入っているか判定するID
+
 SERVER_ID = os.environ["SERVER_ID"]
 
-# DBに保存する有効期限(単位:日)
 SESSION_EXPIRES = os.environ["SESSION_EXPIRES"]
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -32,6 +31,13 @@ DATABASES = {
         'PASSWORD': os.environ["DATABASE_PASS"],
         'DATABASE': os.environ["DATABASE_TABLE"],
     }
+}
+
+DATABASE_CONFIG = {
+    'user': DATABASES['session']['USER'],
+    'password': DATABASES['session']['PASSWORD'],
+    'host': DATABASES['session']['HOST'],
+    'database': DATABASES['session']['DATABASE'],
 }
 
 

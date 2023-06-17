@@ -22,10 +22,13 @@
 	            <div class="nav-belt__address-dir">
 		            <div class="nav-belt__address-name">
 			            <p class="nav-belt__address-to">お届け先</p>
-			            <p class="nav-belt__address-toname">〇〇さん</p>
 		            </div>
 		            <div class="nav-belt__address-number">
-						<h1>1-0001</h1>
+						{% if info.mc_id %}
+						<h1>1-0001仮</h1>
+						{% else %}
+						<h1>ログイン</h1>
+						{% endif %}
 		            </div>
 	            </div>
             </div>
@@ -50,8 +53,13 @@
 	            </form>
             </div>
 	        <div class="nav-belt__account">
-		        <p>〇〇さん</p>
-		        <h1>アカウント&リスト</h1>
+				{% if info.mc_id %}
+		        	<p>{{ info.mc_id }}さん</p>
+		        	<h1>アカウント&リスト</h1>
+				{% else %}
+					<p>ゲストさん</p>
+		        	<h1>ログイン</h1>
+				{% endif %}
 	        </div>
 	        <div class="nav-belt__returns">
 		        <p>返品もこちら</p>

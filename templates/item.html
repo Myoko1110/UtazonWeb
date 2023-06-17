@@ -237,8 +237,8 @@
 				{% for child in item_review %}
 				<li class="review-list__child">
 					<div class="review-list__account">
-						<img class="review-list__account-img" src="https://images-fe.ssl-images-amazon.com/images/S/amazon-avatars-global/default._CR0,0,1024,1024_SX48_.png">
-						<p>ユーザー名</p>
+						<img class="review-list__account-img" src="https://crafatar.com/avatars/{{ child.mc_uuid }}">
+						<p>{{ child.mc_id }}</p>
 					</div>
 					<div class="review-list__title">
 						{% if child.star >= 4.8 %}
