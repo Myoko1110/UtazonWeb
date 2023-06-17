@@ -1,12 +1,12 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <title>Utazon.com | うたかた鯖</title>
-	<link rel="stylesheet" href="{% static 'home/stylesheet.css' %}">
-    <link rel="stylesheet" href="{% static 'local.css' %}">
-		<link rel="icon" href="{% static 'icon.svg' %}">
+    <link rel="stylesheet" href="../assets/cart/stylesheet.css">
+    <link rel="stylesheet" href="../assets/local.css">
+	<link rel="icon" href="{% static 'icon.svg' %}">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 <div class="global-header">
@@ -87,114 +87,41 @@
 </div>
 <div class="wrapper">
 	<div class="subwrapper">
-		<div class="main">
-			<div class="main-banner">
-				<img src="https://m.media-amazon.com/images/I/71dD1qOtWXL._SX3000_.jpg">
+		<div class="cart">
+			<div class="cart-notexist">
+				<h2>お客様のUtazonカートに商品はありません。</h2>
+				<p>商品をカートに追加してください。</p>
+			</div>
+			<div class="cart-exist">
+				<h2>ショッピングカート</h2>
+				<ul class="cart-list">
+					<li class="cart-child">
+						<img src="https://m.media-amazon.com/images/I/61XeAxs1D0L._AC_SX679_.jpg">
+						<div class="cart-product">
+							<h2>ADATA デスクトップPC用 メモリ PC4-25600 DDR4-3200MHz 288Pin 32GB × 2枚 AD4U3200732G22-DA</h2>
+							<p class="cart-product__y">在庫あり</p>
+							<p class="cart-product__n">残り6点 ご注文はお早めに</p>
+							<div class="cart-product__number">
+								<p>数量:</p>
+								<input class="cart-product__number-input" type="number" value="1">
+								<a>削除</a>
+							</div>
+						</div>
+						<div class="cart-price">
+							<h3>￥18,555</h3>
+							<p>ポイント：<span>100pt (1%)</span></p>
+						</div>
+					</li>
+				</ul>
 			</div>
 		</div>
-		<div class="gw-layout">
-			<div class="gw-card">
-				<div class="gw-card__1 gw-card__child">
-					<h1>閲覧履歴に基づくおすすめ商品</h1>
-					<div class="gw-card__items">
-						<div class="gw-card__item-above gw-card__item">
-							<div class="gw-card__item1">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-							<div class="gw-card__item2">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-						</div>
-						<div class="gw-card__item-below gw-card__item">
-							<div class="gw-card__item1">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-							<div class="gw-card__item2">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="gw-card__2 gw-card__child">
-					<h1>ショッピングを続ける</h1>
-					<div class="gw-card__items">
-						<div class="gw-card__item-above gw-card__item">
-							<div class="gw-card__item1">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-							<div class="gw-card__item2">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-						</div>
-						<div class="gw-card__item-below gw-card__item">
-							<div class="gw-card__item1">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-							<div class="gw-card__item2">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="gw-card__3 gw-card__child">
-					<h1>プライム会員</h1>
-					<div class="gw-card__items">
-						<div class="gw-card__item-above gw-card__item">
-							<div class="gw-card__item1">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-							<div class="gw-card__item2">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-						</div>
-						<div class="gw-card__item-below gw-card__item">
-							<div class="gw-card__item1">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-							<div class="gw-card__item2">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="gw-card__4 gw-card__child">
-					<h1>ショッピングを続ける</h1>
-					<div class="gw-card__items">
-						<div class="gw-card__item-above gw-card__item">
-							<div class="gw-card__item1">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-							<div class="gw-card__item2">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-						</div>
-						<div class="gw-card__item-below gw-card__item">
-							<div class="gw-card__item1">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-							<div class="gw-card__item2">
-								<img class="gw-card__item-img" src="https://images-fe.ssl-images-amazon.com/images/G/09/2023/fashion/05_May/CML/01_Gateway/ASIN_Based/CML_202305_GW_M_quadcard_1_dt_186x116._SY116_CB590267832_.jpg">
-								<p class="gw-card__item1-name">商品名</p>
-							</div>
-						</div>
-					</div>
-				</div>
+		<div class="buy">
+			<div class="buy-delivery">
+				<i></i>
+				<p>通常配送無料</p>
 			</div>
+			<h2>小計 (1 個の商品) (税込) : <span>￥10,218</span></h2>
+			<input class="buy-continue" type="submit" value="レジに進む">
 		</div>
 	</div>
 </div>

@@ -4,7 +4,7 @@
 
 - session情報
 
-| **カラム** | **session_id**  | **session_val** | **user_id**    | **access_token**    | **login_date**          | **expires**             |
+| **カラム** | **session_id**  | **session_val** | **discord_id**    | **access_token**    | **login_date**          | **expires**             |
 |--------|-------------|-------------|------------|-----------------|---------------------|---------------------|
 | **データの例** | l__ZVkzs... | hcLTydvh... | 8860894... | dfM9RdniEcOA... | 2023-06-03 20:37:16 | 2023-07-03 20:37:16 |
 | **説明** | cookieに保存されるセッション名 | cookieに保存されるセッションの値 | DiscordのユーザーID  | Discordのアクセストークン | ログインされた時間 | セッションの有効期限 |

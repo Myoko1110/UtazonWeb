@@ -6,7 +6,8 @@
     <title>Utazon.com | うたかた鯖</title>
 	<link rel="stylesheet" href="{% static 'home/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
-		<link rel="icon" href="{% static 'icon.svg' %}">
+	<link rel="icon" href="{% static 'icon.svg' %}">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 <div class="global-header">
@@ -198,5 +199,14 @@
 		</div>
 	</div>
 </div>
+{% if session %}
+<div class="expires">
+	<div class="expires__box">
+		<h1>期限切れ</h1>
+		<p>セッションの期限が切れました。お手数ですが、もう一度ログインをお願いいたします。</p>
+		<a href="/login">ログイン</a>
+	</div>
+</div>
+{% endif %}
 </body>
 </html>

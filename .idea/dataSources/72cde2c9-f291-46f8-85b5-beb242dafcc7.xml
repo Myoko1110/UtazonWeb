@@ -1031,33 +1031,105 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <Host>localhost</Host>
       <Plugin>caching_sha2_password</Plugin>
     </user>
-    <table id="298" parent="292" name="session">
+    <table id="298" parent="292" name="item">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb3_general_ci</CollationName>
     </table>
-    <column id="299" parent="298" name="session_id">
-      <DasType>varchar(256)|0s</DasType>
+    <table id="299" parent="292" name="linked">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb3_general_ci</CollationName>
+    </table>
+    <table id="300" parent="292" name="session">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb3_general_ci</CollationName>
+    </table>
+    <column id="301" parent="298" name="id">
+      <DasType>bigint|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="300" parent="298" name="session_val">
+    <column id="302" parent="298" name="name">
       <DasType>varchar(256)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="301" parent="298" name="user_id">
+    <column id="303" parent="298" name="price">
+      <DasType>int|0s</DasType>
+      <Position>3</Position>
+    </column>
+    <column id="304" parent="298" name="image">
+      <DasType>json|0s</DasType>
+      <Position>4</Position>
+    </column>
+    <column id="305" parent="298" name="review">
+      <DasType>json|0s</DasType>
+      <Position>5</Position>
+    </column>
+    <column id="306" parent="298" name="stock">
+      <DasType>bigint|0s</DasType>
+      <Position>6</Position>
+    </column>
+    <column id="307" parent="298" name="about">
+      <DasType>json|0s</DasType>
+      <Position>7</Position>
+    </column>
+    <column id="308" parent="298" name="kind">
+      <DasType>json|0s</DasType>
+      <Position>8</Position>
+    </column>
+    <column id="309" parent="299" name="mc_uuid">
+      <DasType>varchar(36)|0s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="310" parent="299" name="discord_id">
+      <DasType>bigint|0s</DasType>
+      <Position>2</Position>
+    </column>
+    <column id="311" parent="299" name="link_time">
       <DasType>bigint|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="302" parent="298" name="access_token">
-      <DasType>varchar(256)|0s</DasType>
+    <column id="312" parent="299" name="cart">
+      <DasType>json|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="303" parent="298" name="login_date">
+    <index id="313" parent="299" name="mc_uuid">
+      <ColNames>mc_uuid</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="314" parent="299" name="mc_uuid">
+      <UnderlyingIndexName>mc_uuid</UnderlyingIndexName>
+    </key>
+    <column id="315" parent="300" name="session_id">
+      <DasType>varchar(64)|0s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="316" parent="300" name="session_val">
+      <DasType>varchar(256)|0s</DasType>
+      <Position>2</Position>
+    </column>
+    <column id="317" parent="300" name="discord_id">
+      <DasType>bigint|0s</DasType>
+      <Position>3</Position>
+    </column>
+    <column id="318" parent="300" name="access_token">
+      <DasType>varchar(64)|0s</DasType>
+      <Position>4</Position>
+    </column>
+    <column id="319" parent="300" name="login_date">
       <DasType>datetime|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="304" parent="298" name="expires">
+    <column id="320" parent="300" name="expires">
       <DasType>datetime|0s</DasType>
       <Position>6</Position>
     </column>
+    <index id="321" parent="300" name="session_id">
+      <ColNames>session_id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="322" parent="300" name="session_id">
+      <UnderlyingIndexName>session_id</UnderlyingIndexName>
+    </key>
   </database-model>
 </dataSource>

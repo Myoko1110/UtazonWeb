@@ -2,8 +2,8 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/browse/views.py" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/config/functions.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/login/apps.py" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/login/functions.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/login/views.py" dialect="GenericSQL" />
   </component>
 </project>

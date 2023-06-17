@@ -5,7 +5,7 @@ import secrets
 import mysql.connector
 import datetime
 import config.settings as settings
-from login.functions import session_is_valid
+from config.functions import session_is_valid
 
 
 def login(request):
@@ -66,41 +66,34 @@ def login(request):
         for i in guilds.json():
             if i['id'] == str(settings.SERVER_ID):
                 # セッションを作成
-                session_id = f'_Secure-{secrets.token_urlsafe(128)}'
+                session_id = f'_Secure-{secrets.token_urlsafe(32)}'
                 session_value = f'{secrets.token_urlsafe(128)}'
 
-                config = {
-                    'user': settings.DATABASES['session']['USER'],
-                    'password': settings.DATABASES['session']['PASSWORD'],
-                    'host': settings.DATABASES['session']['HOST'],
-                    'database': settings.DATABASES['session']['DATABASE'],
-                }
-
-                session_cnx = mysql.connector.connect(**config)
+                session_cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
 
                 # 現在時間と1ヶ月後を取得
                 now = datetime.datetime.now().replace(microsecond=0)
                 expires = now + datetime.timedelta(days=int(settings.SESSION_EXPIRES))
 
-                user_id = identify.json()['id']
+                discord_id = identify.json()['id']
                 user_avatar = identify.json()['avatar']
 
                 # dbにセッションを記録
                 with session_cnx:
                     with session_cnx.cursor() as cursor:
                         sql = """INSERT INTO `session` (
-                                 `session_id`, `session_val`, `user_id`, `access_token`, `login_date`, `expires`
+                                 `session_id`, `session_val`, `discord_id`, `access_token`, `login_date`, `expires`
                                  ) VALUES (%s, %s, %s, %s, %s, %s)"""
 
                         cursor.execute(sql,
-                                       (session_id, session_value, user_id, access_token, now, expires))
+                                       (session_id, session_value, discord_id, access_token, now, expires))
                     session_cnx.commit()
                 cursor.close()
 
                 # ユーザーのアイコンを取得
-                user_icon_url = f"https://cdn.discordapp.com/avatars/{user_id}/{user_avatar}"
+                user_icon_url = f"https://cdn.discordapp.com/avatars/{discord_id}/{user_avatar}"
                 user_icon = requests.get(user_icon_url).content
-                file_name = settings.BASE_DIR / "assets" / "usericon" / f"{user_id}.webp"
+                file_name = settings.BASE_DIR / "assets" / "usericon" / f"{discord_id}.webp"
 
                 # アイコンをローカルに保存
                 with open(file_name, mode='wb') as f:
