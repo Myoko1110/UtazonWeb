@@ -35,7 +35,7 @@ def item(request):
 
         with cnx:
             with cnx.cursor() as cursor:
-                sql = "SELECT * FROM item WHERE id=%s"
+                sql = "SELECT * FROM item WHERE item_id=%s"
                 cursor.execute(sql, (item_id,))
 
                 # session_idのレコードを取得

@@ -43,8 +43,8 @@ def table_create(sender, **kwargs):
             cursor.execute(sql)
 
             sql = """CREATE TABLE IF NOT EXISTS `item` (
-                                                    id BIGINT UNIQUE,
-                                                    name VARCHAR(256),
+                                                    item_id BIGINT UNIQUE,
+                                                    item_name VARCHAR(256),
                                                     price INT,
                                                     image JSON,
                                                     review JSON,
@@ -59,5 +59,5 @@ def table_create(sender, **kwargs):
                                                     link_time BIGINT,
                                                     cart JSON)"""
             cursor.execute(sql)
-            cursor.close()
-            cnx.commit()
+        cursor.close()
+        cnx.commit()
