@@ -4,7 +4,7 @@ import requests
 import config.settings as settings
 
 
-def session_is_valid(request):
+def is_session_valid(request):
     """
     セッションの確認
     """
@@ -82,6 +82,30 @@ def get_userinfo_from_discord(discord_id):
             return {"mc_uuid": mc_uuid, "mc_id": mc_id}
 
 
+def get_userinfo_from_uuid(uuid):
+    """
+    uuidからのユーザー情報の取得
+    """
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
+
+    with cnx:
+        with cnx.cursor() as cursor:
+
+            sql = "SELECT * FROM linked WHERE mc_uuid=%s"
+            cursor.execute(sql, (uuid,))
+
+            # discord_idのレコードを取得
+            discord_id = cursor.fetchone()[1]
+
+            # mc関係のprofileを取得
+            profile = requests.get(f'https://sessionserver.mojang.com/session/minecraft/profile/{uuid}').json()
+
+            # mc_idを取得
+            mc_id = profile["name"]
+
+            return {"discord_id": discord_id, "mc_id": mc_id}
+
+
 def get_userinfo_from_session(request):
     """
     セッションからのユーザー情報の取得
@@ -108,9 +132,9 @@ def get_userinfo_from_session(request):
                     if result is None:
                         continue
 
-                    # discordIDを取得
-                    discord_id = result[2]
+                    # uuidを取得
+                    mc_uuid = result[2]
 
-                    profile = get_userinfo_from_discord(discord_id)
+                    profile = get_userinfo_from_uuid(mc_uuid)
 
-                    return {"discord_id": discord_id, "mc_uuid": profile["mc_uuid"], "mc_id": profile["mc_id"]}
+                    return {"discord_id": profile["discord_id"], "mc_uuid": mc_uuid, "mc_id": profile["mc_id"]}

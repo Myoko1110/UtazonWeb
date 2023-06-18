@@ -1,7 +1,6 @@
 import mysql.connector
 import config.settings as settings
 from django.apps import AppConfig
-import logging
 
 
 class LoginConfig(AppConfig):
@@ -36,7 +35,7 @@ def table_create(sender, **kwargs):
             sql = """CREATE TABLE IF NOT EXISTS `session` (
                                                     session_id VARCHAR(64) UNIQUE,
                                                     session_val VARCHAR(256),
-                                                    discord_id BIGINT,
+                                                    mc_uuid VARCHAR(36),
                                                     access_token VARCHAR(64),
                                                     login_date DATETIME,
                                                     expires DATETIME)"""
@@ -56,8 +55,14 @@ def table_create(sender, **kwargs):
             sql = """CREATE TABLE IF NOT EXISTS `linked` (
                                                     mc_uuid VARCHAR(36) UNIQUE,
                                                     discord_id BIGINT,
-                                                    link_time BIGINT,
-                                                    cart JSON)"""
+                                                    link_time BIGINT)"""
+            cursor.execute(sql)
+
+            sql = """CREATE TABLE IF NOT EXISTS `user` (
+                                                    mc_uuid VARCHAR(36) UNIQUE,
+                                                    cart JSON,
+                                                    later JSON,
+                                                    point INT)"""
             cursor.execute(sql)
         cursor.close()
         cnx.commit()

@@ -5,7 +5,7 @@ import secrets
 import mysql.connector
 import datetime
 import config.settings as settings
-from config.functions import session_is_valid
+from config.functions import is_session_valid
 
 
 def login(request):
@@ -65,41 +65,49 @@ def login(request):
         # Discordサーバーに参加しているかを確認
         for i in guilds.json():
             if i['id'] == str(settings.SERVER_ID):
-                # セッションを作成
-                session_id = f'_Secure-{secrets.token_urlsafe(32)}'
-                session_value = f'{secrets.token_urlsafe(128)}'
-
-                session_cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
-
-                # 現在時間と1ヶ月後を取得
-                now = datetime.datetime.now().replace(microsecond=0)
-                expires = now + datetime.timedelta(days=int(settings.SESSION_EXPIRES))
 
                 discord_id = identify.json()['id']
-                user_avatar = identify.json()['avatar']
+                cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
 
-                # dbにセッションを記録
-                with session_cnx:
-                    with session_cnx.cursor() as cursor:
+                # DiscordConnectでリンクしてるか確認
+                with cnx:
+                    with cnx.cursor() as cursor:
+                        sql = "SELECT * FROM linked WHERE discord_id=%s"
+                        cursor.execute(sql, (discord_id,))
+                        result = cursor.fetchone()
+
+                        if not result:
+                            cnx.commit()
+                            cursor.close()
+                            # エラーを表示
+                            context = {'err': True, 'content': 'DiscordとMinecraftを接続した上でログインしてください。'}
+                            return render(request, 'login.html', context=context)
+
+                        mc_uuid = result[0]
+
+                        # セッションを作成
+                        session_id = f'_Secure-{secrets.token_urlsafe(32)}'
+                        session_value = f'{secrets.token_urlsafe(128)}'
+
+                        # 現在時間と1ヶ月後を取得
+                        now = datetime.datetime.now().replace(microsecond=0)
+                        expires = now + datetime.timedelta(days=int(settings.SESSION_EXPIRES))
+
                         sql = """INSERT INTO `session` (
-                                 `session_id`, `session_val`, `discord_id`, `access_token`, `login_date`, `expires`
+                                 `session_id`, `session_val`, `mc_uuid`, `access_token`, `login_date`, `expires`
                                  ) VALUES (%s, %s, %s, %s, %s, %s)"""
 
                         cursor.execute(sql,
-                                       (session_id, session_value, discord_id, access_token, now, expires))
-                    session_cnx.commit()
+                                       (session_id, session_value, mc_uuid, access_token, now, expires))
+
+                        sql = """INSERT INTO `user` (
+                                 `mc_uuid`, `cart`, `later`, `point`
+                                 ) VALUES (%s, %s, %s, %s)"""
+                        cursor.execute(sql,(mc_uuid, "[]", "[]", 0))
+                    cnx.commit()
                 cursor.close()
 
-                # ユーザーのアイコンを取得
-                user_icon_url = f"https://cdn.discordapp.com/avatars/{discord_id}/{user_avatar}"
-                user_icon = requests.get(user_icon_url).content
-                file_name = settings.BASE_DIR / "assets" / "usericon" / f"{discord_id}.webp"
-
-                # アイコンをローカルに保存
-                with open(file_name, mode='wb') as f:
-                    f.write(user_icon)
-
-                # 問題がなかったらcookie付与・リダイレクト
+                # 問題がなかったらcookie付与しリダイレクト
                 response = redirect('/')
                 response.set_cookie(session_id, session_value, expires=expires)
                 response.set_cookie("LOGIN_STATUS", True, max_age=315360000)
@@ -111,10 +119,10 @@ def login(request):
             return render(request, 'login.html', context=context)
 
     else:
-        if session_is_valid(request)[0]:
+        if is_session_valid(request)[0]:
             # 既ログイン処理
             return redirect('/')
-        elif session_is_valid(request)[1]:
+        elif is_session_valid(request)[1]:
             # 期限切れ処理
             context = {'err': False, 'content': 'error'}
             return render(request, 'login.html', context=context)
