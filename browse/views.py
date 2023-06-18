@@ -27,6 +27,7 @@ def index_view(request):
 
 
 def item(request):
+    info = get_userinfo_from_session(request)
 
     # アイテムIDを指定
     item_id = request.GET.get('id')
@@ -66,11 +67,13 @@ def item(request):
             "item_price": result[2],
             "item_point": int(result[2] * 0.1),
             "item_images": json.loads(result[3]),
+            "item_stock": result[5],
             "item_about": reversed(json.loads(result[6]).items()),
             "item_kind": json.loads(result[7]),
             "item_review": item_review,
             "item_review_number": len(item_review),
-            "item_review_av": item_review_av
+            "item_review_av": item_review_av,
+            "info": info,
         }
 
         # 既ログイン処理
@@ -111,18 +114,18 @@ def cart(request):
 
                 cursor.close()
                 cnx.commit()
-
+        print(cart)
         total = 0
-        for i in cart:
+        for _ in cart:
             total += item[2]
 
         context = {
             "session": False,
-            "info": info,
             "cart": cart,
             "cart_number": len(json.loads(result[1])),
             "later": json.loads(result[2]),
-            "total": total
+            "total": total,
+            "info": info,
         }
         # 既ログイン処理
         return render(request, 'cart.html', context=context)

@@ -111,8 +111,14 @@
 						<img src="{{ child.3.0 }}">
 						<div class="cart-product">
 							<h2>{{ child.1 }}</h2>
+							{% if child.5 != 0 %}
 							<p class="cart-product__y">在庫あり</p>
-							<p class="cart-product__n">残り6点 ご注文はお早めに</p>
+							{% if child.5 <= 15 %}
+							<p class="cart-product__n">残り{{ child.5 }}点 ご注文はお早めに</p>
+							{% endif %}
+							{% else %}
+							<p class="cart-product__n">在庫なし</p>
+							{% endif %}
 							<div class="cart-product__number">
 								<p>数量:</p>
 								<input class="cart-product__number-input" type="number" value="1">
@@ -120,8 +126,12 @@
 							</div>
 						</div>
 						<div class="cart-price">
+							{% if child.5 != 0 %}
 							<h3>${{ child.2 }}</h3>
 							<p>ポイント：<span>{{ child.8 }}pt (10%)</span></p>
+							{% else %}
+							<h3 style="color: #b12704">在庫なし</h3>
+							{% endif %}
 						</div>
 					</li>
 					{% endfor %}
