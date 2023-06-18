@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Utazon.com | うたかた鯖</title>
+    <link rel="stylesheet" href="../assets/cart/stylesheet.css">
+    <link rel="stylesheet" href="../assets/local.css">
+	<link rel="icon" href="{% static 'icon.svg' %}">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="global-header">
+    <header>
+        <div class="nav-belt">
+            <div class="nav-belt__logo">
+                <a href="/">
+                    <img src="../assets/logo.svg">
+                </a>
+            </div>
+            <div class="nav-belt__address">
+                <img class="nav-belt__address-map" src="../assets/pin.svg">
+	            <div class="nav-belt__address-dir">
+		            <div class="nav-belt__address-name">
+			            <p class="nav-belt__address-to">お届け先</p>
+		            </div>
+		            <div class="nav-belt__address-number">
+						{% if info.mc_id %}
+						<h1>1-0001仮</h1>
+						{% else %}
+						<h1>ログイン</h1>
+						{% endif %}
+		            </div>
+	            </div>
+            </div>
+            <div class="nav-belt__search">
+	            <form>
+		            <select class="nav-belt__search-select">
+			            <option>すべて</option>
+			            <option>建築ブロック</option>
+			            <option>装飾ブロック</option>
+			            <option>レッドストーン</option>
+			            <option>運送</option>
+			            <option>食料</option>
+			            <option>道具</option>
+			            <option>戦闘</option>
+			            <option>醸造</option>
+		            </select>
+	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com">
+		            <label class="nav-belt__search-label">
+			            <input class="nav-belt__search-submit" type="submit" value="">
+			            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960"><path d="M796 935 533 672q-30 26-69.959 40.5T378 727q-108.162 0-183.081-75Q120 577 120 471t75-181q75-75 181.5-75t181 75Q632 365 632 471.15 632 514 618 554q-14 40-42 75l264 262-44 44ZM377 667q81.25 0 138.125-57.5T572 471q0-81-56.875-138.5T377 275q-82.083 0-139.542 57.5Q180 390 180 471t57.458 138.5Q294.917 667 377 667Z"/></svg>
+		            </label>
+	            </form>
+            </div>
+	        <div class="nav-belt__account">
+				{% if info.mc_id %}
+		        	<p>{{ info.mc_id }}さん</p>
+		        	<h1>アカウント&リスト</h1>
+				{% else %}
+					<p>ゲストさん</p>
+		        	<h1>ログイン</h1>
+				{% endif %}
+	        </div>
+	        <div class="nav-belt__returns">
+		        <p>返品もこちら</p>
+		        <h1>注文履歴</h1>
+	        </div>
+	        <div class="nav-belt__cart">
+		        <div class="nav-belt__cart-ui">
+			        <img src="../assets/cart.png">
+			        <p>1</p>
+		        </div>
+		        <div class="nav-belt__cart-text">
+			        <h1>カート</h1>
+		        </div>
+	        </div>
+        </div>
+	    <div class="nav-main">
+			<a class="nav-main__point">Utazonポイント:<span>100</span></a>
+			<div class="nav-main__category">
+				<a class="nav-main__category-child">ヘルプ</a>
+				<a class="nav-main__category-child">プライム</a>
+				<a class="nav-main__category-child">建築ブロック</a>
+				<a class="nav-main__category-child">装飾ブロック</a>
+				<a class="nav-main__category-child">レッドストーン</a>
+				<a class="nav-main__category-child">運送</a>
+				<a class="nav-main__category-child">食料</a>
+				<a class="nav-main__category-child">道具</a>
+				<a class="nav-main__category-child">戦闘</a>
+				<a class="nav-main__category-child">醸造</a>
+				<a class="nav-main__category-child">再購入</a>
+			</div>
+	    </div>
+    </header>
+</div>
+<div class="wrapper">
+	<div class="subwrapper">
+		<div class="cart">
+			{% if cart_number == 0 %}
+			<div class="cart-notexist">
+				<h2>お客様のUtazonカートに商品はありません。</h2>
+				<p>商品をカートに追加してください。</p>
+			</div>
+			{% else %}
+			<div class="cart-exist">
+				<h2>ショッピングカート</h2>
+				<ul class="cart-list">
+					{% for child in cart %}
+					<li class="cart-child">
+						<img src="{{ child.3.0 }}">
+						<div class="cart-product">
+							<h2>{{ child.1 }}</h2>
+							<p class="cart-product__y">在庫あり</p>
+							<p class="cart-product__n">残り6点 ご注文はお早めに</p>
+							<div class="cart-product__number">
+								<p>数量:</p>
+								<input class="cart-product__number-input" type="number" value="1">
+								<a>削除</a>
+							</div>
+						</div>
+						<div class="cart-price">
+							<h3>${{ child.2 }}</h3>
+							<p>ポイント：<span>{{ child.8 }}pt (10%)</span></p>
+						</div>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+			{% endif %}
+		</div>
+		<div class="buy">
+			<div class="buy-delivery">
+				<i></i>
+				<p>通常配送無料</p>
+			</div>
+			<h2>小計 ({{ cart_number }} 個の商品) (税込) : <span>${{ total }}</span></h2>
+			<input class="buy-continue" type="submit" value="レジに進む">
+		</div>
+	</div>
+</div>
+</body>
+</html>
