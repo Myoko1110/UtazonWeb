@@ -99,6 +99,7 @@ body, html{
     border: none;
     height: 100%;
     width: calc(100vw - 790px);
+    padding: 0 8px;
 }
 .nav-belt__search-submit{
     background-color: #69cafe;
@@ -186,7 +187,6 @@ body, html{
     height: 40px;
     background-color: #232f3e;
     display: flex;
-    align-items: center;
     padding: 0 20px;
     font-size: 14px;
 }
@@ -195,7 +195,7 @@ body, html{
     height: 100%;
     display: flex;
     align-items: center;
-    padding: 0 12px;
+    margin: 0 12px;
 }
 .nav-main__point span{
     color: #90d4ff;
@@ -203,11 +203,25 @@ body, html{
 }
 .nav-main__category{
     display: flex;
+    flex-wrap: wrap;
+    height: 40px;
+    overflow: hidden;
 }
 .nav-main__category-child{
     color: #ffffff;
     height: 100%;
     display: flex;
     align-items: center;
-    padding: 0 12px;
+    padding: 10px 12px;
+}
+@media(max-width: 999px){
+    .nav-belt__address{
+        display: none;
+    }
+    .nav-belt__account{
+        display: none;
+    }
+    .nav-belt__search-input{
+        width: calc(100vw - 490px);
+    }
 }

@@ -7,6 +7,8 @@
 	<link rel="stylesheet" href="{% static 'home/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="{% static 'search.js' %}"></script>
 </head>
 <body>
 <div class="global-header">
@@ -33,7 +35,7 @@
 	            </div>
             </div>
             <div class="nav-belt__search">
-	            <form>
+	            <form id="search">
 		            <select class="nav-belt__search-select">
 			            <option>すべて</option>
 			            <option>建築ブロック</option>
@@ -45,7 +47,7 @@
 			            <option>戦闘</option>
 			            <option>醸造</option>
 		            </select>
-	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com">
+	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com" value="{{ query }}" id="search_query">
 		            <label class="nav-belt__search-label">
 			            <input class="nav-belt__search-submit" type="submit" value="">
 			            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960"><path d="M796 935 533 672q-30 26-69.959 40.5T378 727q-108.162 0-183.081-75Q120 577 120 471t75-181q75-75 181.5-75t181 75Q632 365 632 471.15 632 514 618 554q-14 40-42 75l264 262-44 44ZM377 667q81.25 0 138.125-57.5T572 471q0-81-56.875-138.5T377 275q-82.083 0-139.542 57.5Q180 390 180 471t57.458 138.5Q294.917 667 377 667Z"/></svg>
