@@ -93,17 +93,18 @@ def login(request):
                         now = datetime.datetime.now().replace(microsecond=0)
                         expires = now + datetime.timedelta(days=int(settings.SESSION_EXPIRES))
 
+                        # sessionテーブルに保存
                         sql = """INSERT INTO `session` (
                                  `session_id`, `session_val`, `mc_uuid`, `access_token`, `login_date`, `expires`
                                  ) VALUES (%s, %s, %s, %s, %s, %s)"""
-
                         cursor.execute(sql,
                                        (session_id, session_value, mc_uuid, access_token, now, expires))
 
-                        sql = """INSERT INTO `user` (
+                        # userテーブルになかったら作成
+                        sql = """INSERT IGNORE INTO `user` (
                                  `mc_uuid`, `cart`, `later`, `point`
                                  ) VALUES (%s, %s, %s, %s)"""
-                        cursor.execute(sql,(mc_uuid, "[]", "[]", 0))
+                        cursor.execute(sql, (mc_uuid, "[]", "[]", 0))
                     cnx.commit()
                 cursor.close()
 
