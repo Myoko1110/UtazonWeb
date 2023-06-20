@@ -1,0 +1,89 @@
+.wrapper{
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 100px 0 0;
+}
+
+.search{
+    background-color: #ffffff;
+    box-shadow: 0 0 10px #ddd;
+    display: flex;
+    align-items: center;
+    height: 36px;
+    width: 100%;
+    padding: 0 20px;
+}
+.search-number{
+    margin: 0;
+    font-size: 14px;
+}
+.search-keyword{
+    font-weight: 700;
+    color: #006cc4;
+    margin: 0 0 0 5px;
+    font-size: 14px;
+}
+.main-list{
+    list-style: none;
+    max-width: 1000px;
+}
+.main-list li{
+    display: flex;
+}
+.main-img{
+    width: 280px;
+    height: 240px;
+    object-fit: contain;
+    background-color: #f8f8f8;
+}
+.main-info{
+    margin: 10px 15px;
+}
+.main-info a{
+    font-weight: 400;
+    font-size: 18px;
+    margin: 0;
+}
+.main-star{
+    -webkit-background-size: 512px 512px;
+    background-size: 512px 512px;
+    background-repeat: no-repeat;
+    height: 18px;
+    width: 80px;
+    background-image: url("../star.png");
+}
+.main-star__box{
+    display: flex;
+    align-items: center;
+    margin: 3px 0;
+}
+.main-star__box p{
+    margin: 0 0 0 5px;
+    font-size: 14px;
+}
+.main-price p{
+    color: #b12704;
+    font-size: 21px;
+    margin: 0;
+}
+.main-price p span{
+    font-size: 12px;
+    vertical-align: top;
+}
+.main-point{
+    color: #b12704;
+    margin: 0;
+    font-size: 14px;
+}
+
+body, html{
+    margin: 0;
+    padding: 0;
+}
+
+*{
+    box-sizing: border-box;
+    font-family: 'Hiragino Kaku Gothic ProN','Hiragino Sans', Meiryo, sans-serif;
+}
