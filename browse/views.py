@@ -137,10 +137,12 @@ def cart(request):
 
 
 def search(request):
+    query = request.GET.get('q')
+    if not query:
+        return redirect('/')
+
     if is_session_valid(request)[0]:
         info = get_userinfo_from_session(request)
-
-        query = request.GET.get('q')
 
         cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
 
@@ -186,4 +188,3 @@ def search(request):
     else:
         # 未ログイン処理
         return redirect('/login')
-
