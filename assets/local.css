@@ -5,7 +5,12 @@ body, html{
 
 *{
     box-sizing: border-box;
-    font-family: 'Hiragino Kaku Gothic ProN','Hiragino Sans',Meiryo,sans-serif;
+    font-family: 'Hiragino Kaku Gothic ProN','Hiragino Sans', 'Arial', Meiryo, sans-serif;
+}
+
+a{
+    text-decoration: none;
+    color: #000000;
 }
 
 
@@ -27,11 +32,17 @@ body, html{
 }
 .nav-belt__logo{
     margin: 0 6px;
+    border: 1px solid transparent;
+    height: 100%;
+}
+.nav-belt__logo:hover{
+    border: 1px solid #ffffff;
 }
 .nav-belt__logo a{
     height: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 .nav-belt__logo img{
     width: 115px;
@@ -155,6 +166,10 @@ body, html{
 .nav-belt__cart{
     display: flex;
     align-items: end;
+    border: 1px solid transparent;
+}
+.nav-belt__cart:hover{
+    border: 1px solid #ffffff;
 }
 .nav-belt__cart-ui{
     display: flex;

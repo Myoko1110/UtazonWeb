@@ -231,11 +231,14 @@
     border: none;
     background-color: #3585ef;
     box-shadow: 0 2px 5px 0 #D5D9D97F;
-    display: block;
     height: 32px;
     border-radius: 100px;
     cursor: pointer;
     margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
 }
 .item-about__buy-order-cart:hover{
     background-color: #2373da;

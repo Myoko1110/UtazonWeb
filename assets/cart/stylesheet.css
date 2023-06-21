@@ -49,7 +49,7 @@
     margin-right: 10px;
     width: calc(100% - 350px);
 }
-.cart-product h2{
+.cart-title{
     font-size: 18px;
     border: none!important;
     margin: 0!important;
