@@ -13,5 +13,4 @@ window.onload = function() {
 
 function close_expires(){
     document.getElementById("expires").style.display = "none";
-    console.log("aa")
 }
