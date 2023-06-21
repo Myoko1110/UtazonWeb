@@ -80,39 +80,6 @@
     margin: 25px 0 0 0;
 }
 
-.expires{
-    position: fixed;
-    background-color: rgba(0, 0, 0, 0.3);
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.expires__box{
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 10px;
-    max-width: 400px;
-    width: 100%;
-    margin: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.expires__box h1{
-    margin: 0;
-}
-.expires__box a{
-    background-color: #232f3e;
-    color: #ffffff;
-    padding: 8px 13px;
-    text-decoration: none;
-    text-align: center;
-}
-
 
 body, html{
     margin: 0;

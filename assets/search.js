@@ -10,3 +10,8 @@ window.onload = function() {
         location.href=`//${host}/search/?q=${query}`;
     });
 };
+
+function close_expires(){
+    document.getElementById("expires").style.display = "none";
+    console.log("aa")
+}

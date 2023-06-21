@@ -26,7 +26,7 @@
 			            <p class="nav-belt__address-to">お届け先</p>
 		            </div>
 		            <div class="nav-belt__address-number">
-						{% if info.mc_id %}
+						{% if session is True %}
 						<h1>1-0001仮</h1>
 						{% else %}
 						<h1>ログイン</h1>
@@ -55,7 +55,7 @@
 	            </form>
             </div>
 	        <div class="nav-belt__account">
-				{% if info.mc_id %}
+				{% if session is True %}
 		        	<p>{{ info.mc_id }}さん</p>
 		        	<h1>アカウント&リスト</h1>
 				{% else %}
@@ -71,7 +71,11 @@
 	        	<div class="nav-belt__cart">
 		        	<div class="nav-belt__cart-ui">
 			        	<img src="../assets/cart.png">
+						{% if session is True %}
 			        	<p>{{ info.user_cart }}</p>
+						{% else %}
+						<p>0</p>
+						{% endif %}
 		        	</div>
 		        	<div class="nav-belt__cart-text">
 			        	<h1>カート</h1>
@@ -210,9 +214,12 @@
 		</div>
 	</div>
 </div>
-{% if session %}
-<div class="expires">
+{% if session == "expires" %}
+<div class="expires" id="expires">
 	<div class="expires__box">
+		<div class="expires__close">
+			<svg onclick="close_expires()" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+		</div>
 		<h1>期限切れ</h1>
 		<p>セッションの期限が切れました。お手数ですが、もう一度ログインをお願いいたします。</p>
 		<a href="/login">ログイン</a>

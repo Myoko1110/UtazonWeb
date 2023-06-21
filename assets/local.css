@@ -240,3 +240,57 @@ a{
         width: calc(100vw - 490px);
     }
 }
+
+.expires{
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.3);
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.expires__box{
+    background-color: #ffffff;
+    padding: 10px 30px;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 100%;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.expires__box h1{
+    margin: 20px 0 0;
+}
+.expires__box a{
+    background-color: #1b3d77;
+    color: #ffffff;
+    padding: 8px 13px;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+.expires__close{
+    text-align: right;
+    position: absolute;
+    max-width: 400px;
+    width: 100%;
+    padding: 0 10px;
+    height: 30px;
+    margin: 0 10px;
+}
+.expires__close svg{
+    padding: 3px;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    border-radius: 100px;
+}
+.expires__close svg:hover{
+    background-color: #d9d9d9;
+}

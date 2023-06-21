@@ -37,6 +37,7 @@
     height: 240px;
     object-fit: contain;
     background-color: #f8f8f8;
+    cursor: pointer;
 }
 .main-info{
     margin: 10px 15px;
@@ -45,6 +46,11 @@
     font-weight: 400;
     font-size: 18px;
     margin: 0;
+    color: #000000;
+    text-decoration: none;
+}
+.main-info a:hover{
+    color: #006cc4;
 }
 .main-star{
     -webkit-background-size: 512px 512px;
@@ -63,12 +69,16 @@
     margin: 0 0 0 5px;
     font-size: 14px;
 }
-.main-price p{
+.main-price a{
     color: #b12704;
     font-size: 21px;
     margin: 0;
+    text-decoration: none;
 }
-.main-price p span{
+.main-price a:hover{
+    color: #b12704;
+}
+.main-price a span{
     font-size: 12px;
     vertical-align: top;
 }

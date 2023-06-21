@@ -94,14 +94,14 @@ def login(request):
                         expires = now + datetime.timedelta(days=int(settings.SESSION_EXPIRES))
 
                         # sessionテーブルに保存
-                        sql = """INSERT INTO `session` (
+                        sql = """INSERT INTO `utazon_session` (
                                  `session_id`, `session_val`, `mc_uuid`, `access_token`, `login_date`, `expires`
                                  ) VALUES (%s, %s, %s, %s, %s, %s)"""
                         cursor.execute(sql,
                                        (session_id, session_value, mc_uuid, access_token, now, expires))
 
                         # userテーブルになかったら作成
-                        sql = """INSERT IGNORE INTO `user` (
+                        sql = """INSERT IGNORE INTO `utazon_user` (
                                  `mc_uuid`, `cart`, `later`, `point`
                                  ) VALUES (%s, %s, %s, %s)"""
                         cursor.execute(sql, (mc_uuid, "[]", "[]", 0))
