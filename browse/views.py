@@ -62,6 +62,7 @@ def item(request):
             item_review_av = None
 
         context = {
+            "item_id": result[0],
             "item_name": result[1],
             "item_price": result[2],
             "item_point": int(result[2] * 0.1),
@@ -134,6 +135,60 @@ def cart(request):
     else:
         # 未ログイン処理
         return redirect('/login')
+
+
+def cart_delete(request):
+    if is_session_valid(request)[0]:
+
+        item_id = int(request.GET.get('id'))
+
+        info = get_userinfo_from_session(request)
+        cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
+        with cnx:
+            with cnx.cursor() as cursor:
+                sql = "SELECT * FROM user WHERE mc_uuid=%s"
+                cursor.execute(sql, (info["mc_uuid"],))
+
+                # mc_uuidのレコードを取得
+                user_cart = json.loads(cursor.fetchone()[1])
+
+                if item_id and item_id in user_cart:
+                    user_cart.remove(item_id)
+
+                    sql = "UPDATE user SET cart=%s WHERE mc_uuid=%s"
+
+                    cursor.execute(sql, (json.dumps(user_cart), info["mc_uuid"]))
+            cursor.close()
+            cnx.commit()
+
+    return redirect("/cart")
+
+
+def cart_add(request):
+    if is_session_valid(request)[0]:
+
+        item_id = int(request.GET.get('id'))
+
+        info = get_userinfo_from_session(request)
+        cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
+        with cnx:
+            with cnx.cursor() as cursor:
+                sql = "SELECT * FROM user WHERE mc_uuid=%s"
+                cursor.execute(sql, (info["mc_uuid"],))
+
+                # mc_uuidのレコードを取得
+                user_cart = json.loads(cursor.fetchone()[1])
+
+                if item_id:
+                    user_cart.append(item_id)
+
+                    sql = "UPDATE user SET cart=%s WHERE mc_uuid=%s"
+
+                    cursor.execute(sql, (json.dumps(user_cart), info["mc_uuid"]))
+            cursor.close()
+            cnx.commit()
+
+    return redirect("/cart")
 
 
 def search(request):

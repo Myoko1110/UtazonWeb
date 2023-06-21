@@ -67,15 +67,17 @@
 		        <p>返品もこちら</p>
 		        <h1>注文履歴</h1>
 	        </div>
-	        <div class="nav-belt__cart">
-		        <div class="nav-belt__cart-ui">
-			        <img src="../assets/cart.png">
-			        <p>1</p>
-		        </div>
-		        <div class="nav-belt__cart-text">
-			        <h1>カート</h1>
-		        </div>
-	        </div>
+			<a href="/cart">
+	        	<div class="nav-belt__cart">
+		        	<div class="nav-belt__cart-ui">
+			        	<img src="../assets/cart.png">
+			        	<p>{{ info.user_cart }}</p>
+		        	</div>
+		        	<div class="nav-belt__cart-text">
+			        	<h1>カート</h1>
+		        	</div>
+	        	</div>
+			</a>
         </div>
 	    <div class="nav-main">
 			<a class="nav-main__point">Utazonポイント:<span>100</span></a>
@@ -111,7 +113,7 @@
 					<li class="cart-child">
 						<img src="{{ child.3.0 }}">
 						<div class="cart-product">
-							<h2>{{ child.1 }}</h2>
+							<a class="cart-title" href="../item?id={{ child.0 }}">{{ child.1 }}</a>
 							{% if child.5 != 0 %}
 							<p class="cart-product__y">在庫あり</p>
 							{% if child.5 <= 15 %}
@@ -123,7 +125,7 @@
 							<div class="cart-product__number">
 								<p>数量:</p>
 								<input class="cart-product__number-input" type="number" value="1">
-								<a>削除</a>
+								<a href="delete/?id={{ child.0 }}">削除</a>
 							</div>
 						</div>
 						<div class="cart-price">
@@ -146,7 +148,9 @@
 				<p>通常配送無料</p>
 			</div>
 			<h2>小計 ({{ user_cart_number }} 個の商品) (税込) : <span>${{ item_total }}</span></h2>
+			{% if user_cart_number != 0 %}
 			<input class="buy-continue" type="submit" value="レジに進む">
+			{% endif %}
 		</div>
 	</div>
 </div>

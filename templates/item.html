@@ -67,15 +67,17 @@
 		        <p>返品もこちら</p>
 		        <h1>注文履歴</h1>
 	        </div>
-	        <div class="nav-belt__cart">
-		        <div class="nav-belt__cart-ui">
-			        <img src="../assets/cart.png">
-			        <p>1</p>
-		        </div>
-		        <div class="nav-belt__cart-text">
-			        <h1>カート</h1>
-		        </div>
-	        </div>
+			<a href="/cart">
+	        	<div class="nav-belt__cart">
+		        	<div class="nav-belt__cart-ui">
+			        	<img src="../assets/cart.png">
+			        	<p>{{ info.user_cart }}</p>
+		        	</div>
+		        	<div class="nav-belt__cart-text">
+			        	<h1>カート</h1>
+		        	</div>
+	        	</div>
+			</a>
         </div>
 	    <div class="nav-main">
 			<a class="nav-main__point">Utazonポイント:<span>100</span></a>
@@ -225,7 +227,7 @@
 							<input class="item-about__buy-order-number-input" type="number" value="1">
 						</div>
 						<input class="item-about__buy-order-input" type="submit" value="今すぐ買う">
-						<input class="item-about__buy-order-cart" type="submit" value="カートに入れる">
+						<a href="../cart/add/?id={{ item_id }}" class="item-about__buy-order-cart" type="submit">カートに入れる</a>
 					</form>
 				</div>
 			</div>
