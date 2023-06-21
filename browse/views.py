@@ -13,77 +13,98 @@ def index_view(request):
         info = get_userinfo_from_session(request)
 
         context = {
-            "session": False,
+            "session": True,
             "info": info,
         }
         # 既ログイン処理
         return render(request, 'index.html', context=context)
     elif is_session_valid(request)[1]:
+        response = render(request, 'index.html', context={"session": "expires"})
+
+        for key in request.COOKIES:
+            if key.startswith('_Secure-'):
+                response.delete_cookie(key)
+                response.delete_cookie("LOGIN_STATUS")
+
         # 期限切れ処理
-        return render(request, 'index.html', context={"session": False})
+        return response
     else:
         # 未ログイン処理
-        return redirect('/login')
+        return render(request, 'index.html', context={"session": False})
 
 
 def item(request):
+    # アイテムIDを指定
+    item_id = request.GET.get('id')
+
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
+
+    # dbに接続
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_item WHERE item_id=%s"
+            cursor.execute(sql, (item_id,))
+
+            # item_idのレコードを取得
+            result = cursor.fetchone()
+            cursor.close()
+            cnx.commit()
+
+    # レビューを取得
+    item_review = json.loads(result[4].replace("\n", "<br>"))
+
+    # item_reviewにmc情報を追加
+    for i in item_review:
+        mc_uuid = i["mc_uuid"]
+        profile = get_userinfo_from_uuid(mc_uuid)
+        i["mc_id"] = profile["mc_id"]
+
+    # レビューの平均を計算
+    if item_review:
+        item_review_av = float("{:.1f}".format(round(mean([i["star"] for i in item_review]), 1)))
+    else:
+        item_review_av = None
+
+    context = {
+        "item_id": result[0],
+        "item_name": result[1],
+        "item_price": result[2],
+        "item_point": int(result[2] * 0.1),
+        "item_images": json.loads(result[3]),
+        "item_stock": result[5],
+        "item_about": reversed(json.loads(result[6]).items()),
+        "item_kind": json.loads(result[7]),
+        "item_review": item_review,
+        "item_review_number": len(item_review),
+        "item_review_av": item_review_av,
+
+    }
+
     if is_session_valid(request)[0]:
         info = get_userinfo_from_session(request)
 
-        # アイテムIDを指定
-        item_id = request.GET.get('id')
-
-        cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
-
-        # dbに接続
-        with cnx:
-            with cnx.cursor() as cursor:
-                sql = "SELECT * FROM item WHERE item_id=%s"
-                cursor.execute(sql, (item_id,))
-
-                # item_idのレコードを取得
-                result = cursor.fetchone()
-                cursor.close()
-                cnx.commit()
-
-        # レビューを取得
-        item_review = json.loads(result[4].replace("\n", "<br>"))
-
-        # item_reviewにmc情報を追加
-        for i in item_review:
-            mc_uuid = i["mc_uuid"]
-            profile = get_userinfo_from_uuid(mc_uuid)
-            i["mc_id"] = profile["mc_id"]
-
-        # レビューの平均を計算
-        if item_review:
-            item_review_av = float("{:.1f}".format(round(mean([i["star"] for i in item_review]), 1)))
-        else:
-            item_review_av = None
-
-        context = {
-            "item_id": result[0],
-            "item_name": result[1],
-            "item_price": result[2],
-            "item_point": int(result[2] * 0.1),
-            "item_images": json.loads(result[3]),
-            "item_stock": result[5],
-            "item_about": reversed(json.loads(result[6]).items()),
-            "item_kind": json.loads(result[7]),
-            "item_review": item_review,
-            "item_review_number": len(item_review),
-            "item_review_av": item_review_av,
-            "info": info,
-        }
+        context["info"] = info
+        context["session"] = True
 
         # 既ログイン処理
         return render(request, 'item.html', context=context)
+
     elif is_session_valid(request)[1]:
+        context["session"] = "expires"
+        response = render(request, 'item.html', context=context)
+
+        for key in request.COOKIES:
+            if key.startswith('_Secure-'):
+                response.delete_cookie(key)
+                response.delete_cookie("LOGIN_STATUS")
+
         # 期限切れ処理
-        return render(request, 'item.html')
+        return response
+
     else:
+        context["session"] = False
         # 未ログイン処理
-        return redirect('/login')
+        return render(request, 'item.html', context=context)
 
 
 def cart(request):
@@ -94,7 +115,7 @@ def cart(request):
         # dbに接続
         with cnx:
             with cnx.cursor() as cursor:
-                sql = "SELECT * FROM user WHERE mc_uuid=%s"
+                sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
                 cursor.execute(sql, (info["mc_uuid"],))
 
                 # mc_uuidのレコードを取得
@@ -102,7 +123,7 @@ def cart(request):
 
                 user_cart = []
                 for i in json.loads(result[1]):
-                    sql = "SELECT * FROM item WHERE item_id=%s"
+                    sql = "SELECT * FROM utazon_item WHERE item_id=%s"
                     cursor.execute(sql, (i,))
 
                     # item_idのレコードを取得
@@ -129,9 +150,18 @@ def cart(request):
         }
         # 既ログイン処理
         return render(request, 'cart.html', context=context)
+
     elif is_session_valid(request)[1]:
+        response = render(request, 'cart.html', context={"session": "expires"})
+
+        for key in request.COOKIES:
+            if key.startswith('_Secure-'):
+                response.delete_cookie(key)
+        response.delete_cookie("LOGIN_STATUS")
+
         # 期限切れ処理
-        return render(request, 'cart.html', context={"session": False})
+        return response
+
     else:
         # 未ログイン処理
         return redirect('/login')
@@ -146,7 +176,7 @@ def cart_delete(request):
         cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
         with cnx:
             with cnx.cursor() as cursor:
-                sql = "SELECT * FROM user WHERE mc_uuid=%s"
+                sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
                 cursor.execute(sql, (info["mc_uuid"],))
 
                 # mc_uuidのレコードを取得
@@ -155,7 +185,7 @@ def cart_delete(request):
                 if item_id and item_id in user_cart:
                     user_cart.remove(item_id)
 
-                    sql = "UPDATE user SET cart=%s WHERE mc_uuid=%s"
+                    sql = "UPDATE utazon_user SET cart=%s WHERE mc_uuid=%s"
 
                     cursor.execute(sql, (json.dumps(user_cart), info["mc_uuid"]))
             cursor.close()
@@ -173,7 +203,7 @@ def cart_add(request):
         cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
         with cnx:
             with cnx.cursor() as cursor:
-                sql = "SELECT * FROM user WHERE mc_uuid=%s"
+                sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
                 cursor.execute(sql, (info["mc_uuid"],))
 
                 # mc_uuidのレコードを取得
@@ -182,7 +212,7 @@ def cart_add(request):
                 if item_id:
                     user_cart.append(item_id)
 
-                    sql = "UPDATE user SET cart=%s WHERE mc_uuid=%s"
+                    sql = "UPDATE utazon_user SET cart=%s WHERE mc_uuid=%s"
 
                     cursor.execute(sql, (json.dumps(user_cart), info["mc_uuid"]))
             cursor.close()
@@ -196,50 +226,63 @@ def search(request):
     if not query:
         return redirect('/')
 
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
+
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s"
+            cursor.execute(sql, (f"%{query}%",))
+
+            # mc_uuidのレコードを取得
+            result = list(cursor.fetchall())
+            cursor.close()
+        cnx.commit()
+
+    search_results = len(result)
+
+    for i in range(search_results):
+
+        # imageのJSONをlistに変換
+        result[i] = list(result[i])
+        result[i][3] = json.loads(result[i][3])
+
+        # レビューの平均を算出
+        item_review = json.loads(result[i][4].replace("\n", "<br>"))
+        if item_review:
+            item_review_av = float("{:.1f}".format(round(mean([i["star"] for i in item_review]), 1)))
+        else:
+            item_review_av = None
+        result[i].append(item_review_av)
+
+        # ポイントを計算
+        result[i].append(int(result[i][2] * 0.1))
+
+    context = {
+        "result": result,
+        "query": query,
+        "search_results": search_results,
+    }
+
     if is_session_valid(request)[0]:
         info = get_userinfo_from_session(request)
+        context["info"] = info
+        context["info"] = info
 
-        cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
-
-        with cnx:
-            with cnx.cursor() as cursor:
-                sql = "SELECT * FROM item WHERE name LIKE %s"
-                cursor.execute(sql, (f"%{query}%",))
-
-                # mc_uuidのレコードを取得
-                result = list(cursor.fetchall())
-                cursor.close()
-            cnx.commit()
-
-        search_results = len(result)
-
-        for i in range(search_results):
-
-            # imageのJSONをlistに変換
-            result[i] = list(result[i])
-            result[i][3] = json.loads(result[i][3])
-
-            # レビューの平均を算出
-            item_review = json.loads(result[i][4].replace("\n", "<br>"))
-            if item_review:
-                item_review_av = float("{:.1f}".format(round(mean([i["star"] for i in item_review]), 1)))
-            else:
-                item_review_av = None
-            result[i].append(item_review_av)
-
-            # ポイントを計算
-            result[i].append(int(result[i][2] * 0.1))
-
-        context = {
-            "result": result,
-            "query": query,
-            "search_results": search_results,
-            "info": info,
-        }
         return render(request, 'search.html', context=context)
+
     elif is_session_valid(request)[1]:
+        context["session"] = "expires"
+        response = render(request, 'search.html', context=context)
+
+        for key in request.COOKIES:
+            if key.startswith('_Secure-'):
+                response.delete_cookie(key)
+                response.delete_cookie("LOGIN_STATUS")
+
         # 期限切れ処理
-        return render(request, 'search.html', context={"session": False})
+        return response
+
     else:
+        context["session"] = False
         # 未ログイン処理
-        return redirect('/login')
+        return render(request, 'search.html', context=context)
