@@ -27,7 +27,7 @@ class RunOnce:
 
 @RunOnce
 def table_create(sender, **kwargs):
-    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
 

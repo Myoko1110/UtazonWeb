@@ -49,6 +49,9 @@
     font-weight: 400;
     border-radius: 10px;
 }
+.main__box-button:hover{
+    background-color: #4758d7;
+}
 .main__box-button svg{
     width: 22px;
     height: 22px;

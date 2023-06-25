@@ -25,19 +25,22 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }, 'session': {
-        'HOST': os.environ["DATABASE_HOST"],
-        'USER': os.environ["DATABASE_USERNAME"],
-        'PASSWORD': os.environ["DATABASE_PASS"],
-        'DATABASE': os.environ["DATABASE_TABLE"],
     }
 }
 
 DATABASE_CONFIG = {
-    'user': DATABASES['session']['USER'],
-    'password': DATABASES['session']['PASSWORD'],
-    'host': DATABASES['session']['HOST'],
-    'database': DATABASES['session']['DATABASE'],
+    'utazon': {
+        'host': os.environ["DB_UTAZON_HOST"],
+        'user': os.environ["DB_UTAZON_USERNAME"],
+        'password': os.environ["DB_UTAZON_PASS"],
+        'database': os.environ["DB_UTAZON_DBNAME"],
+    },
+    'address': {
+        'host': os.environ["DB_ADDRESS_HOST"],
+        'user': os.environ["DB_ADDRESS_USERNAME"],
+        'password': os.environ["DB_ADDRESS_PASS"],
+        'database': os.environ["DB_ADDRESS_DBNAME"],
+    },
 }
 
 

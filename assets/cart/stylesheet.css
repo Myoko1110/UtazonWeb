@@ -7,6 +7,8 @@
 .subwrapper{
     display: flex;
     margin: 20px;
+    width: 100%;
+    justify-content: center;
 }
 .cart{
     background-color: #ffffff;
@@ -44,10 +46,22 @@
     width: 180px;
     object-fit: contain;
 }
+@media(min-width: 900px){
+    .cart-box{
+        display: flex;
+    }
+    .cart-product{
+        width: calc(100% - 100px);
+    }
+}
+@media(min-width: 899px){
+    .cart-product{
+        width: 100%;
+    }
+}
 .cart-product{
     margin-left: 10px;
     margin-right: 10px;
-    width: calc(100% - 350px);
 }
 .cart-title{
     font-size: 18px;
@@ -87,12 +101,13 @@
     cursor: pointer;
 }
 .cart-price{
-    width: 150px;
+    width: 100px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 .cart-price h3{
     font-size: 18px;
     font-weight: 700;
-    text-align: right;
     margin: 0;
 }
 .cart-price p{

@@ -2,9 +2,9 @@ from django.shortcuts import redirect, render
 import requests
 import logging
 import secrets
-import mysql.connector
 import datetime
 import config.settings as settings
+import config.DBManager
 from config.functions import is_session_valid
 
 
@@ -67,46 +67,27 @@ def login(request):
             if i['id'] == str(settings.SERVER_ID):
 
                 discord_id = identify.json()['id']
-                cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
 
                 # DiscordConnectでリンクしてるか確認
-                with cnx:
-                    with cnx.cursor() as cursor:
-                        sql = "SELECT * FROM linked WHERE discord_id=%s"
-                        cursor.execute(sql, (discord_id,))
-                        result = cursor.fetchone()
+                mc_uuid = config.DBManager.get_mc_uuid(discord_id)
 
-                        if not result:
-                            cnx.commit()
-                            cursor.close()
-                            # エラーを表示
-                            context = {'err': True, 'content': 'DiscordとMinecraftを接続した上でログインしてください。'}
-                            return render(request, 'login.html', context=context)
+                if not mc_uuid:
+                    # エラーを表示
+                    context = {'err': True, 'content': 'DiscordとMinecraftを接続した上でログインしてください。'}
+                    return render(request, 'login.html', context=context)
 
-                        mc_uuid = result[0]
+                # セッションを作成
+                session_id = f'_Secure-{secrets.token_urlsafe(32)}'
+                session_value = f'{secrets.token_urlsafe(128)}'
 
-                        # セッションを作成
-                        session_id = f'_Secure-{secrets.token_urlsafe(32)}'
-                        session_value = f'{secrets.token_urlsafe(128)}'
+                # 現在時間と1ヶ月後を取得
+                now = datetime.datetime.now().replace(microsecond=0)
+                expires = now + datetime.timedelta(days=int(settings.SESSION_EXPIRES))
 
-                        # 現在時間と1ヶ月後を取得
-                        now = datetime.datetime.now().replace(microsecond=0)
-                        expires = now + datetime.timedelta(days=int(settings.SESSION_EXPIRES))
+                config.DBManager.save_session(session_id, session_value, mc_uuid, access_token, now, expires)
 
-                        # sessionテーブルに保存
-                        sql = """INSERT INTO `utazon_session` (
-                                 `session_id`, `session_val`, `mc_uuid`, `access_token`, `login_date`, `expires`
-                                 ) VALUES (%s, %s, %s, %s, %s, %s)"""
-                        cursor.execute(sql,
-                                       (session_id, session_value, mc_uuid, access_token, now, expires))
-
-                        # userテーブルになかったら作成
-                        sql = """INSERT IGNORE INTO `utazon_user` (
-                                 `mc_uuid`, `cart`, `later`, `point`
-                                 ) VALUES (%s, %s, %s, %s)"""
-                        cursor.execute(sql, (mc_uuid, "[]", "[]", 0))
-                    cnx.commit()
-                cursor.close()
+                # userテーブルになかったら作成
+                config.DBManager.create_user_info(mc_uuid)
 
                 # 問題がなかったらcookie付与しリダイレクト
                 response = redirect('/')
@@ -123,11 +104,22 @@ def login(request):
         if is_session_valid(request)[0]:
             # 既ログイン処理
             return redirect('/')
-        elif is_session_valid(request)[1]:
-            # 期限切れ処理
-            context = {'err': False, 'content': 'error'}
-            return render(request, 'login.html', context=context)
         else:
             # 未ログイン処理
             context = {'err': False, 'content': 'error'}
             return render(request, 'login.html', context=context)
+
+
+def logout(request):
+    response = redirect('/')
+
+    for key in request.COOKIES:
+        if key.startswith('_Secure-'):
+            response.delete_cookie(key)
+
+            config.DBManager.delete_session(key)
+
+    response.delete_cookie("LOGIN_STATUS")
+
+    # リダイレクト
+    return response
