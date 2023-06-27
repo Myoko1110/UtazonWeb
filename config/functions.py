@@ -1,88 +1,201 @@
 import datetime
+import logging
 import requests
 import config.DBManager
 
 
-def is_session_valid(request):
+class is_session:
     """
     セッションが有効か確認
+
+    引数:
+        request: Djangoのrequestオブジェクト
     """
+    def __init__(self, request):
+        self.request = request
+        self.valid = False
+        self.expire = False
+        self.invalid = False
 
-    # Cookie取得
-    session = request.COOKIES
+        session = self.request.COOKIES
 
-    # 一つずつ処理
-    for child in session:
-        if child.startswith('_Secure-'):
+        # 一つずつ処理
+        for child in session:
+            if child.startswith('_Secure-'):
 
-            result = config.DBManager.get_session(child, session[child])
+                result = config.DBManager.get_session(child, session[child])
 
-            # EmptySetを判定
-            if result is None or len(result) == 0:
-                # 未ログイン処理
-                continue
+                # EmptySetを判定
+                if result is None or len(result) == 0:
+                    # 未ログイン処理
+                    continue
+                else:
+                    # 有効期限の確認
+                    now = datetime.datetime.now()
+                    if now > result[5]:
+                        config.DBManager.delete_session(child)
+                        # 期限切れの処理
+                        self.expire = True
+                        return
+
+                    # 既ログイン処理
+                    self.valid = True
+                    return
+        else:
+            if "LOGIN_STATUS" in session and session["LOGIN_STATUS"]:
+                # 期限切れの処理
+                self.expire = True
+
+            # 未ログイン処理
+            self.invalid = True
+
+
+class get_user_info:
+    """
+    ユーザー情報を取得する
+
+    引数:
+        get_user_info.from_uuid:
+            mc_uuid: MCのUUID
+
+        get_user_info.from_session:
+            request: DjangoのHttpRequestオブジェクト
+    """
+    class from_uuid:
+        def __init__(self, mc_uuid):
+            self.mc_uuid = mc_uuid
+
+        def all(self):
+            profile = requests.get(f'https://sessionserver.mojang.com/session/minecraft/profile/{self.mc_uuid}').json()
+
+            # mc_idを取得
+            mc_id = profile["name"]
+
+            # discord_idを取得
+            discord_id = config.DBManager.get_discord_id(self.mc_uuid)
+
+            return {
+                "mc_id": mc_id,
+                "discord_id": discord_id,
+            }
+
+        def mc_id(self):
+            profile = requests.get(f'https://sessionserver.mojang.com/session/minecraft/profile/{self.mc_uuid}').json()
+
+            # mc_idを取得
+            mc_id = profile["name"]
+
+            return mc_id
+
+        def discord_id(self):
+            discord_id = config.DBManager.get_discord_id(self.mc_uuid)
+            return discord_id
+
+    class from_session:
+        def __init__(self, request):
+            self.request = request
+
+        def all(self):
+            try:
+                session = self.request.COOKIES
+            except AttributeError:
+                logging.error("request引数にはDjangoのHttpRequestオブジェクトを入れてください")
+                return False
+
+            for child in session:
+                if child.startswith('_Secure-'):
+
+                    result = config.DBManager.get_session(child, session[child])
+
+                    if result is None:
+                        continue
+
+                    # uuidを取得
+                    mc_uuid = result[2]
+
+                    profile = get_user_info.from_uuid(mc_uuid).all()
+
+                    cart = len(config.DBManager.get_utazon_user_cart(mc_uuid))
+
+                    return {
+                        "discord_id": profile["discord_id"],
+                        "mc_uuid": mc_uuid,
+                        "mc_id": profile["mc_id"],
+                        "user_cart": cart,
+                    }
+
             else:
-                # 有効期限の確認
-                now = datetime.datetime.now()
-                if now > result[5]:
-                    config.DBManager.delete_session(child)
-                    # 期限切れの処理
-                    return [False, True, False]
+                return False
 
-                # 既ログイン処理
-                return [True, False, False]
-    else:
-        if "LOGIN_STATUS" in session and session["LOGIN_STATUS"]:
-            # 期限切れの処理
-            return [False, True, False]
+        def mc_id(self):
+            try:
+                session = self.request.COOKIES
+            except AttributeError:
+                logging.error("request引数にはDjangoのHttpRequestオブジェクトを入れてください")
+                return False
 
-        # 未ログイン処理
-        return [False, False, True]
+            for child in session:
+                if child.startswith('_Secure-'):
 
+                    result = config.DBManager.get_session(child, session[child])
 
-def get_userinfo_from_uuid(uuid):
-    """
-    uuidからのユーザー情報の取得
-    """
+                    if result is None:
+                        continue
 
-    # discord_idのレコードを取得
-    discord_id = config.DBManager.get_discord_id(uuid)
+                    # uuidを取得
+                    mc_uuid = result[2]
 
-    # mc関係のprofileを取得
-    profile = requests.get(f'https://sessionserver.mojang.com/session/minecraft/profile/{uuid}').json()
+                    mc_id = get_user_info.from_uuid(mc_uuid).mc_id
 
-    # mc_idを取得
-    mc_id = profile["name"]
+                    return mc_id
 
-    return {"discord_id": discord_id, "mc_id": mc_id}
+            else:
+                return False
 
+        def mc_uuid(self):
+            try:
+                session = self.request.COOKIES
+            except AttributeError:
+                logging.error("request引数にはDjangoのHttpRequestオブジェクトを入れてください")
+                return False
 
-def get_userinfo_from_session(request):
-    """
-    セッションからのユーザー情報の取得
-    """
+            for child in session:
+                if child.startswith('_Secure-'):
 
-    # Cookie取得
-    session = request.COOKIES
+                    result = config.DBManager.get_session(child, session[child])
 
-    # 一つずつ処理
-    for child in session:
-        if child.startswith('_Secure-'):
+                    if result is None:
+                        continue
 
-            result = config.DBManager.get_session(child, session[child])
+                    # uuidを取得
+                    mc_uuid = result[2]
 
-            if result is None:
-                continue
+                    return mc_uuid
 
-            # uuidを取得
-            mc_uuid = result[2]
+            else:
+                return False
 
-            profile = get_userinfo_from_uuid(mc_uuid)
+        def discord_id(self):
+            try:
+                session = self.request.COOKIES
+            except AttributeError:
+                logging.error("request引数にはDjangoのHttpRequestオブジェクトを入れてください")
+                return False
 
-            cart = len(config.DBManager.get_utazon_user_cart(mc_uuid))
+            for child in session:
+                if child.startswith('_Secure-'):
 
-            return {"discord_id": profile["discord_id"], "mc_uuid": mc_uuid, "mc_id": profile["mc_id"],
-                    "user_cart": cart}
+                    result = config.DBManager.get_session(child, session[child])
 
-    else:
-        return False
+                    if result is None:
+                        continue
+
+                    # uuidを取得
+                    mc_uuid = result[2]
+
+                    discord_id = get_user_info.from_uuid(mc_uuid).discord_id()
+
+                    return discord_id
+
+            else:
+                return False

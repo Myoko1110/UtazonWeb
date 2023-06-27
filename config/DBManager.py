@@ -12,6 +12,9 @@ def get_utazon_user_cart(mc_uuid):
 
             # mc_uuidのレコードを取得
             result = cursor.fetchone()
+
+            if not result:
+                return False
     return json.loads(result[1])
 
 
@@ -24,6 +27,9 @@ def get_utazon_user_later(mc_uuid):
 
             # mc_uuidのレコードを取得
             result = cursor.fetchone()
+
+            if not result:
+                return False
     return json.loads(result[2])
 
 
@@ -36,6 +42,21 @@ def get_item(item_id):
 
             # item_idのレコードを取得
             result = cursor.fetchone()
+
+            if not result:
+                return False
+    return result
+
+
+def search_item(item_query):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s"
+            cursor.execute(sql, (f"%{item_query}%",))
+
+            # mc_uuidのレコードを取得
+            result = list(cursor.fetchall())
     return result
 
 
@@ -45,7 +66,7 @@ def update_user_cart(cart_value, mc_uuid):
 
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "UPDATE utazon_user SET cart=%s WHERE mc_uuid=%s"
+            sql = "UPDATE IGNORE utazon_user SET cart=%s WHERE mc_uuid=%s"
 
             cursor.execute(sql, (user_cart, mc_uuid))
             cnx.commit()
@@ -62,6 +83,9 @@ def get_session(session_id, session_val):
 
             # session_idのレコードを取得
             result = cursor.fetchone()
+
+            if not result:
+                return False
     return result
 
 
@@ -75,6 +99,9 @@ def get_discord_id(uuid):
             cursor.execute(sql, (uuid,))
 
             result = cursor.fetchone()[1]
+
+            if not result:
+                return False
     return result
 
 
@@ -100,7 +127,7 @@ def delete_session(session_id):
 
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "DELETE FROM utazon_session WHERE session_id=%s"
+            sql = "DELETE IGNORE FROM utazon_session WHERE session_id=%s"
             cursor.execute(sql, (session_id,))
             cnx.commit()
     return True

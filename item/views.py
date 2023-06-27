@@ -1,16 +1,16 @@
 from django.shortcuts import redirect, render
-from config.functions import is_session_valid, get_userinfo_from_session, get_userinfo_from_uuid
-import mysql.connector
+import config.DBManager
+import config.functions
 import json
-import config.settings as settings
 from statistics import mean
 
 
 def index_view(request):
-    if is_session_valid(request)[0]:
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
 
         # ユーザー情報を取得
-        info = get_userinfo_from_session(request)
+        info = config.functions.get_user_info.from_session(request).all()
 
         context = {
             "session": True,
@@ -18,13 +18,13 @@ def index_view(request):
         }
         # 既ログイン処理
         return render(request, 'index.html', context=context)
-    elif is_session_valid(request)[1]:
+    elif is_session.expire:
         response = render(request, 'index.html', context={"session": "expires"})
 
         for key in request.COOKIES:
             if key.startswith('_Secure-'):
                 response.delete_cookie(key)
-                response.delete_cookie("LOGIN_STATUS")
+        response.delete_cookie("LOGIN_STATUS")
 
         # 期限切れ処理
         return response
@@ -37,18 +37,8 @@ def item(request):
     # アイテムIDを指定
     item_id = request.GET.get('id')
 
-    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
-
-    # dbに接続
-    with cnx:
-        with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_item WHERE item_id=%s"
-            cursor.execute(sql, (item_id,))
-
-            # item_idのレコードを取得
-            result = cursor.fetchone()
-            cursor.close()
-            cnx.commit()
+    # item_idのレコードを取得
+    result = config.DBManager.get_item(item_id)
 
     # レビューを取得
     item_review = json.loads(result[4].replace("\n", "<br>"))
@@ -56,8 +46,8 @@ def item(request):
     # item_reviewにmc情報を追加
     for i in item_review:
         mc_uuid = i["mc_uuid"]
-        profile = get_userinfo_from_uuid(mc_uuid)
-        i["mc_id"] = profile["mc_id"]
+        mc_id = config.functions.get_user_info.from_uuid(mc_uuid).mc_id()
+        i["mc_id"] = mc_id
 
     # レビューの平均を計算
     if item_review:
@@ -80,8 +70,9 @@ def item(request):
 
     }
 
-    if is_session_valid(request)[0]:
-        info = get_userinfo_from_session(request)
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+        info = config.functions.get_user_info.from_session(request).all()
 
         context["info"] = info
         context["session"] = True
@@ -89,14 +80,14 @@ def item(request):
         # 既ログイン処理
         return render(request, 'item.html', context=context)
 
-    elif is_session_valid(request)[1]:
+    elif is_session.expire:
         context["session"] = "expires"
         response = render(request, 'item.html', context=context)
 
         for key in request.COOKIES:
             if key.startswith('_Secure-'):
                 response.delete_cookie(key)
-                response.delete_cookie("LOGIN_STATUS")
+        response.delete_cookie("LOGIN_STATUS")
 
         # 期限切れ処理
         return response
@@ -108,50 +99,46 @@ def item(request):
 
 
 def cart(request):
-    if is_session_valid(request)[0]:
-        info = get_userinfo_from_session(request)
-        cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+        info = config.functions.get_user_info.from_session(request).all()
 
         # dbに接続
-        with cnx:
-            with cnx.cursor() as cursor:
-                sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
-                cursor.execute(sql, (info["mc_uuid"],))
+        user_cart_id = config.DBManager.get_utazon_user_cart(info["mc_uuid"])
 
-                # mc_uuidのレコードを取得
-                result = cursor.fetchone()
+        user_cart = []
+        for i in user_cart_id:
+            result = config.DBManager.get_item(i)
 
-                user_cart = []
-                for i in json.loads(result[1]):
-                    sql = "SELECT * FROM utazon_item WHERE item_id=%s"
-                    cursor.execute(sql, (i,))
+            # item_idのレコードを取得
+            item_info = list(result)
 
-                    # item_idのレコードを取得
-                    item_info = list(cursor.fetchone())
-
-                    item_info[3] = json.loads(item_info[3])
-                    item_info.append(int(item_info[2] / 10))
-                    user_cart.append(item_info)
-
-                cursor.close()
-                cnx.commit()
+            item_info[3] = json.loads(item_info[3])
+            item_info.append(int(item_info[2] / 10))
+            user_cart.append(item_info)
 
         item_total = 0
         for _ in user_cart:
             item_total += item_info[2]
 
+        if 0 not in [i[5] for i in user_cart]:
+            buy_able = True
+        else:
+            buy_able = False
+
         context = {
-            "session": False,
+            "session": True,
             "user_cart": user_cart,
-            "user_cart_number": len(json.loads(result[1])),
-            "user_later": json.loads(result[2]),
+            "user_cart_number": len(user_cart_id),
+            "user_later": config.DBManager.get_utazon_user_later(info["mc_uuid"]),
             "item_total": item_total,
+            "buy_able": buy_able,
             "info": info,
         }
         # 既ログイン処理
         return render(request, 'cart.html', context=context)
 
-    elif is_session_valid(request)[1]:
+    elif is_session.expire:
         response = render(request, 'cart.html', context={"session": "expires"})
 
         for key in request.COOKIES:
@@ -168,55 +155,35 @@ def cart(request):
 
 
 def cart_delete(request):
-    if is_session_valid(request)[0]:
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
 
         item_id = int(request.GET.get('id'))
 
-        info = get_userinfo_from_session(request)
-        cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
-        with cnx:
-            with cnx.cursor() as cursor:
-                sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
-                cursor.execute(sql, (info["mc_uuid"],))
+        info = config.functions.get_user_info.from_session(request).all()
+        user_cart_id = config.DBManager.get_utazon_user_cart(info["mc_uuid"])
 
-                # mc_uuidのレコードを取得
-                user_cart = json.loads(cursor.fetchone()[1])
-
-                if item_id and item_id in user_cart:
-                    user_cart.remove(item_id)
-
-                    sql = "UPDATE utazon_user SET cart=%s WHERE mc_uuid=%s"
-
-                    cursor.execute(sql, (json.dumps(user_cart), info["mc_uuid"]))
-            cursor.close()
-            cnx.commit()
+        # mc_uuidのレコードを取得
+        if item_id and item_id in user_cart_id:
+            user_cart_id.remove(item_id)
+            config.DBManager.update_user_cart(user_cart_id, info["mc_uuid"])
 
     return redirect("/cart")
 
 
 def cart_add(request):
-    if is_session_valid(request)[0]:
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
 
         item_id = int(request.GET.get('id'))
 
-        info = get_userinfo_from_session(request)
-        cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
-        with cnx:
-            with cnx.cursor() as cursor:
-                sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
-                cursor.execute(sql, (info["mc_uuid"],))
+        info = config.functions.get_user_info.from_session(request).all()
 
-                # mc_uuidのレコードを取得
-                user_cart = json.loads(cursor.fetchone()[1])
+        user_cart_id = list(config.DBManager.get_utazon_user_cart(info["mc_uuid"]))
 
-                if item_id:
-                    user_cart.append(item_id)
-
-                    sql = "UPDATE utazon_user SET cart=%s WHERE mc_uuid=%s"
-
-                    cursor.execute(sql, (json.dumps(user_cart), info["mc_uuid"]))
-            cursor.close()
-            cnx.commit()
+        if item_id:
+            user_cart_id.append(item_id)
+            config.DBManager.update_user_cart(user_cart_id, info["mc_uuid"])
 
     return redirect("/cart")
 
@@ -226,17 +193,7 @@ def search(request):
     if not query:
         return redirect('/')
 
-    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG)
-
-    with cnx:
-        with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s"
-            cursor.execute(sql, (f"%{query}%",))
-
-            # mc_uuidのレコードを取得
-            result = list(cursor.fetchall())
-            cursor.close()
-        cnx.commit()
+    result = config.DBManager.search_item(query)
 
     search_results = len(result)
 
@@ -263,21 +220,22 @@ def search(request):
         "search_results": search_results,
     }
 
-    if is_session_valid(request)[0]:
-        info = get_userinfo_from_session(request)
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+        info = config.functions.get_user_info.from_session(request).all()
         context["info"] = info
-        context["info"] = info
+        context["session"] = True
 
         return render(request, 'search.html', context=context)
 
-    elif is_session_valid(request)[1]:
+    elif is_session.expire:
         context["session"] = "expires"
         response = render(request, 'search.html', context=context)
 
         for key in request.COOKIES:
             if key.startswith('_Secure-'):
                 response.delete_cookie(key)
-                response.delete_cookie("LOGIN_STATUS")
+        response.delete_cookie("LOGIN_STATUS")
 
         # 期限切れ処理
         return response

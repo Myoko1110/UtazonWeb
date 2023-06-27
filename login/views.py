@@ -5,7 +5,7 @@ import secrets
 import datetime
 import config.settings as settings
 import config.DBManager
-from config.functions import is_session_valid
+import config.functions
 
 
 def login(request):
@@ -101,7 +101,8 @@ def login(request):
             return render(request, 'login.html', context=context)
 
     else:
-        if is_session_valid(request)[0]:
+        is_session = config.functions.is_session(request)
+        if is_session.valid:
             # 既ログイン処理
             return redirect('/')
         else:
