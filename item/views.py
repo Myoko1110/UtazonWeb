@@ -58,7 +58,7 @@ def item(request):
     context = {
         "item_id": result[0],
         "item_name": result[1],
-        "item_price": result[2],
+        "item_price": f"{result[2]:,}",
         "item_point": int(result[2] * 0.1),
         "item_images": json.loads(result[3]),
         "item_stock": result[5],
@@ -115,6 +115,7 @@ def cart(request):
 
             item_info[3] = json.loads(item_info[3])
             item_info.append(int(item_info[2] / 10))
+            item_info.append(f"{item_info[2]:,}")
             user_cart.append(item_info)
 
         item_total = 0
@@ -131,7 +132,7 @@ def cart(request):
             "user_cart": user_cart,
             "user_cart_number": len(user_cart_id),
             "user_later": config.DBManager.get_utazon_user_later(info["mc_uuid"]),
-            "item_total": item_total,
+            "item_total": f"{item_total:,}",
             "buy_able": buy_able,
             "info": info,
         }

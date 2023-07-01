@@ -146,7 +146,7 @@
 						</div>
 						<div class="cart-price">
 							{% if child.5 != 0 %}
-							<h3>${{ child.2 }}</h3>
+							<h3>${{ child.9 }}</h3>
 							<p>ポイント：<span>{{ child.8 }}pt (10%)</span></p>
 							{% else %}
 							<h3 style="color: #b12704">在庫なし</h3>
@@ -167,7 +167,7 @@
 			<h2>小計 ({{ user_cart_number }} 個の商品) (税込) : <span>${{ item_total }}</span></h2>
 			{% if user_cart_number != 0 %}
 			{% if buy_able %}
-			<input class="buy-continue" type="submit" value="レジに進む">
+			<input class="buy-continue" type="submit" value="レジに進む" onclick="location.href='/buy'">
 			{% else %}
 			<input class="buy-continue" type="submit" value="在庫なしを削除してください" style="background-color: #cccccc;cursor: not-allowed">
 			{% endif %}
@@ -176,10 +176,10 @@
 	</div>
 </div>
 {% if session == "expires" %}
-<div class="expires" id="expires">
-	<div class="expires__box">
-		<div class="expires__close">
-			<svg onclick="close_expires()" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+<div class="box" id="expires">
+	<div class="box__box">
+		<div class="box__close">
+			<svg onclick="close_box()" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
 		</div>
 		<h1>期限切れ</h1>
 		<p>セッションの期限が切れました。お手数ですが、もう一度ログインをお願いいたします。</p>

@@ -7,6 +7,8 @@
 .main{
     max-width: 1500px;
     width: 100%;
+    z-index: 0;
+    position: relative;
 }
 .main-banner{
     height: 100%;
@@ -89,4 +91,7 @@ body, html{
 *{
     box-sizing: border-box;
     font-family: 'Hiragino Kaku Gothic ProN','Hiragino Sans',Meiryo,sans-serif;
+}
+html, body{
+    background-color: #E3E6E6;
 }
