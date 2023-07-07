@@ -73,6 +73,17 @@ def update_user_cart(cart_value, mc_uuid):
     return True
 
 
+def update_item_review(item_id, value):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "UPDATE utazon_item SET review=%s WHERE item_id=%s"
+
+            cursor.execute(sql, (value ,item_id,))
+            cnx.commit()
+    return True
+
+
 def get_session(session_id, session_val):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
 

@@ -13,13 +13,13 @@
 .buy{
     background-color: #ffffff;
     max-width: 1100px;
-    width: calc(100% - 300px);
+    width: 100%;
     padding: 20px;
 }
 .buy-title{
     border-bottom: 1px solid #dddddd;
     display: flex;
-    align-items: flex-end
+    align-items: flex-end;
 }
 .buy-title h2{
     font-weight: 400;
@@ -37,6 +37,11 @@
     display: flex;
     margin: 20px 0 0;
     padding: 20px 0 0;
+}
+@media(max-width: 800px){
+    .buy-list{
+        display: block;
+    }
 }
 .buy-balance{
     border-top: 1px solid #e8e8e8;
@@ -63,6 +68,9 @@
 }
 .buy-right p{
     font-size: 15px;
+}
+.buy-items ul{
+    padding: 0;
 }
 .buy-items__list{
     list-style: none;

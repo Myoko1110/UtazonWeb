@@ -1,7 +1,10 @@
+import datetime
+
 from django.shortcuts import redirect, render
 import config.DBManager
 import config.functions
 import json
+import random
 from statistics import mean
 
 
@@ -64,7 +67,7 @@ def item(request):
         "item_stock": result[5],
         "item_about": reversed(json.loads(result[6]).items()),
         "item_kind": json.loads(result[7]),
-        "item_review": item_review,
+        "item_review": reversed(item_review),
         "item_review_number": len(item_review),
         "item_review_av": item_review_av,
 
@@ -245,3 +248,83 @@ def search(request):
         context["session"] = False
         # 未ログイン処理
         return render(request, 'search.html', context=context)
+
+
+def review(request):
+    item_id = request.GET.get('id')
+
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+        info = config.functions.get_user_info.from_session(request).all()
+        result = config.DBManager.get_item(item_id)
+        item_name = result[1]
+        item_image = json.loads(result[3])[0]
+
+        context = {
+            "item_name": item_name,
+            "item_image": item_image,
+            "session": True,
+            "info": info,
+        }
+
+        return render(request, 'review.html', context=context)
+    else:
+        return redirect(f"item?id={item_id}")
+
+def review_post(request):
+    item_id = request.GET.get('id')
+
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+
+        mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
+
+        review_star = request.GET.get('star')
+        review_title = request.GET.get('title')
+        review_text = request.GET.get('text')
+
+        result = config.DBManager.get_item(item_id)
+        item_review = json.loads(result[4])
+
+        now = datetime.datetime.now()
+
+        review = {
+            "id": str(random.randint(0, 99999)).zfill(5),
+            "date": {"day": int(now.day), "time": f"{now.hour}:{now.minute}:{now.second}", "year": int(now.year), "month": int(now.month)},
+            "star": int(review_star),
+            "title": review_title,
+            "value": review_text,
+            "useful": 0,
+            "mc_uuid": mc_uuid
+        }
+
+        item_review.append(review)
+        item_review = json.dumps(item_review)
+
+        config.DBManager.update_item_review(item_id, item_review)
+
+        return redirect(f"/item?id={item_id}")
+    else:
+        return redirect(f"/item?id={item_id}")
+
+def review_userful(request):
+    item_id = request.GET.get('id')
+    review_id = request.GET.get('review_id')
+
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+        result = config.DBManager.get_item(item_id)
+        item_review = json.loads(result[4])
+
+        for i in range(len(item_review)):
+
+            if item_review[i]["id"] != review_id:
+                continue
+            item_review[i]["useful"] += 1
+
+        item_output = json.dumps(item_review)
+        config.DBManager.update_item_review(item_id, item_output)
+
+        return redirect(f"/item?id={item_id}")
+    else:
+        return redirect(f"/item?id={item_id}")

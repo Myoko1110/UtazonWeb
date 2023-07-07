@@ -293,10 +293,11 @@
 
 
 .review{
-    max-width: 1200px;
+    max-width: 1000px;
     display: flex;
     margin-top: 40px;
     padding: 0 20px;
+    width: 100%;
 }
 .review-left{
     width: 300px;
@@ -399,8 +400,10 @@
 .review-list__value-use-btn{
     margin-top: 5px;
     width: 100%;
+    display: flex;
+    align-items: center;
 }
-.review-list__value-use-btn input{
+.review-list__value-use-btn-useful{
     background: #FFF;
     border-radius: 8px;
     box-shadow: 0 2px 5px 0 rgba(213,217,217,.5);
@@ -409,7 +412,7 @@
     display: inline-block;
     text-align: center;
     vertical-align: middle;
-    padding: 5px 18px;
+    padding: 5px 18px!important;
     margin-right: 10px;
 }
 .review-list__value-use-btn a{
@@ -417,6 +420,21 @@
     color: #565959;
     font-size: 14px;
     padding: 0 10px;
+}
+.review-write{
+    margin-top: 20px;
+    margin-right: 20px;
+    display: flex;
+}
+.review-write a{
+    width: 100%;
+    background-color: #d0d0d0;
+    padding: 5px 20px;
+    text-align: center;
+    border-radius: 8px;
+}
+.review-write a:hover{
+    background-color: #b0b0b0;
 }
 
 

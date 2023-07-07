@@ -121,7 +121,7 @@
 			<div class="item-about__img">
 				<div class="item-about__img-list">
 					{% for child in item_images %}
-					<img class="item-about__img-list-img " src="{{ child }}" id="image_{{ forloop.counter }}">
+					<img class="item-about__img-list-img" src="{{ child }}" data-src="{{ child }}">
 					{% endfor %}
 				</div>
 				<div class="item-about__img-index">
@@ -255,10 +255,37 @@
 			<h2>カスタマーレビュー</h2>
 			{% if item_review_av %}
 			<div class="review-star__box">
+				{% if item_review_av >= 4.8 %}
+				<div class="review-star" style="background-position: -99px -366px;">
+				{% elif item_review_av >= 4.3  and item_review_av < 4.8 %}
 				<div class="review-star" style="background-position: -390px -462px;">
+				{% elif item_review_av >= 3.8  and item_review_av < 4.3 %}
+				<div class="review-star" style="background-position: -2px -342px;">
+				{% elif item_review_av >= 3.3  and item_review_av < 3.8 %}
+				<div class="review-star" style="background-position: -196px -414px;">
+				{% elif item_review_av >= 2.8  and item_review_av < 3.3 %}
+				<div class="review-star" style="background-position: -293px -438px;">
+				{% elif item_review_av >= 2.3  and item_review_av < 2.8 %}
+				<div class="review-star" style="background-position: -2px -366px;">
+				{% elif item_review_av >= 1.8  and item_review_av < 2.3 %}
+				<div class="review-star" style="background-position: -99px -390px;">
+				{% elif item_review_av >= 1.3  and item_review_av < 1.8 %}
+				<div class="review-star" style="background-position: -293px -462px;">
+				{% elif item_review_av >= 0.8  and item_review_av < 1.3 %}
+				<div class="review-star" style="background-position: -390px -486px;">
+				{% elif item_review_av >= 0.3  and item_review_av < 0.8 %}
+				<div class="review-star" style="background-position: -99px -415px;">
+				{% elif  item_review_av < 0.3 %}
+				<div class="review-star" style="background-position: -196px -438px;">
+				{% endif %}
 					<span style="opacity: 0">5つ星のうち{{ item_review_av }}</span>
 				</div>
 				<p>{{ item_review_av }}/5</p>
+			</div>
+			{% endif %}
+			{% if session is True %}
+			<div class="review-write">
+				<a href="/review/?id={{ item_id }}">レビューを書く</a>
 			</div>
 			{% endif %}
 		</div>
@@ -307,9 +334,12 @@
 						<p class="review-list__value-date">{{ child.date.year }}年{{ child.date.month }}月{{ child.date.day }}日に日本でレビュー済み</p>
 						<p class="review-list__value-text">{{ child.value }}</p>
 						<div class="review-list__value-use">
+							{% if child.useful != 0 %}
 							<p class="review-list__value-use-text">{{ child.useful }}人のお客様がこれが役に立ったと考えています</p>
+							{% endif %}
 							<div class="review-list__value-use-btn">
-								<input type="submit" name="" value="役に立った">
+								<a class="review-list__value-use-btn-useful" data-href="/review/userful/?id={{ item_id }}&review_id={{ child.id }}">役に立った</a>
+								<p style="font-size: 14px;color: #067D62;margin: 0;display: none" data-href="/review/userful/?id={{ item_id }}&review_id={{ child.id }}">フィードバックをお寄せいただきありがとうございます。</p>
 								<a>レポート</a>
 							</div>
 						</div>

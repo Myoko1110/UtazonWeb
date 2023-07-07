@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Utazon.com | うたかた鯖</title>
+    <link rel="stylesheet" href="{% static 'review/stylesheet.css' %}">
+    <link rel="stylesheet" href="{% static 'local.css' %}">
+	<link rel="icon" href="{% static 'icon.svg' %}">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+	<script src="{% static 'local.js' %}"></script>
+	<script src="{% static 'review/review.js' %}"></script>
+</head>
+<body>
+<div class="global-header">
+    <header>
+        <div class="nav-belt">
+            <div class="nav-belt__logo">
+                <a href="/" class="nav-link">
+                    <img src="../assets/logo.svg">
+                </a>
+            </div>
+            <div class="nav-belt__address">
+                <img class="nav-belt__address-map" src="../assets/pin.svg">
+	            <div class="nav-belt__address-dir">
+		            <div class="nav-belt__address-name">
+			            <p class="nav-belt__address-to">お届け先</p>
+		            </div>
+		            <div class="nav-belt__address-number">
+						{% if session is True %}
+						<h1>1-0001仮</h1>
+						{% else %}
+						<h1>ログイン</h1>
+						{% endif %}
+		            </div>
+	            </div>
+            </div>
+            <div class="nav-belt__search">
+	            <form id="search">
+		            <select class="nav-belt__search-select">
+			            <option>すべて</option>
+			            <option>建築ブロック</option>
+			            <option>装飾ブロック</option>
+			            <option>レッドストーン</option>
+			            <option>運送</option>
+			            <option>食料</option>
+			            <option>道具</option>
+			            <option>戦闘</option>
+			            <option>醸造</option>
+		            </select>
+	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com" value="{{ query }}" id="search_query">
+		            <label class="nav-belt__search-label">
+			            <input class="nav-belt__search-submit" type="submit" value="">
+			            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960"><path d="M796 935 533 672q-30 26-69.959 40.5T378 727q-108.162 0-183.081-75Q120 577 120 471t75-181q75-75 181.5-75t181 75Q632 365 632 471.15 632 514 618 554q-14 40-42 75l264 262-44 44ZM377 667q81.25 0 138.125-57.5T572 471q0-81-56.875-138.5T377 275q-82.083 0-139.542 57.5Q180 390 180 471t57.458 138.5Q294.917 667 377 667Z"/></svg>
+		            </label>
+	            </form>
+            </div>
+			{% if session is True %}
+			<a onclick="logout_confirm()" class="nav-link">
+			{% else %}
+			<a href="/login" class="nav-link">
+			{% endif %}
+				<div class="nav-belt__account">
+				{% if session is True %}
+		        	<p>{{ info.mc_id }}さん</p>
+		        	<h1>ログアウト</h1>
+				{% else %}
+					<p>ゲストさん</p>
+		        	<h1>ログイン</h1>
+				{% endif %}
+	        </div>
+			</a>
+
+	        <div class="nav-belt__returns">
+		        <p>返品もこちら</p>
+		        <h1>注文履歴</h1>
+	        </div>
+			<a href="/cart" class="nav-link">
+	        	<div class="nav-belt__cart">
+		        	<div class="nav-belt__cart-ui">
+			        	<img src="../assets/cart.png">
+						{% if session is True %}
+			        	<p>{{ info.user_cart }}</p>
+						{% else %}
+						<p>0</p>
+						{% endif %}
+		        	</div>
+		        	<div class="nav-belt__cart-text">
+			        	<h1>カート</h1>
+		        	</div>
+	        	</div>
+			</a>
+        </div>
+	    <div class="nav-main">
+			<a class="nav-main__point">Utazonポイント:<span>100</span></a>
+			<div class="nav-main__category">
+				<a class="nav-main__category-child">ヘルプ</a>
+				<a class="nav-main__category-child">プライム</a>
+				<a class="nav-main__category-child">建築ブロック</a>
+				<a class="nav-main__category-child">装飾ブロック</a>
+				<a class="nav-main__category-child">レッドストーン</a>
+				<a class="nav-main__category-child">運送</a>
+				<a class="nav-main__category-child">食料</a>
+				<a class="nav-main__category-child">道具</a>
+				<a class="nav-main__category-child">戦闘</a>
+				<a class="nav-main__category-child">醸造</a>
+				<a class="nav-main__category-child">再購入</a>
+			</div>
+	    </div>
+    </header>
+</div>
+<div class="wrapper">
+	<div class="subwrapper">
+		<div class="review">
+			<div class="review-title">
+				<h2>この商品をレビュー</h2>
+				<div class="review-title__item">
+					<img src="{{ item_image }}">
+					<p>{{ item_name }}</p>
+				</div>
+			</div>
+			<div class="review-value">
+				<div class="review-value__star">
+					<h3>総合評価</h3>
+					<span class="required" id="star_required">必須項目です</span>
+					<img id="star_1" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMzgiIGhlaWdodD0iMzUiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNMTkgMGwtNS44NyAxMS41MkwwIDEzLjM3bDkuNSA4Ljk3TDcuMjYgMzUgMTkgMjkuMDIgMzAuNzUgMzVsLTIuMjQtMTIuNjYgOS41LTguOTctMTMuMTMtMS44NXoiLz48L2RlZnM+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48dXNlIGZpbGw9IiNGRkYiIHhsaW5rOmhyZWY9IiNhIi8+PHBhdGggc3Ryb2tlPSIjQTI2QTAwIiBzdHJva2Utb3BhY2l0eT0iLjc1IiBkPSJNMTkgMS4xbC01LjU0IDEwLjg4TDEuMSAxMy43Mmw4Ljk0IDguNDRMNy45MiAzNC4xIDE5IDI4LjQ2bDExLjA4IDUuNjQtMi4xMS0xMS45NCA4Ljk0LTguNDQtMTIuMzYtMS43NEwxOSAxLjF6Ii8+PC9nPjwvc3ZnPg==">
+					<img id="star_2" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMzgiIGhlaWdodD0iMzUiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNMTkgMGwtNS44NyAxMS41MkwwIDEzLjM3bDkuNSA4Ljk3TDcuMjYgMzUgMTkgMjkuMDIgMzAuNzUgMzVsLTIuMjQtMTIuNjYgOS41LTguOTctMTMuMTMtMS44NXoiLz48L2RlZnM+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48dXNlIGZpbGw9IiNGRkYiIHhsaW5rOmhyZWY9IiNhIi8+PHBhdGggc3Ryb2tlPSIjQTI2QTAwIiBzdHJva2Utb3BhY2l0eT0iLjc1IiBkPSJNMTkgMS4xbC01LjU0IDEwLjg4TDEuMSAxMy43Mmw4Ljk0IDguNDRMNy45MiAzNC4xIDE5IDI4LjQ2bDExLjA4IDUuNjQtMi4xMS0xMS45NCA4Ljk0LTguNDQtMTIuMzYtMS43NEwxOSAxLjF6Ii8+PC9nPjwvc3ZnPg==">
+					<img id="star_3" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMzgiIGhlaWdodD0iMzUiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNMTkgMGwtNS44NyAxMS41MkwwIDEzLjM3bDkuNSA4Ljk3TDcuMjYgMzUgMTkgMjkuMDIgMzAuNzUgMzVsLTIuMjQtMTIuNjYgOS41LTguOTctMTMuMTMtMS44NXoiLz48L2RlZnM+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48dXNlIGZpbGw9IiNGRkYiIHhsaW5rOmhyZWY9IiNhIi8+PHBhdGggc3Ryb2tlPSIjQTI2QTAwIiBzdHJva2Utb3BhY2l0eT0iLjc1IiBkPSJNMTkgMS4xbC01LjU0IDEwLjg4TDEuMSAxMy43Mmw4Ljk0IDguNDRMNy45MiAzNC4xIDE5IDI4LjQ2bDExLjA4IDUuNjQtMi4xMS0xMS45NCA4Ljk0LTguNDQtMTIuMzYtMS43NEwxOSAxLjF6Ii8+PC9nPjwvc3ZnPg==">
+					<img id="star_4" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMzgiIGhlaWdodD0iMzUiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNMTkgMGwtNS44NyAxMS41MkwwIDEzLjM3bDkuNSA4Ljk3TDcuMjYgMzUgMTkgMjkuMDIgMzAuNzUgMzVsLTIuMjQtMTIuNjYgOS41LTguOTctMTMuMTMtMS44NXoiLz48L2RlZnM+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48dXNlIGZpbGw9IiNGRkYiIHhsaW5rOmhyZWY9IiNhIi8+PHBhdGggc3Ryb2tlPSIjQTI2QTAwIiBzdHJva2Utb3BhY2l0eT0iLjc1IiBkPSJNMTkgMS4xbC01LjU0IDEwLjg4TDEuMSAxMy43Mmw4Ljk0IDguNDRMNy45MiAzNC4xIDE5IDI4LjQ2bDExLjA4IDUuNjQtMi4xMS0xMS45NCA4Ljk0LTguNDQtMTIuMzYtMS43NEwxOSAxLjF6Ii8+PC9nPjwvc3ZnPg==">
+					<img id="star_5" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMzgiIGhlaWdodD0iMzUiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNMTkgMGwtNS44NyAxMS41MkwwIDEzLjM3bDkuNSA4Ljk3TDcuMjYgMzUgMTkgMjkuMDIgMzAuNzUgMzVsLTIuMjQtMTIuNjYgOS41LTguOTctMTMuMTMtMS44NXoiLz48L2RlZnM+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48dXNlIGZpbGw9IiNGRkYiIHhsaW5rOmhyZWY9IiNhIi8+PHBhdGggc3Ryb2tlPSIjQTI2QTAwIiBzdHJva2Utb3BhY2l0eT0iLjc1IiBkPSJNMTkgMS4xbC01LjU0IDEwLjg4TDEuMSAxMy43Mmw4Ljk0IDguNDRMNy45MiAzNC4xIDE5IDI4LjQ2bDExLjA4IDUuNjQtMi4xMS0xMS45NCA4Ljk0LTguNDQtMTIuMzYtMS43NEwxOSAxLjF6Ii8+PC9nPjwvc3ZnPg==">
+				</div>
+				<div class="review-value__title">
+					<h3>レビュータイトル<span class="required" id="title_required">必須項目です</span></h3>
+					<input id="title" type="text" placeholder="最も伝えたいポイントはなんですか？">
+
+				</div>
+				<div class="review-value__text">
+					<h3>レビューを追加<span class="required" id="text_required">必須項目です</span></h3>
+					<textarea id="text" placeholder="気に入ったこと/気に入らなかったことは何ですか？この製品をどのように使いましたか？"></textarea>
+				</div>
+				<div class="review-value__confirm">
+					<h3>投稿にあったっての注意</h3>
+					<p>ふざけてのレビューはおやめください。<br>
+					投稿することによってMCIDが公開されます。<br>
+					投稿は削除できません。ご了承ください。</p>
+				</div>
+				<div class="review-value__submit" id="submit">
+					<a>投稿</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
