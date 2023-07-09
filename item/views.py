@@ -117,14 +117,19 @@ def cart(request):
             item_info = list(result)
 
             item_info[3] = json.loads(item_info[3])
-            item_info.append(int(item_info[2] / 10))
-            item_info.append(f"{item_info[2]:,}")
+
+            item_price = item_info[2]
+
+            item_info.append(int(item_price / 10))
+            item_info.append(f"{item_price:,}")
             item_info.append(i[1])
+
             user_cart.append(item_info)
 
         item_total = 0
-        for _ in user_cart:
-            item_total += item_info[2]
+        for i in range(len(user_cart)):
+            item_price = user_cart[i][2] * user_cart[i][9]
+            item_total += item_price
 
         if 0 not in [i[5] for i in user_cart]:
             buy_able = True

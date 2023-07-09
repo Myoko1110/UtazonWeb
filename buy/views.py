@@ -13,9 +13,10 @@ def buy(request):
 
         user_cart_id = config.DBManager.get_utazon_user_cart(info["mc_uuid"])
 
+        # アイテム情報を取得
         user_cart = []
         for i in user_cart_id:
-            result = config.DBManager.get_item(i)
+            result = config.DBManager.get_item(i[0])
 
             # item_idのレコードを取得
             item_info = list(result)
@@ -26,11 +27,15 @@ def buy(request):
 
             item_info.append(int(item_price / 10))
             item_info.append(f"{item_price:,}")
+            item_info.append(i[1])
+
             user_cart.append(item_info)
 
+        # 請求額算出
         item_total = 0
-        for _ in user_cart:
-            item_total += item_info[2]
+        for i in range(len(user_cart)):
+            item_price = user_cart[i][2] * user_cart[i][9]
+            item_total += item_price
 
         context = {
             "session": True,
