@@ -112,51 +112,95 @@
 </div>
 <div class="wrapper">
 	<div class="subwrapper">
-		<div class="cart">
-			{% if user_cart_number == 0 %}
-			<div class="cart-notexist">
-				<h2>お客様のUtazonカートに商品はありません。</h2>
-				<p>商品をカートに追加してください。</p>
-			</div>
-			{% else %}
-			<div class="cart-exist">
-				<h2>ショッピングカート</h2>
-				{% if session == "expires" %}
-				<p>ログインしてください</p>
-				{% endif %}
-				<ul class="cart-list">
-					{% for child in user_cart %}
-					<li class="cart-child">
-						<img src="{{ child.3.0 }}">
-						<div class="cart-box">
-							<div class="cart-product">
-								<a class="cart-title" href="../item?id={{ child.0 }}">{{ child.1 }}</a>
-								{% if child.5 != 0 %}
-								<p class="cart-product__y">在庫あり</p>
-								{% if child.5 <= 15 %}
-								<p class="cart-product__n">残り{{ child.5 }}点 ご注文はお早めに</p>
-								{% endif %}
-								{% else %}
-								<p class="cart-product__n">在庫なし</p>
-								{% endif %}
-							<div class="cart-product__number">
-								<p>数量:</p>
-								<input class="cart-product__number-input" type="number" value="{{ child.9 }}" data-id="{{ child.0 }}">
-								<a href="delete/?id={{ child.0 }}">削除</a>
+		<div class="cart-parent">
+			<div class="cart">
+				{% if user_cart_number == 0 %}
+				<div class="cart-notexist">
+					<h2>お客様のUtazonカートに商品はありません。</h2>
+					<p>商品をカートに追加してください。</p>
+				</div>
+				{% else %}
+				<div class="cart-exist">
+					<h2>ショッピングカート</h2>
+					{% if session == "expires" %}
+					<p>ログインしてください</p>
+					{% endif %}
+					<ul class="cart-list">
+						{% for child in user_cart %}
+						<li class="cart-child">
+							<img src="{{ child.3.0 }}">
+							<div class="cart-box">
+								<div class="cart-product">
+									<a class="cart-title" href="../item?id={{ child.0 }}">{{ child.1 }}</a>
+									{% if child.5 != 0 %}
+									<p class="cart-product__y">在庫あり</p>
+									{% if child.5 <= 15 %}
+									<p class="cart-product__n">残り{{ child.5 }}点 ご注文はお早めに</p>
+									{% endif %}
+									{% else %}
+									<p class="cart-product__n">在庫なし</p>
+									{% endif %}
+								<div class="cart-product__number">
+									<p>数量:</p>
+									<input class="cart-product__number-input" type="number" value="{{ child.9 }}" data-id="{{ child.0 }}">
+									<a href="delete/?id={{ child.0 }}" style="border-left: #d7d7d7 1px solid;margin-left: 20px">削除</a>
+									<a href="../later/add/?id={{ child.0 }}">あとで買う</a>
+								</div>
 							</div>
-						</div>
-						<div class="cart-price">
-							{% if child.5 != 0 %}
-							<h3>${{ child.8 }}</h3>
-							<p>ポイント：<span>{{ child.7 }}pt (10%)</span></p>
-							{% else %}
-							<h3 style="color: #b12704">在庫なし</h3>
-							{% endif %}
-						</div>
-						</div>
-					</li>
-					{% endfor %}
-				</ul>
+							<div class="cart-price">
+								{% if child.5 != 0 %}
+								<h3>${{ child.8 }}</h3>
+								<p>ポイント：<span>{{ child.7 }}pt (10%)</span></p>
+								{% else %}
+								<h3 style="color: #b12704">在庫なし</h3>
+								{% endif %}
+							</div>
+							</div>
+						</li>
+						{% endfor %}
+					</ul>
+				</div>
+				{% endif %}
+			</div>
+			{% if user_later_number != 0 %}
+			<div class="later">
+				<div class="later-exist">
+					<h2>あとで買う</h2>
+					{% if session == "expires" %}
+					<p>ログインしてください</p>
+					{% endif %}
+					<ul class="later-list">
+						{% for child in user_later %}
+						<li class="later-child">
+							<img src="{{ child.3.0 }}">
+							<div class="later-box">
+								<div class="later-product">
+									<a class="later-title" href="../item?id={{ child.0 }}">{{ child.1 }}</a>
+									{% if child.5 != 0 %}
+									<p class="later-product__y">在庫あり</p>
+									{% if child.5 <= 15 %}
+									<p class="later-product__n">残り{{ child.5 }}点 ご注文はお早めに</p>
+									{% endif %}
+									{% else %}
+									<p class="later-product__n">在庫なし</p>
+									{% endif %}
+								<div class="later-product__number">
+									<a href="../later/delete/?id={{ child.0 }}">削除</a>
+								</div>
+							</div>
+							<div class="later-price">
+								{% if child.5 != 0 %}
+								<h3>${{ child.8 }}</h3>
+								<p>ポイント：<span>{{ child.7 }}pt (10%)</span></p>
+								{% else %}
+								<h3 style="color: #b12704">在庫なし</h3>
+								{% endif %}
+							</div>
+							</div>
+						</li>
+						{% endfor %}
+					</ul>
+				</div>
 			</div>
 			{% endif %}
 		</div>

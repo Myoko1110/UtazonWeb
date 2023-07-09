@@ -31,6 +31,8 @@
 }
 .main-list li{
     display: flex;
+    padding: 20px 0;
+    border-bottom: 1px #e8e8e8 solid;
 }
 .main-img{
     width: 280px;

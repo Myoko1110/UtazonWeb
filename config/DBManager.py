@@ -75,6 +75,19 @@ def update_user_cart(cart_value, mc_uuid):
     return True
 
 
+def update_user_later(later_value, mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    user_later = json.dumps(later_value)
+
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "UPDATE IGNORE utazon_user SET later=%s WHERE mc_uuid=%s"
+
+            cursor.execute(sql, (user_later, mc_uuid))
+            cnx.commit()
+    return True
+
+
 def update_item_review(item_id, value):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:

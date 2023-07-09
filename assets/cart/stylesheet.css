@@ -10,11 +10,14 @@
     width: 100%;
     justify-content: center;
 }
+.cart-parent{
+    width: calc(100% - 300px);
+    max-width: 1100px;
+}
 .cart{
     background-color: #ffffff;
-    max-width: 1100px;
-    width: calc(100% - 300px);
     padding: 20px;
+    width: 100%;
 }
 .cart-notexist h2{
     font-weight: 400;
@@ -95,10 +98,12 @@
     width: 50px;
 }
 .cart-product__number a{
-    margin: 0 10px;
+    margin: 0;
     font-size: 12px;
     color: #007185;
     cursor: pointer;
+    border-right: #d7d7d7 1px solid;
+    padding: 0 15px;
 }
 .cart-price{
     width: 100px;
@@ -116,6 +121,107 @@
     text-align: right;
 }
 .cart-price p span{
+    color: #B12704;
+}
+
+.later{
+    background-color: #ffffff;
+    padding: 20px;
+    width: 100%;
+    margin-top: 50px;
+}
+.later-notexist h2{
+    font-weight: 400;
+    font-size: 28px;
+    margin: 0 0 5px;
+}
+.later-notexist p{
+    margin: 0;
+    font-size: 14px;
+}
+.later-exist h2{
+    font-weight: 400;
+    font-size: 28px;
+    padding: 0 0 15px;
+    border-bottom: 1px solid #dddddd;
+    margin-bottom: 0;
+}
+.later-list{
+    list-style: none;
+    padding: 0;
+}
+.later-child{
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid #dddddd;
+}
+.later-child img{
+    height: 180px;
+    width: 180px;
+    object-fit: contain;
+}
+@media(min-width: 900px){
+    .later-box{
+        display: flex;
+    }
+    .later-product{
+        width: calc(100% - 100px);
+    }
+}
+@media(min-width: 899px){
+    .later-product{
+        width: 100%;
+    }
+}
+.later-product{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.later-title{
+    font-size: 18px;
+    border: none!important;
+    margin: 0!important;
+    padding: 0!important;
+}
+.later-product p{
+    font-size: 12px;
+    margin-bottom: 0;
+    margin-top: 8px;
+}
+.later-product__y{
+    color: #007600;
+}
+.later-product__n{
+    color: #b12704;
+}
+.later-product__number{
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+.later-product__number a{
+    margin: 0;
+    font-size: 12px;
+    color: #007185;
+    cursor: pointer;
+    padding: 0 15px;
+}
+.later-price{
+    width: 100px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.later-price h3{
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+.later-price p{
+    font-size: 12px;
+    margin: 0;
+    text-align: right;
+}
+.later-price p span{
     color: #B12704;
 }
 .buy{
