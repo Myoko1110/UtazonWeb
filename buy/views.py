@@ -37,11 +37,15 @@ def buy(request):
             item_price = user_cart[i][2] * user_cart[i][9]
             item_total += item_price
 
+        user_cart_number = 0
+        for i in range(len(user_cart)):
+            user_cart_number += user_cart[i][9]
+
         context = {
             "session": True,
             "info": info,
             "user_cart": user_cart,
-            "user_cart_number": len(user_cart_id),
+            "user_cart_number": user_cart_number,
             "item_total": f"{item_total:,}",
         }
         return render(request, "buy.html", context=context)

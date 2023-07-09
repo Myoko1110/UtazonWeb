@@ -165,7 +165,7 @@
 				<i></i>
 				<p>通常配送無料</p>
 			</div>
-			<h2>小計 ({{ user_cart_number }} 個の商品) (税込) : <span>${{ item_total }}</span></h2>
+			<h2>小計 ({{ user_cart_number }} 個の商品) : <span>${{ item_total }}</span></h2>
 			{% if user_cart_number != 0 %}
 			{% if buy_able %}
 			<input class="buy-continue" type="submit" value="レジに進む" onclick="location.href='/buy'">

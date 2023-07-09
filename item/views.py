@@ -136,10 +136,14 @@ def cart(request):
         else:
             buy_able = False
 
+        user_cart_number = 0
+        for i in range(len(user_cart)):
+            user_cart_number += user_cart[i][9]
+
         context = {
             "session": True,
             "user_cart": user_cart,
-            "user_cart_number": len(user_cart_id),
+            "user_cart_number": user_cart_number,
             "user_later": config.DBManager.get_utazon_user_later(info["mc_uuid"]),
             "item_total": f"{item_total:,}",
             "buy_able": buy_able,
