@@ -1,11 +1,12 @@
 import datetime
-
-from django.shortcuts import redirect, render
-import config.DBManager
-import config.functions
 import json
 import random
 from statistics import mean
+
+from django.shortcuts import redirect, render
+
+import config.DBManager
+import config.functions
 
 
 def index_view(request):
@@ -65,8 +66,7 @@ def item(request):
         "item_point": int(result[2] * 0.1),
         "item_images": json.loads(result[3]),
         "item_stock": result[5],
-        "item_about": reversed(json.loads(result[6]).items()),
-        "item_kind": json.loads(result[7]),
+        "item_kind": json.loads(result[6]),
         "item_review": reversed(item_review),
         "item_review_number": len(item_review),
         "item_review_av": item_review_av,
@@ -271,6 +271,7 @@ def review(request):
     else:
         return redirect(f"item?id={item_id}")
 
+
 def review_post(request):
     item_id = request.GET.get('id')
 
@@ -306,6 +307,7 @@ def review_post(request):
         return redirect(f"/item?id={item_id}")
     else:
         return redirect(f"/item?id={item_id}")
+
 
 def review_userful(request):
     item_id = request.GET.get('id')

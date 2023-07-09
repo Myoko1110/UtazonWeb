@@ -1,7 +1,9 @@
+import json
+
 from django.shortcuts import redirect, render
+
 import config.functions
 import config.DBManager
-import json
 
 
 def buy(request):

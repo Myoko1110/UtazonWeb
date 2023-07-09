@@ -1,8 +1,10 @@
-from django.shortcuts import redirect, render
-import requests
+import datetime
 import logging
 import secrets
-import datetime
+
+from django.shortcuts import redirect, render
+import requests
+
 import config.settings as settings
 import config.DBManager
 import config.functions

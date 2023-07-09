@@ -1,6 +1,8 @@
-import mysql.connector
-import config.settings as settings
 import json
+
+import mysql.connector
+
+import config.settings as settings
 
 
 def get_utazon_user_cart(mc_uuid):

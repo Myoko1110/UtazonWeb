@@ -1,6 +1,7 @@
-import mysql.connector
-import config.settings as settings
 from django.apps import AppConfig
+import mysql.connector
+
+import config.settings as settings
 
 
 class LoginConfig(AppConfig):
@@ -48,7 +49,6 @@ def table_create(sender, **kwargs):
                                                     image JSON,
                                                     review JSON,
                                                     stock BIGINT,
-                                                    about JSON,
                                                     kind JSON)"""
             cursor.execute(sql)
 
