@@ -21,8 +21,11 @@ def buy(request):
             item_info = list(result)
 
             item_info[3] = json.loads(item_info[3])
-            item_info.append(int(item_info[2] / 10))
-            item_info.append(f"{item_info[2]:,}")
+
+            item_price = item_info[2]
+
+            item_info.append(int(item_price / 10))
+            item_info.append(f"{item_price:,}")
             user_cart.append(item_info)
 
         item_total = 0

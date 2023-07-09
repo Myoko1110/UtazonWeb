@@ -1,6 +1,6 @@
 const xhr = new XMLHttpRequest();
 const host = `http://${location.host}`;
-
+let cart_number = 1;
 
 $(function (){
 
@@ -22,4 +22,9 @@ $(function (){
         $(`p[data-href="${link}"]`).css("display", "block");
     });
 
-})
+    // カートに追加するアイテム数を変更
+    $('#card_add').on("input", function() {
+    cart_number = $(this).val();
+  });
+
+});

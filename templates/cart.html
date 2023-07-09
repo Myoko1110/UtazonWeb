@@ -10,6 +10,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
+	<script src="{% static 'cart/script.js' %}"></script>
 </head>
 <body>
 <div class="global-header">
@@ -140,7 +141,7 @@
 								{% endif %}
 							<div class="cart-product__number">
 								<p>数量:</p>
-								<input class="cart-product__number-input" type="number" value="1">
+								<input class="cart-product__number-input" type="number" value="{{ child.9 }}" data-id="{{ child.0 }}">
 								<a href="delete/?id={{ child.0 }}">削除</a>
 							</div>
 						</div>

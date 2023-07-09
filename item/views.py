@@ -111,7 +111,7 @@ def cart(request):
 
         user_cart = []
         for i in user_cart_id:
-            result = config.DBManager.get_item(i)
+            result = config.DBManager.get_item(i[0])
 
             # item_idのレコードを取得
             item_info = list(result)
@@ -119,6 +119,7 @@ def cart(request):
             item_info[3] = json.loads(item_info[3])
             item_info.append(int(item_info[2] / 10))
             item_info.append(f"{item_info[2]:,}")
+            item_info.append(i[1])
             user_cart.append(item_info)
 
         item_total = 0
@@ -167,10 +168,14 @@ def cart_delete(request):
         info = config.functions.get_user_info.from_session(request).all()
         user_cart_id = config.DBManager.get_utazon_user_cart(info["mc_uuid"])
 
-        # mc_uuidのレコードを取得
-        if item_id and item_id in user_cart_id:
-            user_cart_id.remove(item_id)
-            config.DBManager.update_user_cart(user_cart_id, info["mc_uuid"])
+        if item_id:
+            for i in range(len(user_cart_id)):
+                child = user_cart_id[i]
+
+                if item_id in child and child[0] == item_id:
+                    user_cart_id.remove(child)
+
+                    config.DBManager.update_user_cart(user_cart_id, info["mc_uuid"])
 
     return redirect("/cart")
 
@@ -180,14 +185,46 @@ def cart_add(request):
     if is_session.valid:
 
         item_id = int(request.GET.get('id'))
+        number = int(request.GET.get('n'))
 
         info = config.functions.get_user_info.from_session(request).all()
 
         user_cart_id = list(config.DBManager.get_utazon_user_cart(info["mc_uuid"]))
 
-        if item_id:
-            user_cart_id.append(item_id)
+        if item_id and number:
+
+            # すでに該当のアイテムがあったら元の数に足す
+            for i in range(len(user_cart_id)):
+                if user_cart_id[i][0] == item_id:
+                    user_cart_id[i][1] += number
+                    break
+            else:
+                user_cart_id.append([item_id, number])
+
             config.DBManager.update_user_cart(user_cart_id, info["mc_uuid"])
+
+    return redirect("/cart")
+
+
+def cart_update(request):
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+
+        item_id = int(request.GET.get('id'))
+        number = int(request.GET.get('n'))
+
+        info = config.functions.get_user_info.from_session(request).all()
+
+        user_cart_id = list(config.DBManager.get_utazon_user_cart(info["mc_uuid"]))
+
+        if item_id and number:
+
+            # すでに該当のアイテムがあったら元の数に足す
+            for i in range(len(user_cart_id)):
+                if user_cart_id[i][0] == item_id:
+                    user_cart_id[i][1] = number
+
+                    config.DBManager.update_user_cart(user_cart_id, info["mc_uuid"])
 
     return redirect("/cart")
 

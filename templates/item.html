@@ -10,7 +10,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
-	<script src="{% static 'item/image.js' %}"></script>
+	<script src="{% static 'item/script.js' %}"></script>
 </head>
 <body>
 <div class="global-header">
@@ -240,10 +240,10 @@
 					<form method="get" action="">
 						<div class="item-about__buy-order-number">
 							<p>数量:</p>
-							<input class="item-about__buy-order-number-input" type="number" value="1">
+							<input class="item-about__buy-order-number-input" type="number" value="1" id="card_add">
 						</div>
 						<input class="item-about__buy-order-input" type="submit" value="今すぐ買う">
-						<a href="../cart/add/?id={{ item_id }}" class="item-about__buy-order-cart" type="submit">カートに入れる</a>
+						<a onclick="location.href=`../cart/add/?id={{ item_id }}&n=${cart_number}`" class="item-about__buy-order-cart" type="submit">カートに入れる</a>
 					</form>
 					{% else %}
 					<a href="../login" class="item-about__buy-order-cart" type="submit">ログインして購入</a>
