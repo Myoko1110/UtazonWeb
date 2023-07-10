@@ -47,11 +47,15 @@ def item(request):
     # レビューを取得
     item_review = json.loads(result[4].replace("\n", "<br>"))
 
-    # item_reviewにmc情報を追加
     for i in item_review:
+        # item_reviewにmc情報を追加
         mc_uuid = i["mc_uuid"]
         mc_id = config.functions.get_user_info.from_uuid(mc_uuid).mc_id()
         i["mc_id"] = mc_id
+
+        # item_reviewのdateをdatetimeオブジェクトに変換
+        date = datetime.datetime.strptime(i["date"], "%Y-%m-%d %H:%M:%S")
+        i["date"] = date
 
     # レビューの平均を計算
     if item_review:
@@ -258,7 +262,50 @@ def cart_update(request):
     return redirect("/cart")
 
 
-def later_add(request):
+def later_delete(request):
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+
+        item_id = int(request.GET.get('id'))
+
+        info = config.functions.get_user_info.from_session(request).all()
+        user_later_id = config.DBManager.get_utazon_user_later(info["mc_uuid"])
+
+        if item_id:
+            user_later_id.remove(item_id)
+            config.DBManager.update_user_later(user_later_id, info["mc_uuid"])
+
+    return redirect("/cart")
+
+
+def later_to_cart(request):
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+
+        item_id = int(request.GET.get('id'))
+        mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
+
+        user_later_id = config.DBManager.get_utazon_user_later(mc_uuid)
+        user_cart_id = list(config.DBManager.get_utazon_user_cart(mc_uuid))
+
+        if item_id:
+            user_later_id.remove(item_id)
+            config.DBManager.update_user_later(user_later_id, mc_uuid)
+
+            # すでに該当のアイテムがあったら元の数に足す
+            for i in range(len(user_cart_id)):
+                if user_cart_id[i][0] == item_id:
+                    user_cart_id[i][1] += 1
+                    break
+            else:
+                user_cart_id.append([item_id, 1])
+
+            config.DBManager.update_user_cart(user_cart_id, mc_uuid)
+
+    return redirect("/cart")
+
+
+def cart_to_later(request):
     is_session = config.functions.is_session(request)
     if is_session.valid:
 
@@ -286,22 +333,6 @@ def later_add(request):
 
         if item_id and item_id not in user_later_id:
             user_later_id.append(item_id)
-            config.DBManager.update_user_later(user_later_id, info["mc_uuid"])
-
-    return redirect("/cart")
-
-
-def later_delete(request):
-    is_session = config.functions.is_session(request)
-    if is_session.valid:
-
-        item_id = int(request.GET.get('id'))
-
-        info = config.functions.get_user_info.from_session(request).all()
-        user_later_id = config.DBManager.get_utazon_user_later(info["mc_uuid"])
-
-        if item_id:
-            user_later_id.remove(item_id)
             config.DBManager.update_user_later(user_later_id, info["mc_uuid"])
 
     return redirect("/cart")
@@ -402,12 +433,11 @@ def review_post(request):
         result = config.DBManager.get_item(item_id)
         item_review = json.loads(result[4])
 
-        now = datetime.datetime.now()
+        now = datetime.datetime.now().replace(microsecond=0)
 
-        review = {
+        new_review = {
             "id": str(random.randint(0, 99999)).zfill(5),
-            "date": {"day": int(now.day), "time": f"{now.hour}:{now.minute}:{now.second}", "year": int(now.year),
-                     "month": int(now.month)},
+            "date": str(now),
             "star": int(review_star),
             "title": review_title,
             "value": review_text,
@@ -415,7 +445,7 @@ def review_post(request):
             "mc_uuid": mc_uuid
         }
 
-        item_review.append(review)
+        item_review.append(new_review)
         item_review = json.dumps(item_review)
 
         config.DBManager.update_item_review(item_id, item_review)

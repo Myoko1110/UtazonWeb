@@ -144,7 +144,7 @@
 									<p>数量:</p>
 									<input class="cart-product__number-input" type="number" value="{{ child.9 }}" data-id="{{ child.0 }}">
 									<a href="delete/?id={{ child.0 }}" style="border-left: #d7d7d7 1px solid;margin-left: 20px">削除</a>
-									<a href="../later/add/?id={{ child.0 }}">あとで買う</a>
+									<a href="../cart-to-later/?id={{ child.0 }}">あとで買う</a>
 								</div>
 							</div>
 							<div class="cart-price">
@@ -186,6 +186,7 @@
 									{% endif %}
 								<div class="later-product__number">
 									<a href="../later/delete/?id={{ child.0 }}">削除</a>
+									<a href="../later-to-cart/?id={{ child.0 }}">カートに戻す</a>
 								</div>
 							</div>
 							<div class="later-price">
