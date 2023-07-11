@@ -198,8 +198,8 @@ def cart_delete(request):
 
         item_id = int(request.GET.get('id'))
 
-        info = config.functions.get_user_info.from_session(request).all()
-        user_cart_id = config.DBManager.get_utazon_user_cart(info["mc_uuid"])
+        mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
+        user_cart_id = config.DBManager.get_utazon_user_cart(mc_uuid)
 
         if item_id:
             for i in range(len(user_cart_id)):
@@ -208,7 +208,7 @@ def cart_delete(request):
                 if item_id in child and child[0] == item_id:
                     user_cart_id.remove(child)
 
-                    config.DBManager.update_user_cart(user_cart_id, info["mc_uuid"])
+                    config.DBManager.update_user_cart(user_cart_id, mc_uuid)
 
     return redirect("/cart")
 
@@ -220,9 +220,9 @@ def cart_add(request):
         item_id = int(request.GET.get('id'))
         number = int(request.GET.get('n'))
 
-        info = config.functions.get_user_info.from_session(request).all()
+        mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
 
-        user_cart_id = list(config.DBManager.get_utazon_user_cart(info["mc_uuid"]))
+        user_cart_id = list(config.DBManager.get_utazon_user_cart(mc_uuid))
 
         if item_id and number:
 
@@ -234,7 +234,7 @@ def cart_add(request):
             else:
                 user_cart_id.append([item_id, number])
 
-            config.DBManager.update_user_cart(user_cart_id, info["mc_uuid"])
+            config.DBManager.update_user_cart(user_cart_id, mc_uuid)
 
     return redirect("/cart")
 
@@ -246,9 +246,9 @@ def cart_update(request):
         item_id = int(request.GET.get('id'))
         number = int(request.GET.get('n'))
 
-        info = config.functions.get_user_info.from_session(request).all()
+        mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
 
-        user_cart_id = list(config.DBManager.get_utazon_user_cart(info["mc_uuid"]))
+        user_cart_id = list(config.DBManager.get_utazon_user_cart(mc_uuid))
 
         if item_id and number:
 
@@ -257,7 +257,7 @@ def cart_update(request):
                 if user_cart_id[i][0] == item_id:
                     user_cart_id[i][1] = number
 
-                    config.DBManager.update_user_cart(user_cart_id, info["mc_uuid"])
+                    config.DBManager.update_user_cart(user_cart_id, mc_uuid)
 
     return redirect("/cart")
 
@@ -268,12 +268,12 @@ def later_delete(request):
 
         item_id = int(request.GET.get('id'))
 
-        info = config.functions.get_user_info.from_session(request).all()
-        user_later_id = config.DBManager.get_utazon_user_later(info["mc_uuid"])
+        mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
+        user_later_id = config.DBManager.get_utazon_user_later(mc_uuid)
 
         if item_id:
             user_later_id.remove(item_id)
-            config.DBManager.update_user_later(user_later_id, info["mc_uuid"])
+            config.DBManager.update_user_later(user_later_id, mc_uuid)
 
     return redirect("/cart")
 
@@ -311,9 +311,9 @@ def cart_to_later(request):
 
         item_id = int(request.GET.get('id'))
 
-        info = config.functions.get_user_info.from_session(request).all()
+        mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
 
-        user_cart_id = list(config.DBManager.get_utazon_user_cart(info["mc_uuid"]))
+        user_cart_id = config.DBManager.get_utazon_user_cart(mc_uuid)
 
         if item_id:
             for i in range(len(user_cart_id)):
@@ -327,13 +327,13 @@ def cart_to_later(request):
                 if item_id in child and child[0] == item_id:
                     user_cart_id.remove(child)
 
-                    config.DBManager.update_user_cart(user_cart_id, info["mc_uuid"])
+                    config.DBManager.update_user_cart(user_cart_id, mc_uuid)
 
-        user_later_id = list(config.DBManager.get_utazon_user_later(info["mc_uuid"]))
+        user_later_id = config.DBManager.get_utazon_user_later(mc_uuid)
 
         if item_id and item_id not in user_later_id:
             user_later_id.append(item_id)
-            config.DBManager.update_user_later(user_later_id, info["mc_uuid"])
+            config.DBManager.update_user_later(user_later_id, mc_uuid)
 
     return redirect("/cart")
 

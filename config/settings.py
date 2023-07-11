@@ -15,6 +15,7 @@ DISCORD_CLIENT = {
     'CLIENT-ID': os.environ["DISCORD_CLIENT_ID"],
     'CLIENT-SECRET': os.environ["DISCORD_CLIENT_SECRET"],
     'REDIRECT': os.environ["DISCORD_REDIRECT"],
+    'URL': os.environ["DISCORD_LOGIN_URL"],
 }
 
 SERVER_ID = os.environ["SERVER_ID"]

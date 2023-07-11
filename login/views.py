@@ -35,7 +35,11 @@ def login(request):
             logging.error(f'access_tokenを取得できませんでした(StatusCode: {token_request.status_code}, Code: {code})')
 
             # エラーを表示
-            context = {'err': True, 'content': '内部エラーが発生しました。もう一度お試しください。'}
+            context = {
+                'err': True,
+                'content': '内部エラーが発生しました。もう一度お試しください。',
+                'url': config.settings.DISCORD_CLIENT["URL"],
+            }
             return render(request, 'login.html', context=context)
 
         # access_tokenを指定
@@ -50,7 +54,11 @@ def login(request):
             logging.error(f'access_tokenからidentifyを取得できませんでした(StatusCode: {identify.status_code}, Code: {code}, AccessToken: {access_token})')
 
             # エラーを表示
-            context = {'err': True, 'content': '内部エラーが発生しました。お手数ですがもう一度お試しください。'}
+            context = {
+                'err': True,
+                'content': '内部エラーが発生しました。お手数ですがもう一度お試しください。',
+                'url': config.settings.DISCORD_CLIENT["URL"],
+            }
             return render(request, 'login.html', context=context)
 
         # tokenから参加サーバーを取得
@@ -61,7 +69,11 @@ def login(request):
             logging.error(f'access_tokenからguildsを取得できませんでした(StatusCode: {guilds.status_code}, Code: {code}, AccessToken: {access_token})')
 
             # エラーを表示
-            context = {'err': True, 'content': '内部エラーが発生しました。お手数ですがもう一度お試しください。'}
+            context = {
+                'err': True,
+                'content': '内部エラーが発生しました。お手数ですがもう一度お試しください。',
+                'url': config.settings.DISCORD_CLIENT["URL"],
+            }
             return render(request, 'login.html', context=context)
 
         # Discordサーバーに参加しているかを確認
@@ -75,7 +87,11 @@ def login(request):
 
                 if not mc_uuid:
                     # エラーを表示
-                    context = {'err': True, 'content': 'DiscordとMinecraftを接続した上でログインしてください。'}
+                    context = {
+                        'err': True,
+                        'content': 'DiscordとMinecraftを接続した上でログインしてください。',
+                        'url': config.settings.DISCORD_CLIENT["URL"],
+                    }
                     return render(request, 'login.html', context=context)
 
                 # セッションを作成
@@ -99,7 +115,11 @@ def login(request):
 
         else:
             # エラーを表示
-            context = {'err': True, 'content': 'Discordサーバーに参加されていません。参加の上、もう一度お試しください。'}
+            context = {
+                'err': True,
+                'content': 'Discordサーバーに参加されていません。参加の上、もう一度お試しください。',
+                'url': config.settings.DISCORD_CLIENT["URL"],
+            }
             return render(request, 'login.html', context=context)
 
     else:
@@ -109,7 +129,11 @@ def login(request):
             return redirect('/')
         else:
             # 未ログイン処理
-            context = {'err': False, 'content': 'error'}
+            context = {
+                'err': False,
+                'content': 'error',
+                'url': config.settings.DISCORD_CLIENT["URL"],
+            }
             return render(request, 'login.html', context=context)
 
 
