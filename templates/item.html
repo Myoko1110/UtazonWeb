@@ -113,9 +113,11 @@
 <div class="wrapper">
 	<div class="item">
 		<div class="item-category">
-			<a>ブロック</a>
+			{% if item_category.parent %}
+			<a href="../category/?name={{ item_category.parent.en }}">{{ item_category.parent.jp }}</a>
 			<span>></span>
-			<a>あいうえお</a>
+			{% endif %}
+			<a href="../category/?name={{ item_category.en }}">{{ item_category.jp }}</a>
 		</div>
 		<div class="item-about">
 			<div class="item-about__img">

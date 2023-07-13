@@ -63,6 +63,8 @@ def item(request):
     else:
         item_review_av = None
 
+    category = config.functions.get_category(result[7]).from_en()
+
     context = {
         "item_id": result[0],
         "item_name": result[1],
@@ -74,7 +76,7 @@ def item(request):
         "item_review": reversed(item_review),
         "item_review_number": len(item_review),
         "item_review_av": item_review_av,
-
+        "item_category": category
     }
 
     is_session = config.functions.is_session(request)

@@ -4,6 +4,7 @@ import logging
 import requests
 
 import config.DBManager
+import config.settings as settings
 
 
 class is_session:
@@ -201,3 +202,62 @@ class get_user_info:
 
             else:
                 return False
+
+
+class get_category:
+    def __init__(self, value):
+        self.value = value
+
+    def from_en(self):
+        if self.value == "other":
+            list = {
+                "jp": "その他",
+                "en": self.value,
+                "parent": None,
+            }
+            return list
+
+        categories = settings.CATEGORIES['categories']
+        for category, value in categories.items():
+            for en, jp in value.items():
+                if en == self.value:
+                    parent_jp = categories[category]["JAPANESE"]
+                    list = {
+                        "jp": jp,
+                        "en": self.value,
+                        "parent": {
+                            "en": category,
+                            "jp": parent_jp,
+                        },
+                    }
+                    return list
+        else:
+            return False
+
+    def from_jp(self):
+        if self.value == "その他":
+            list = {
+                "jp": self.value,
+                "en": "other",
+                "parent": None,
+            }
+            return list
+
+        categories = settings.CATEGORIES['categories']
+        for category, value in categories.items():
+            for en, jp in value.items():
+                if en == "JAPANESE":
+                    continue
+                if jp == self.value:
+                    parent_jp = categories[category]["JAPANESE"]
+                    list = {
+                        "jp": self.value,
+                        "en": en,
+                        "parent": {
+                            "en": category,
+                            "jp": parent_jp,
+                        },
+                    }
+                    return list
+        else:
+            return False

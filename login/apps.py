@@ -39,7 +39,8 @@ def table_create(sender, **kwargs):
                                                     mc_uuid VARCHAR(36),
                                                     access_token VARCHAR(64),
                                                     login_date DATETIME,
-                                                    expires DATETIME)"""
+                                                    expires DATETIME
+                                                    )"""
             cursor.execute(sql)
 
             sql = """CREATE TABLE IF NOT EXISTS `utazon_item` (
@@ -49,20 +50,24 @@ def table_create(sender, **kwargs):
                                                     image JSON,
                                                     review JSON,
                                                     stock BIGINT,
-                                                    kind JSON)"""
+                                                    kind JSON,
+                                                    category VARCHAR(64)
+                                                    )"""
             cursor.execute(sql)
 
             sql = """CREATE TABLE IF NOT EXISTS `utazon_user` (
                                                     mc_uuid VARCHAR(36) UNIQUE,
                                                     cart JSON,
                                                     later JSON,
-                                                    point INT)"""
+                                                    point INT
+                                                    )"""
             cursor.execute(sql)
 
             sql = """CREATE TABLE IF NOT EXISTS `linked` (
                                                     mc_uuid VARCHAR(36) UNIQUE,
                                                     discord_id BIGINT,
-                                                    link_time BIGINT)"""
+                                                    link_time BIGINT
+                                                    )"""
             cursor.execute(sql)
         cursor.close()
         cnx.commit()

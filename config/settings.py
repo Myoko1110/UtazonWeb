@@ -1,4 +1,5 @@
 import os
+import yaml
 
 from dotenv import load_dotenv
 from pathlib import Path
@@ -44,6 +45,9 @@ DATABASE_CONFIG = {
         'database': os.environ["DB_ADDRESS_DBNAME"],
     },
 }
+
+with open("categories.yml", encoding="utf-8") as f:
+    CATEGORIES = yaml.load(f, Loader=yaml.SafeLoader)
 
 
 # Application definition
