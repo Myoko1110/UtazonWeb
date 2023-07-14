@@ -205,20 +205,28 @@ class get_user_info:
 
 
 class get_category:
+    """
+    セッションから親カテゴリを取得
+
+    引数:
+        .from_en:
+            value: 英語セッション名
+        .from_jp:
+            value: 日本語セッション名
+    """
     def __init__(self, value):
         self.value = value
 
     def from_en(self):
-        if self.value == "other":
-            list = {
-                "jp": "その他",
-                "en": self.value,
-                "parent": None,
-            }
-            return list
-
-        categories = settings.CATEGORIES['categories']
+        categories = settings.CATEGORIES
         for category, value in categories.items():
+            if category == self.value:
+                list = {
+                    "jp": value,
+                    "en": self.value,
+                    "parent": None,
+                }
+                return list
             for en, jp in value.items():
                 if en == self.value:
                     parent_jp = categories[category]["JAPANESE"]
@@ -235,16 +243,15 @@ class get_category:
             return False
 
     def from_jp(self):
-        if self.value == "その他":
-            list = {
-                "jp": self.value,
-                "en": "other",
-                "parent": None,
-            }
-            return list
-
-        categories = settings.CATEGORIES['categories']
+        categories = settings.CATEGORIES
         for category, value in categories.items():
+            if value == self.value:
+                list = {
+                    "jp": self.value,
+                    "en": category,
+                    "parent": None,
+                }
+                return list
             for en, jp in value.items():
                 if en == "JAPANESE":
                     continue
