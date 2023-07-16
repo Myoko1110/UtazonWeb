@@ -478,3 +478,58 @@ def review_userful(request):
         return redirect(f"/item?id={item_id}")
     else:
         return redirect(f"/item?id={item_id}")
+
+
+def category(request):
+    cat_id = request.GET.get('name')
+    result = config.DBManager.get_item_from_category(cat_id)
+
+    if result:
+        for i in range(len(result)):
+
+            # imageのJSONをlistに変換
+            result[i] = list(result[i])
+            result[i][3] = json.loads(result[i][3])
+
+            # レビューの平均を算出
+            item_review = json.loads(result[i][4].replace("\n", "<br>"))
+            if item_review:
+                item_review_av = float("{:.1f}".format(round(mean([i["star"] for i in item_review]), 1)))
+            else:
+                item_review_av = None
+            result[i].append(item_review_av)
+
+            # ポイントを計算
+            result[i].append(int(result[i][2] * 0.1))
+
+    category = config.functions.get_category(cat_id).from_en()
+
+    context = {
+        "result": result,
+        "category": category,
+    }
+
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+        info = config.functions.get_user_info.from_session(request).all()
+        context["info"] = info
+        context["session"] = True
+
+        return render(request, "category.html", context=context)
+
+    elif is_session.expire:
+        context["session"] = "expires"
+        response = render(request, 'category.html', context=context)
+
+        for key in request.COOKIES:
+            if key.startswith('_Secure-'):
+                response.delete_cookie(key)
+        response.delete_cookie("LOGIN_STATUS")
+
+        # 期限切れ処理
+        return response
+
+    else:
+        context["session"] = False
+        # 未ログイン処理
+        return render(request, 'category.html', context=context)

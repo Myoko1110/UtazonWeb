@@ -50,6 +50,21 @@ def get_item(item_id):
     return result
 
 
+def get_item_from_category(cat_id):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_item WHERE category=%s"
+            cursor.execute(sql, (cat_id,))
+
+            # cat_idのレコードを取得
+            result = cursor.fetchall()
+
+            if not result:
+                return False
+    return result
+
+
 def search_item(item_query):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:

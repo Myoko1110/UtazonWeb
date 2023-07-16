@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Utazon.com | うたかた鯖</title>
-	<link rel="stylesheet" href="{% static 'search/stylesheet.css' %}">
+    <link rel="stylesheet" href="{% static 'category/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -110,55 +110,63 @@
     </header>
 </div>
 <div class="wrapper">
-	<div class="search">
-		<p class="search-number">検索結果{{ search_results }}件</p>
-		<p class="search-keyword">"{{ query }}"</p>
-	</div>
-	<div class="main">
-		<ul class="main-list">
-			{% for child in result %}
-			<li>
-				<img class="main-img" src="{{ child.3.0 }}" onclick="location.href='../item/?id={{ child.0 }}'">
-				<div class="main-info">
-					<a href="../item/?id={{ child.0 }}">{{ child.1 }}</a>
-					{% if child.8 %}
-					<div class="main-star__box">
-						{% if child.8 >= 4.8 %}
-						<div class="main-star" style="background-position: -2px -2px;">
-						{% elif child.8 >= 4.3  and child.8 < 4.8 %}
-						<div class="main-star" style="background-position: -2px -42px;">
-						{% elif child.8 >= 3.8  and child.8 < 4.3 %}
-						<div class="main-star" style="background-position: -2px -22px;">
-						{% elif child.8 >= 3.3  and child.8 < 3.8 %}
-						<div class="main-star" style="background-position: -2px -82px;">
-						{% elif child.8 >= 2.8  and child.8 < 3.3 %}
-						<div class="main-star" style="background-position: -2px -62px;">
-						{% elif child.8 >= 2.3  and child.8 < 2.8 %}
-						<div class="main-star" style="background-position: -2px -122px;">
-						{% elif child.8 >= 1.8  and child.8 < 2.3 %}
-						<div class="main-star" style="background-position: -2px -102px;">
-						{% elif child.8 >= 1.3  and child.8 < 1.8 %}
-						<div class="main-star" style="background-position: -2px -162px;">
-						{% elif child.8 >= 0.8  and child.8 < 1.3 %}
-						<div class="main-star" style="background-position: -2px -142px;">
-						{% elif child.8 >= 0.3  and child.8 < 0.8 %}
-						<div class="main-star" style="background-position: -2px -202px;">
-						{% elif  child.8 < 0.3 %}
-						<div class="main-star" style="background-position: -2px -182px;">
-						{% endif %}
-							<span style="opacity: 0;">5つ星のうち{{ child.8 }}</span>
+	<div class="subwrapper">
+		<div class="category">
+			{% if category.parent %}
+			<a href="?name={{ category.parent.en }}">{{ category.parent.jp }}</a>
+			{% endif %}
+			<h2 class="category-title">{{ category.jp }}</h2>
+			<div class="main">
+				<ul class="main-list">
+					{% if result %}
+					{% for child in result %}
+					<li>
+						<img class="main-img" src="{{ child.3.0 }}" onclick="location.href='../item/?id={{ child.0 }}'">
+						<div class="main-info">
+							<a href="../item/?id={{ child.0 }}">{{ child.1 }}</a>
+							{% if child.8 %}
+							<div class="main-star__box">
+								{% if child.8 >= 4.8 %}
+								<div class="main-star" style="background-position: -2px -2px;">
+								{% elif child.8 >= 4.3  and child.8 < 4.8 %}
+								<div class="main-star" style="background-position: -2px -42px;">
+								{% elif child.8 >= 3.8  and child.8 < 4.3 %}
+								<div class="main-star" style="background-position: -2px -22px;">
+								{% elif child.8 >= 3.3  and child.8 < 3.8 %}
+								<div class="main-star" style="background-position: -2px -82px;">
+								{% elif child.8 >= 2.8  and child.8 < 3.3 %}
+								<div class="main-star" style="background-position: -2px -62px;">
+								{% elif child.8 >= 2.3  and child.8 < 2.8 %}
+								<div class="main-star" style="background-position: -2px -122px;">
+								{% elif child.8 >= 1.8  and child.8 < 2.3 %}
+								<div class="main-star" style="background-position: -2px -102px;">
+								{% elif child.8 >= 1.3  and child.8 < 1.8 %}
+								<div class="main-star" style="background-position: -2px -162px;">
+								{% elif child.8 >= 0.8  and child.8 < 1.3 %}
+								<div class="main-star" style="background-position: -2px -142px;">
+								{% elif child.8 >= 0.3  and child.8 < 0.8 %}
+								<div class="main-star" style="background-position: -2px -202px;">
+								{% elif  child.8 < 0.3 %}
+								<div class="main-star" style="background-position: -2px -182px;">
+								{% endif %}
+									<span style="opacity: 0;">5つ星のうち{{ child.8 }}</span>
+								</div>
+								<p>{{ child.8 }}</p>
+							</div>
+							{% endif %}
+							<div class="main-price">
+								<a href="../item/?id={{ child.0 }}"><span>$</span>{{ child.2 }}</a>
+							</div>
+							<p class="main-point">{{ child.9 }}ポイント(10%)</p>
 						</div>
-						<p>{{ child.8 }}</p>
-					</div>
+					</li>
+					{% endfor %}
+					{% else %}
+					<h2>カテゴリのアイテムがありません</h2>
 					{% endif %}
-					<div class="main-price">
-						<a href="../item/?id={{ child.0 }}"><span>$</span>{{ child.2 }}</a>
-					</div>
-					<p class="main-point">{{ child.9 }}ポイント(10%)</p>
-				</div>
-			</li>
-			{% endfor %}
-		</ul>
+				</ul>
+			</div>
+		</div>
 	</div>
 </div>
 {% if session == "expires" %}
