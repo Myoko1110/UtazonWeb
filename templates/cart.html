@@ -142,15 +142,15 @@
 									{% endif %}
 								<div class="cart-product__number">
 									<p>数量:</p>
-									<input class="cart-product__number-input" type="number" value="{{ child.9 }}" data-id="{{ child.0 }}">
+									<input class="cart-product__number-input" type="number" value="{{ child.10 }}" data-id="{{ child.0 }}">
 									<a href="delete/?id={{ child.0 }}" style="border-left: #d7d7d7 1px solid;margin-left: 20px">削除</a>
 									<a href="../cart-to-later/?id={{ child.0 }}">あとで買う</a>
 								</div>
 							</div>
 							<div class="cart-price">
 								{% if child.5 != 0 %}
-								<h3>${{ child.8 }}</h3>
-								<p>ポイント：<span>{{ child.7 }}pt (10%)</span></p>
+								<h3>${{ child.9 }}</h3>
+								<p>ポイント：<span>{{ child.8 }}pt (10%)</span></p>
 								{% else %}
 								<h3 style="color: #b12704">在庫なし</h3>
 								{% endif %}

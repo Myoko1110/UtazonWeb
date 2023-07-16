@@ -4,6 +4,7 @@ import random
 from statistics import mean
 
 from django.shortcuts import redirect, render
+from django.http import Http404
 
 import config.DBManager
 import config.functions
@@ -43,6 +44,9 @@ def item(request):
 
     # item_idのレコードを取得
     result = config.DBManager.get_item(item_id)
+
+    if not result:
+        raise Http404
 
     # レビューを取得
     item_review = json.loads(result[4].replace("\n", "<br>"))
@@ -153,7 +157,8 @@ def cart(request):
 
         item_total = 0
         for i in range(len(user_cart)):
-            item_price = user_cart[i][2] * user_cart[i][9]
+            item_price = user_cart[i][2] * user_cart[i][10]
+
             item_total += item_price
 
         if 0 not in [i[5] for i in user_cart]:
@@ -163,7 +168,7 @@ def cart(request):
 
         user_cart_number = 0
         for i in range(len(user_cart)):
-            user_cart_number += user_cart[i][9]
+            user_cart_number += user_cart[i][10]
 
         context = {
             "session": True,
@@ -200,6 +205,9 @@ def cart_delete(request):
 
         item_id = int(request.GET.get('id'))
 
+        if not item_id:
+            raise Http404
+
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
         user_cart_id = config.DBManager.get_utazon_user_cart(mc_uuid)
 
@@ -221,6 +229,9 @@ def cart_add(request):
 
         item_id = int(request.GET.get('id'))
         number = int(request.GET.get('n'))
+
+        if not item_id or not number:
+            raise Http404
 
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
 
@@ -248,6 +259,9 @@ def cart_update(request):
         item_id = int(request.GET.get('id'))
         number = int(request.GET.get('n'))
 
+        if not item_id or not number:
+            raise Http404
+
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
 
         user_cart_id = list(config.DBManager.get_utazon_user_cart(mc_uuid))
@@ -270,6 +284,9 @@ def later_delete(request):
 
         item_id = int(request.GET.get('id'))
 
+        if not item_id:
+            raise Http404
+
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
         user_later_id = config.DBManager.get_utazon_user_later(mc_uuid)
 
@@ -285,6 +302,10 @@ def later_to_cart(request):
     if is_session.valid:
 
         item_id = int(request.GET.get('id'))
+
+        if not item_id:
+            raise Http404
+
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
 
         user_later_id = config.DBManager.get_utazon_user_later(mc_uuid)
@@ -313,8 +334,10 @@ def cart_to_later(request):
 
         item_id = int(request.GET.get('id'))
 
-        mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
+        if not item_id:
+            raise Http404
 
+        mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
         user_cart_id = config.DBManager.get_utazon_user_cart(mc_uuid)
 
         if item_id:
@@ -400,6 +423,8 @@ def search(request):
 
 def review(request):
     item_id = request.GET.get('id')
+    if not item_id:
+        raise Http404
 
     is_session = config.functions.is_session(request)
     if is_session.valid:
@@ -422,6 +447,8 @@ def review(request):
 
 def review_post(request):
     item_id = request.GET.get('id')
+    if not item_id:
+        raise Http404
 
     is_session = config.functions.is_session(request)
     if is_session.valid:
@@ -461,6 +488,9 @@ def review_userful(request):
     item_id = request.GET.get('id')
     review_id = request.GET.get('review_id')
 
+    if not item_id or not review_id:
+        raise Http404
+
     is_session = config.functions.is_session(request)
     if is_session.valid:
         result = config.DBManager.get_item(item_id)
@@ -483,6 +513,9 @@ def review_userful(request):
 def category(request):
     cat_id = request.GET.get('name')
     result = config.DBManager.get_item_from_category(cat_id)
+
+    if not result:
+        raise Http404
 
     if result:
         for i in range(len(result)):
