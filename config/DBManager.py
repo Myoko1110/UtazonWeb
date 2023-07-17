@@ -1,4 +1,6 @@
+import datetime
 import json
+import random
 
 import mysql.connector
 
@@ -208,3 +210,35 @@ def save_session(session_id, session_value, mc_uuid, access_token, now, expires,
             else:
                 cnx.commit()
                 return True
+
+
+def add_order(items, mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+
+    with cnx:
+        with cnx.cursor() as cursor:
+
+            while True:
+                try:
+                    # お届け時間を計算
+                    now = datetime.datetime.now().replace(microsecond=0)
+                    if now < datetime.datetime.strptime('17:00:00', '%H:%M:%S'):
+                        rand_time = now.replace(hour=random.randint(8, 18), minute=random.randint(1, 59), second=0,
+                                                microsecond=0) + datetime.timedelta(days=2)
+                    else:
+                        rand_time = now.replace(hour=random.randint(8, 18), minute=random.randint(1, 59), second=0,
+                                                microsecond=0) + datetime.timedelta(days=1)
+                    order_id = int(str(random.randint(0, 999999)).zfill(6))
+
+                    sql = """INSERT IGNORE INTO `utazon_order` (  
+                                         `mc_uuid`, `order_item`, `delivery_time` ,`order_time`, `order_id`
+                                         ) VALUES (%s, %s, %s, %s, %s)"""
+                    cursor.execute(sql, (mc_uuid, items, rand_time, now, order_id))
+                except mysql.connector.Error as err:
+                    if err.errno == 1062:
+                        continue
+                    else:
+                        raise err
+                else:
+                    cnx.commit()
+                    return True

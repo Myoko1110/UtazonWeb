@@ -3,6 +3,7 @@ from . import views
 
 app_name = 'buy'
 urlpatterns = [
-    path('', views.buy, name='index'),
+    path('', views.buy, name='buy'),
+    path('confirm/', views.buy_confirm, name='buy_confirm'),
 
 ]

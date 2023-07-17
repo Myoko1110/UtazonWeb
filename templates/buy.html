@@ -10,6 +10,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
+	<script src="{% static 'buy/script.js' %}"></script>
 </head>
 <body>
 <div class="global-header">
@@ -158,7 +159,7 @@
 				</div>
 				<div class="buy-right">
 					<h3 class="buy-schedule__date">：◯年◯月◯日にお届け</h3>
-					<div class="buy-items">
+					<div class="buy-items" data-items="{{ user_cart_id }}">
 						<ul>
 							{% for child in user_cart %}
 							<li class="buy-items__list">
@@ -176,7 +177,7 @@
 			</div>
 			<div class="buy-confirm">
 				<div class="buy-confirm__btn">
-					<a>注文を確定</a>
+					<a id="order_confirm">注文を確定</a>
 				</div>
 				<div class="buy-confirm__description">
 					<h3>ご請求額： ${{ item_total }}</h3>
