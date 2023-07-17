@@ -187,23 +187,24 @@ def create_user_info(mc_uuid):
     return True
 
 
-def save_session(session_id, session_value, mc_uuid, access_token, now, expires):
+def save_session(session_id, session_value, mc_uuid, access_token, now, expires, logged_IP):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     
     with cnx:
         with cnx.cursor() as cursor:
-            while True:
-                try:
-                    # sessionテーブルに保存
-                    sql = """INSERT INTO `utazon_session` (
-                             `session_id`, `session_val`, `mc_uuid`, `access_token`, `login_date`, `expires`
-                             ) VALUES (%s, %s, %s, %s, %s, %s)"""
-                    cursor.execute(sql, (session_id, session_value, mc_uuid, access_token, now, expires))
+            # すでにidがあるときの対策
+            try:
+                # sessionテーブルに保存
+                sql = """INSERT INTO `utazon_session` (
+                         `session_id`, `session_val`, `mc_uuid`, `access_token`, `login_date`, `expires`, `logged_IP`
+                         ) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+                cursor.execute(sql, (session_id, session_value, mc_uuid, access_token, now, expires, logged_IP))
 
-                except mysql.connector.Error as err:
-                    if err.errno == 1062:
-                        continue
+            except mysql.connector.Error as err:
+                if err.errno == 1062:
+                    return err
                 else:
-                    break
-            cnx.commit()
-    return True
+                    raise err
+            else:
+                cnx.commit()
+                return True

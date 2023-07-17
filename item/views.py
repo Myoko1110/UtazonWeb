@@ -67,7 +67,7 @@ def item(request):
     else:
         item_review_av = None
 
-    category = config.functions.get_category(result[7]).from_en()
+    item_category = config.functions.get_category(result[7]).from_en()
 
     context = {
         "item_id": result[0],
@@ -80,7 +80,7 @@ def item(request):
         "item_review": reversed(item_review),
         "item_review_number": len(item_review),
         "item_review_av": item_review_av,
-        "item_category": category
+        "item_category": item_category
     }
 
     is_session = config.functions.is_session(request)
@@ -343,11 +343,7 @@ def cart_to_later(request):
         if item_id:
             for i in range(len(user_cart_id)):
 
-                # 2回実行される対策
-                try:
-                    child = user_cart_id[i]
-                except IndexError:
-                    pass
+                child = user_cart_id[i]
 
                 if item_id in child and child[0] == item_id:
                     user_cart_id.remove(child)

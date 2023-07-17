@@ -29,7 +29,7 @@ class is_session:
                 result = config.DBManager.get_session(child, session[child])
 
                 # EmptySetを判定
-                if result is None or len(result) == 0:
+                if not result:
                     # 未ログイン処理
                     continue
                 else:

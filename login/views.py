@@ -102,7 +102,22 @@ def login(request):
                 now = datetime.datetime.now().replace(microsecond=0)
                 expires = now + datetime.timedelta(days=int(settings.SESSION_EXPIRES))
 
-                config.DBManager.save_session(session_id, session_value, mc_uuid, access_token, now, expires)
+                # クライアントのIPを取得
+                forwarded_addresses = request.META.get('HTTP_X_FORWARDED_FOR')
+                if forwarded_addresses:
+                    # 'HTTP_X_FORWARDED_FOR'ヘッダがある場合: 転送経路の先頭要素を取得する。
+                    client_addr = forwarded_addresses.split(',')[0]
+                else:
+                    # 'HTTP_X_FORWARDED_FOR'ヘッダがない場合: 直接接続なので'REMOTE_ADDR'ヘッダを参照する。
+                    client_addr = request.META.get('REMOTE_ADDR')
+
+                while True:
+                    save_session = config.DBManager.save_session(session_id, session_value, mc_uuid, access_token, now, expires, client_addr)
+
+                    if save_session is True:
+                        break
+                    elif save_session.errno == 1062:
+                        continue
 
                 # userテーブルになかったら作成
                 config.DBManager.create_user_info(mc_uuid)

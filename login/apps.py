@@ -39,7 +39,8 @@ def table_create(sender, **kwargs):
                                                     mc_uuid VARCHAR(36),
                                                     access_token VARCHAR(64),
                                                     login_date DATETIME,
-                                                    expires DATETIME
+                                                    expires DATETIME,
+                                                    logged_IP varchar(128)
                                                     )"""
             cursor.execute(sql)
 
