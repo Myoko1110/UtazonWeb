@@ -242,3 +242,20 @@ def add_order(items, mc_uuid):
                 else:
                     cnx.commit()
                     return True
+
+
+def get_order():
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = "SELECT * FROM `utazon_order`"
+            cursor.execute(sql)
+
+            result = cursor.fetchall()
+
+            for i in range(len(result)):
+                result[i]["delivery_time"] = result[i]["delivery_time"].strftime("%Y-%m-%d %H:%M:%S")
+                result[i]["order_time"] = result[i]["order_time"].strftime("%Y-%m-%d %H:%M:%S")
+
+            return result
