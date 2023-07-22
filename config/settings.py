@@ -23,6 +23,8 @@ SERVER_ID = os.environ["SERVER_ID"]
 
 SESSION_EXPIRES = os.environ["SESSION_EXPIRES"]
 
+ORDER_LIST_PASS = os.environ["ORDER_LIST_PASS"]
+
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     'default': {
@@ -91,7 +93,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
