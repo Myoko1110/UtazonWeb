@@ -133,7 +133,7 @@ def get_session(session_id, session_val):
 
 
 def get_discord_id(uuid):
-    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["linked"])
 
     with cnx:
         with cnx.cursor() as cursor:
@@ -257,5 +257,12 @@ def get_order():
             for i in range(len(result)):
                 result[i]["delivery_time"] = result[i]["delivery_time"].strftime("%Y-%m-%d %H:%M:%S")
                 result[i]["order_time"] = result[i]["order_time"].strftime("%Y-%m-%d %H:%M:%S")
+                order_item_load = json.loads(result[i]["order_item"])
+
+                order_item = []
+                for ii in range(len(order_item_load)):
+                    create_list = {"id": order_item_load[ii][0], "qty": order_item_load[ii][1]}
+                    order_item.append(create_list)
+                result[i]["order_item"] = order_item
 
             return result

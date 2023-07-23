@@ -46,6 +46,12 @@ DATABASE_CONFIG = {
         'password': os.environ["DB_ADDRESS_PASS"],
         'database': os.environ["DB_ADDRESS_DBNAME"],
     },
+    'linked': {
+        'host': os.environ["DB_LINKED_HOST"],
+        'user': os.environ["DB_LINKED_USERNAME"],
+        'password': os.environ["DB_LINKED_PASS"],
+        'database': os.environ["DB_LINKED_DBNAME"],
+    },
 }
 
 with open("categories.yml", encoding="utf-8") as f:
