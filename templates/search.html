@@ -17,11 +17,11 @@
         <div class="nav-belt">
             <div class="nav-belt__logo">
                 <a href="/" class="nav-link">
-                    <img src="../assets/logo.svg">
+                    <img src="{% static 'logo.svg' %}">
                 </a>
             </div>
             <div class="nav-belt__address">
-                <img class="nav-belt__address-map" src="../assets/pin.svg">
+                <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
 	            <div class="nav-belt__address-dir">
 		            <div class="nav-belt__address-name">
 			            <p class="nav-belt__address-to">お届け先</p>
@@ -78,7 +78,7 @@
 			<a href="/cart" class="nav-link">
 	        	<div class="nav-belt__cart">
 		        	<div class="nav-belt__cart-ui">
-			        	<img src="../assets/cart.png">
+			        	<img src="{% static 'cart.png' %}">
 						{% if session is True %}
 			        	<p>{{ info.user_cart }}</p>
 						{% else %}

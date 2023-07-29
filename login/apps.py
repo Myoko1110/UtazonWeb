@@ -69,7 +69,7 @@ def table_create(sender, **kwargs):
                                                     order_item JSON,
                                                     delivery_time DATETIME,
                                                     order_time DATETIME,
-                                                    order_id INT UNIQUE
+                                                    order_id VARCHAR(18) UNIQUE
                                                     )"""
             cursor.execute(sql)
 

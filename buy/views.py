@@ -1,4 +1,5 @@
 import json
+import random
 
 from django.shortcuts import redirect, render
 from django.http import Http404
@@ -75,16 +76,52 @@ def buy_confirm(request):
     is_session = config.functions.is_session(request)
     if is_session.valid:
 
+        info = config.functions.get_user_info.from_session(request).all()
+
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
         order_item = request.GET.get("items")
 
-        config.DBManager.add_order(order_item, mc_uuid)
+        order = config.DBManager.add_order(order_item, mc_uuid)
+        config.DBManager.update_user_cart([], mc_uuid)
 
-        return redirect("/")
+        order_item_obj = []
+        order_item = json.loads(order_item)
 
+        for i in order_item:
+            result = config.DBManager.get_item(i[0])
+
+            # item_idのレコードを取得
+            item_info = list(result)
+
+            item_info[3] = json.loads(item_info[3])
+
+            item_price = item_info[2]
+
+            item_info.append(int(item_price / 10))
+            item_info.append(f"{item_price:,}")
+            item_info.append(i[1])
+
+            order_item_obj.append(item_info)
+
+        context = {
+            "session": True,
+            "info": info,
+            "order_id": order[0],
+            "order_time": {
+                "year": order[1].year,
+                "month": order[1].month,
+                "day": order[1].day,
+                "hour": order[1].hour,
+                "minute": order[1].minute,
+                "second": order[1].second,
+            },
+            "order_item_obj": order_item_obj,
+        }
+
+        return render(request, "buy-confirm.html", context=context)
 
     elif is_session.expire:
-        response = render(request, "buy.html", context={"session": "expires"})
+        response = render(request, "buy-confirm.html", context={"session": "expires"})
 
         for key in request.COOKIES:
             if key.startswith("_Secure-"):
@@ -96,4 +133,5 @@ def buy_confirm(request):
 
     else:
         # 未ログイン処理
-        return redirect('/')
+        return redirect('/login')
+

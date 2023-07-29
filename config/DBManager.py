@@ -228,7 +228,7 @@ def add_order(items, mc_uuid):
                     else:
                         rand_time = now.replace(hour=random.randint(8, 18), minute=random.randint(1, 59), second=0,
                                                 microsecond=0) + datetime.timedelta(days=1)
-                    order_id = int(str(random.randint(0, 999999)).zfill(6))
+                    order_id = f"U{str(random.randint(0, 999)).zfill(3)}-{str(random.randint(0, 999999)).zfill(6)}-{str(random.randint(0, 999999)).zfill(6)}"
 
                     sql = """INSERT IGNORE INTO `utazon_order` (  
                                          `mc_uuid`, `order_item`, `delivery_time` ,`order_time`, `order_id`
@@ -241,7 +241,7 @@ def add_order(items, mc_uuid):
                         raise err
                 else:
                     cnx.commit()
-                    return True
+                    return order_id, rand_time
 
 
 def get_order():
