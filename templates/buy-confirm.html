@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Utazon.com | うたかた鯖</title>
+	<link rel="stylesheet" href="{% static 'buy-confirm/stylesheet.css' %}">
+    <link rel="stylesheet" href="{% static 'local.css' %}">
+	<link rel="icon" href="{% static 'icon.svg' %}">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+	<script src="{% static 'local.js' %}"></script>
+	<script>
+		const url = new URL(document.location);
+		history.replaceState('', '', String(url).replace(/\?items=.*/, ''));
+	</script>
+</head>
+<body>
+<div class="global-header">
+    <header>
+        <div class="nav-belt">
+            <div class="nav-belt__logo">
+                <a href="/" class="nav-link">
+                    <img src="{% static 'logo.svg' %}">
+                </a>
+            </div>
+            <div class="nav-belt__address">
+                <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
+	            <div class="nav-belt__address-dir">
+		            <div class="nav-belt__address-name">
+			            <p class="nav-belt__address-to">お届け先</p>
+		            </div>
+		            <div class="nav-belt__address-number">
+						{% if session is True %}
+						<h1>1-0001仮</h1>
+						{% else %}
+						<h1>ログイン</h1>
+						{% endif %}
+		            </div>
+	            </div>
+            </div>
+            <div class="nav-belt__search">
+	            <form id="search">
+		            <select class="nav-belt__search-select">
+			            <option>すべて</option>
+			            <option>建築ブロック</option>
+			            <option>装飾ブロック</option>
+			            <option>レッドストーン</option>
+			            <option>運送</option>
+			            <option>食料</option>
+			            <option>道具</option>
+			            <option>戦闘</option>
+			            <option>醸造</option>
+		            </select>
+	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com" value="{{ query }}" id="search_query">
+		            <label class="nav-belt__search-label">
+			            <input class="nav-belt__search-submit" type="submit" value="">
+			            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960"><path d="M796 935 533 672q-30 26-69.959 40.5T378 727q-108.162 0-183.081-75Q120 577 120 471t75-181q75-75 181.5-75t181 75Q632 365 632 471.15 632 514 618 554q-14 40-42 75l264 262-44 44ZM377 667q81.25 0 138.125-57.5T572 471q0-81-56.875-138.5T377 275q-82.083 0-139.542 57.5Q180 390 180 471t57.458 138.5Q294.917 667 377 667Z"/></svg>
+		            </label>
+	            </form>
+            </div>
+			{% if session is True %}
+			<a onclick="logout_confirm()" class="nav-link">
+			{% else %}
+			<a href="/login" class="nav-link">
+			{% endif %}
+				<div class="nav-belt__account">
+				{% if session is True %}
+		        	<p>{{ info.mc_id }}さん</p>
+		        	<h1>ログアウト</h1>
+				{% else %}
+					<p>ゲストさん</p>
+		        	<h1>ログイン</h1>
+				{% endif %}
+	        </div>
+			</a>
+
+	        <div class="nav-belt__returns">
+		        <p>返品もこちら</p>
+		        <h1>注文履歴</h1>
+	        </div>
+			<a href="/cart" class="nav-link">
+	        	<div class="nav-belt__cart">
+		        	<div class="nav-belt__cart-ui">
+			        	<img src="{% static 'cart.png' %}">
+						{% if session is True %}
+			        	<p>{{ info.user_cart }}</p>
+						{% else %}
+						<p>0</p>
+						{% endif %}
+		        	</div>
+		        	<div class="nav-belt__cart-text">
+			        	<h1>カート</h1>
+		        	</div>
+	        	</div>
+			</a>
+        </div>
+	    <div class="nav-main">
+			<a class="nav-main__point">Utazonポイント:<span>100</span></a>
+			<div class="nav-main__category">
+				<a class="nav-main__category-child">ヘルプ</a>
+				<a class="nav-main__category-child">プライム</a>
+				<a class="nav-main__category-child">建築ブロック</a>
+				<a class="nav-main__category-child">装飾ブロック</a>
+				<a class="nav-main__category-child">レッドストーン</a>
+				<a class="nav-main__category-child">運送</a>
+				<a class="nav-main__category-child">食料</a>
+				<a class="nav-main__category-child">道具</a>
+				<a class="nav-main__category-child">戦闘</a>
+				<a class="nav-main__category-child">醸造</a>
+				<a class="nav-main__category-child">再購入</a>
+			</div>
+	    </div>
+    </header>
+</div>
+<div class="wrapper">
+	<div class="subwrapper">
+		<div class="buy">
+			<div class="buy-title">
+				<h2>ありがとうございます。注文が確定されました。</h2>
+			</div>
+			<div class="buy-receive buy-list">
+				<div class="buy-left">
+					<h3 class="buy-subtitle">
+					<span>お届け先</span>
+					</h3>
+				</div>
+				<div class="buy-right">
+					<p>myoko_1110</p>
+					<p>1-0001</p>
+					<p>〇〇県 〇〇市〇〇丁目</p>
+					<p>1-1-1</p>
+				</div>
+			</div>
+			<div class="buy-schedule buy-list">
+				<div class="buy-left">
+					<h3 class="buy-subtitle">
+					<span>お届け予定日</span>
+					</h3>
+				</div>
+				<div class="buy-right">
+					<h3 class="buy-schedule__date">：{{ order_time.year }}年{{ order_time.month }}月{{ order_time.day }}日
+						{{ order_time.hour }}時頃</h3>
+					<div class="buy-items">
+						<ul>
+							{% for child in order_item_obj %}
+							<li class="buy-items__list">
+								<img src="{{ child.3.0 }}">
+								<div class="buy-items__box">
+									<h3>{{ child.1 }}</h3>
+									<p>${{ child.2 }}</p>
+								</div>
+							</li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+			</div>
+			<p style="font-size: 13px">注文番号：{{ order_id }}</p>
+			<div class="buy-confirm">
+				<div class="buy-confirm__btn">
+					<a href="/">配送状況を確認</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

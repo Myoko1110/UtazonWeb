@@ -1,0 +1,103 @@
+.wrapper{
+    background-color: #E3E6E6;
+    display: flex;
+    justify-content: center;
+    margin: 100px 0 0;
+}
+.subwrapper{
+    display: flex;
+    margin: 20px;
+    width: 100%;
+    justify-content: center;
+}
+.buy{
+    background-color: #ffffff;
+    max-width: 1100px;
+    width: calc(100% - 300px);
+    padding: 20px;
+}
+.buy-title{
+    border-bottom: 1px solid #dddddd;
+}
+.buy-title h2{
+    font-weight: 400;
+    font-size: 28px;
+    padding: 0 0 15px;
+    margin-bottom: 0;
+    margin-right: 10px;
+}
+.buy-title a{
+    margin: 16px 0;
+    display: block;
+    color: #007185;
+}
+.buy-list{
+    display: flex;
+    margin: 20px 0 0;
+    padding: 20px 0 0;
+}
+.buy-receive{
+    padding: 0;
+}
+.buy-schedule{
+    border-top: 1px solid #e8e8e8;
+}
+.buy-schedule__date{
+    color: #007600;
+}
+.buy-list p, .buy-list h3{
+    margin: 0;
+}
+.buy-subtitle span{
+    margin: 0 10px 0 0;
+}
+.buy-left{
+    width: 200px;
+}
+.buy-right p{
+    font-size: 15px;
+}
+.buy-items__list{
+    list-style: none;
+    display: flex;
+}
+.buy-items__list img{
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+}
+.buy-items__box{
+    margin: 0 0 0 10px;
+}
+.buy-items__box h3{
+    font-weight: 400;
+}
+.buy-items__box p{
+    font-weight: 700;
+    font-size: 18px;
+    margin-top: 5px;
+}
+.buy-confirm{
+    border-top: 1px solid #e8e8e8;
+    display: flex;
+    padding-top: 20px;
+}
+.buy-confirm__btn{
+    margin: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.buy-confirm__btn a{
+    background-color: #14adff;
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+.buy-confirm__btn a:hover{
+    background-color: #118bcc;
+}
+.buy-confirm__description p{
+    color: #565959;
+    font-size: 12px;
+    margin: 0;
+}
