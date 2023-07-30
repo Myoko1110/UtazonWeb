@@ -222,7 +222,7 @@ class get_category:
         for category, value in categories.items():
             if category == self.value:
                 list = {
-                    "jp": value,
+                    "jp": value["JAPANESE"],
                     "en": self.value,
                     "parent": None,
                 }

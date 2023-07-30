@@ -8,6 +8,7 @@ from django.http import Http404
 
 import config.DBManager
 import config.functions
+import config.settings as settings
 
 
 def index_view(request):
@@ -511,7 +512,28 @@ def category(request):
     result = config.DBManager.get_item_from_category(cat_id)
 
     if not result:
-        raise Http404
+
+        # 親カテゴリを参照
+        if cat_id in settings.CATEGORIES.keys():
+
+            # resultをリセット
+            result = []
+            for i in settings.CATEGORIES[cat_id].keys():
+
+                # カテゴリずつ追加
+                child_category = config.DBManager.get_item_from_category(i)
+
+                # カテゴリにアイテムがなかったらスキップ
+                if not child_category:
+                    continue
+
+                # resultに追加
+                else:
+                    for child in child_category:
+                        result.append(child)
+
+        else:
+            raise Http404
 
     if result:
         for i in range(len(result)):

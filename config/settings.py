@@ -57,7 +57,6 @@ DATABASE_CONFIG = {
 with open("categories.yml", encoding="utf-8") as f:
     CATEGORIES = yaml.load(f, Loader=yaml.SafeLoader)
 
-
 # Application definition
 
 INSTALLED_APPS = [
