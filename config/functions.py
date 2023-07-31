@@ -1,6 +1,4 @@
 import datetime
-import logging
-
 import requests
 
 import config.DBManager
@@ -101,9 +99,8 @@ class get_user_info:
         def all(self):
             try:
                 session = self.request.COOKIES
-            except AttributeError:
-                logging.error("request引数にはDjangoのHttpRequestオブジェクトを入れてください")
-                return False
+            except AttributeError as exc:
+                raise TypeError("Pass a Request object on request argument.") from exc
 
             for child in session:
                 if child.startswith('_Secure-'):
@@ -133,9 +130,8 @@ class get_user_info:
         def mc_id(self):
             try:
                 session = self.request.COOKIES
-            except AttributeError:
-                logging.error("request引数にはDjangoのHttpRequestオブジェクトを入れてください")
-                return False
+            except AttributeError as exc:
+                raise TypeError("Pass a Request object on request argument.") from exc
 
             for child in session:
                 if child.startswith('_Secure-'):
@@ -158,9 +154,8 @@ class get_user_info:
         def mc_uuid(self):
             try:
                 session = self.request.COOKIES
-            except AttributeError:
-                logging.error("request引数にはDjangoのHttpRequestオブジェクトを入れてください")
-                return False
+            except AttributeError as exc:
+                raise TypeError("Pass a Request object on request argument.") from exc
 
             for child in session:
                 if child.startswith('_Secure-'):
@@ -181,9 +176,8 @@ class get_user_info:
         def discord_id(self):
             try:
                 session = self.request.COOKIES
-            except AttributeError:
-                logging.error("request引数にはDjangoのHttpRequestオブジェクトを入れてください")
-                return False
+            except AttributeError as exc:
+                raise TypeError("Pass a Request object on request argument.") from exc
 
             for child in session:
                 if child.startswith('_Secure-'):
