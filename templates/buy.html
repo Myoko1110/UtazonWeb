@@ -139,7 +139,12 @@
 					<span>残高</span>
 					</h3>
 				</div>
-				{% if player_balance >= item_total_float %}
+				{% if not player_balance %}
+				<div class="buy-right" style="display: flex">
+					<p>
+						<span class="buy-balance__money">エラーが発生しました</span>
+					</p>
+				{% elif player_balance >= item_total_float %}
 				<div class="buy-right" style="display: flex">
 					<p>
 						<span>購入後の残高</span>

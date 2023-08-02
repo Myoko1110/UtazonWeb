@@ -25,9 +25,16 @@
     margin: 0 0 0 5px;
     font-size: 14px;
 }
+.main{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 .main-list{
     list-style: none;
     max-width: 1000px;
+    width: 100%;
 }
 .main-list li{
     display: flex;
@@ -43,6 +50,7 @@
 }
 .main-info{
     margin: 10px 15px;
+    width: 100%;
 }
 .main-info a{
     font-weight: 400;
