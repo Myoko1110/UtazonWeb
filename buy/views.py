@@ -1,11 +1,11 @@
 import json
-import random
 
 from django.shortcuts import redirect, render
 from django.http import Http404
 
 import config.functions
 import config.DBManager
+import config.VaultManager
 
 
 def buy(request):
@@ -43,6 +43,8 @@ def buy(request):
         for i in range(len(user_cart)):
             user_cart_number += user_cart[i][10]
 
+        player_balance = config.VaultManager.get_player_balance("305d2e94-608f-4198-8381-5dc7bcf70f27")
+
         context = {
             "session": True,
             "info": info,
@@ -50,6 +52,9 @@ def buy(request):
             "user_cart_number": user_cart_number,
             "user_cart_id": user_cart_id,
             "item_total": f"{item_total:,}",
+            "player_balance": player_balance,
+            "item_total_float": float(item_total),
+            "after_balance": player_balance - float(item_total),
         }
         return render(request, "buy.html", context=context)
 

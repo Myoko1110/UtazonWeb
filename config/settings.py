@@ -25,6 +25,9 @@ SESSION_EXPIRES = os.environ["SESSION_EXPIRES"]
 
 ORDER_LIST_PASS = os.environ["ORDER_LIST_PASS"]
 
+SOCKET_PORT = os.environ["SOCKET_PORT"]
+SOCKET_HOST = os.environ["SOCKET_HOST"]
+
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     'default': {

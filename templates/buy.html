@@ -139,15 +139,24 @@
 					<span>残高</span>
 					</h3>
 				</div>
+				{% if player_balance >= item_total_float %}
+				<div class="buy-right" style="display: flex">
+					<p>
+						<span>購入後の残高</span>
+						<span class="buy-balance__money">${{ player_balance }}</span>
+					</p>
+					<p style="margin: 0 0 0 20px">
+						<span>→</span>
+						<span class="buy-balance__money">${{ after_balance }}</span>
+					</p>
+				{% else %}
 				<div class="buy-right">
 					<p>
 						<span>残高</span>
-						<span class="buy-balance__money">$1000</span>
+						<span class="buy-balance__money">${{ player_balance }}</span>
 					</p>
-					<p>
-						<span>購入後</span>
-						<span class="buy-balance__money">$1000</span>
-					</p>
+					<p style="color: #b12704;font-weight: 700">残高不足です</p>
+				{% endif %}
 				</div>
 			</div>
 			<div class="buy-schedule buy-list">
@@ -166,8 +175,8 @@
 								<img src="{{ child.3.0 }}">
 								<div class="buy-items__box">
 									<h3>{{ child.1 }}</h3>
-									<p>${{ child.8 }}</p>
-									<p style="font-weight: 400;font-size: 14px;margin: 0;">個数: {{ child.9 }}</p>
+									<p>${{ child.9 }}</p>
+									<p style="font-weight: 400;font-size: 14px;margin: 0;">個数: {{ child.10 }}</p>
 								</div>
 							</li>
 							{% endfor %}
