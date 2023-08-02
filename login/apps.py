@@ -47,7 +47,7 @@ def table_create(sender, **kwargs):
             sql = """CREATE TABLE IF NOT EXISTS `utazon_item` (
                                                     item_id BIGINT UNIQUE,
                                                     item_name VARCHAR(256),
-                                                    price INT,
+                                                    price DOUBLE,
                                                     image JSON,
                                                     review JSON,
                                                     stock BIGINT,

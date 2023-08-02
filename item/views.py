@@ -73,7 +73,7 @@ def item(request):
     context = {
         "item_id": result[0],
         "item_name": result[1],
-        "item_price": f"{result[2]:,}",
+        "item_price": f"{result[2]:,.2f}",
         "item_point": int(result[2] * 0.1),
         "item_images": json.loads(result[3]),
         "item_stock": result[5],
@@ -132,7 +132,7 @@ def cart(request):
             item_price = item_info[2]
 
             item_info.append(int(item_price / 10))
-            item_info.append(f"{item_price:,}")
+            item_info.append(f"{item_price:,.2f}")
             item_info.append(i[1])
 
             user_cart.append(item_info)
@@ -151,7 +151,7 @@ def cart(request):
             item_price = item_info[2]
 
             item_info.append(int(item_price / 10))
-            item_info.append(f"{item_price:,}")
+            item_info.append(f"{item_price:,.2f}")
             item_info.append(i)
 
             user_later.append(item_info)
@@ -177,7 +177,7 @@ def cart(request):
             "user_cart_number": user_cart_number,
             "user_later": user_later,
             "user_later_number": len(user_later),
-            "item_total": f"{item_total:,}",
+            "item_total": f"{item_total:,.2f}",
             "buy_able": buy_able,
             "info": info,
         }
@@ -371,9 +371,7 @@ def search(request):
 
     for i in range(search_results):
 
-        # imageのJSONをlistに変換
         result[i] = list(result[i])
-        result[i][3] = json.loads(result[i][3])
 
         # レビューの平均を算出
         item_review = json.loads(result[i][4].replace("\n", "<br>"))
@@ -385,6 +383,9 @@ def search(request):
 
         # ポイントを計算
         result[i].append(int(result[i][2] * 0.1))
+
+        result[i][3] = json.loads(result[i][3])
+        result[i][2] = f"{result[i][2]:,.2f}"
 
     context = {
         "result": result,
@@ -538,9 +539,7 @@ def category(request):
     if result:
         for i in range(len(result)):
 
-            # imageのJSONをlistに変換
             result[i] = list(result[i])
-            result[i][3] = json.loads(result[i][3])
 
             # レビューの平均を算出
             item_review = json.loads(result[i][4].replace("\n", "<br>"))
@@ -552,6 +551,9 @@ def category(request):
 
             # ポイントを計算
             result[i].append(int(result[i][2] * 0.1))
+
+            result[i][3] = json.loads(result[i][3])
+            result[i][2] = f"{result[i][2]:,.2f}"
 
     category = config.functions.get_category(cat_id).from_en()
 

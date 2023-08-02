@@ -28,7 +28,7 @@ def buy(request):
             item_price = item_info[2]
 
             item_info.append(int(item_price / 10))
-            item_info.append(f"{item_price:,}")
+            item_info.append(f"{item_price:,.2f}")
             item_info.append(i[1])
 
             user_cart.append(item_info)
@@ -51,7 +51,7 @@ def buy(request):
             "user_cart": user_cart,
             "user_cart_number": user_cart_number,
             "user_cart_id": user_cart_id,
-            "item_total": f"{item_total:,}",
+            "item_total": f"{item_total:,.2f}",
             "player_balance": player_balance,
             "item_total_float": float(item_total),
             "after_balance": player_balance - float(item_total),
@@ -103,7 +103,7 @@ def buy_confirm(request):
             item_price = item_info[2]
 
             item_info.append(int(item_price / 10))
-            item_info.append(f"{item_price:,}")
+            item_info.append(f"{item_price:,.2f}")
             item_info.append(i[1])
 
             order_item_obj.append(item_info)
