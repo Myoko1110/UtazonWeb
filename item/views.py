@@ -25,7 +25,10 @@ def index_view(request):
         # 既ログイン処理
         return render(request, 'index.html', context=context)
     elif is_session.expire:
-        response = render(request, 'index.html', context={"session": "expires"})
+        context = {
+            "session": "expires",
+        }
+        response = render(request, 'index.html', context=context)
 
         for key in request.COOKIES:
             if key.startswith('_Secure-'):
@@ -35,8 +38,11 @@ def index_view(request):
         # 期限切れ処理
         return response
     else:
+        context = {
+            "session": False,
+        }
         # 未ログイン処理
-        return render(request, 'index.html', context={"session": False})
+        return render(request, 'index.html', context=context)
 
 
 def item(request):
@@ -185,7 +191,10 @@ def cart(request):
         return render(request, 'cart.html', context=context)
 
     elif is_session.expire:
-        response = render(request, 'cart.html', context={"session": "expires"})
+        context = {
+            "session": "expires",
+        }
+        response = render(request, 'cart.html', context=context)
 
         for key in request.COOKIES:
             if key.startswith('_Secure-'):

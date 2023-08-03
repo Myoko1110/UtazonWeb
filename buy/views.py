@@ -58,17 +58,6 @@ def buy(request):
         }
         return render(request, "buy.html", context=context)
 
-    elif is_session.expire:
-        response = render(request, "buy.html", context={"session": "expires"})
-
-        for key in request.COOKIES:
-            if key.startswith("_Secure-"):
-                response.delete_cookie(key)
-        response.delete_cookie("LOGIN_STATUS")
-
-        # 期限切れ処理
-        return response
-
     else:
         # 未ログイン処理
         return redirect('/')
@@ -125,18 +114,6 @@ def buy_confirm(request):
 
         return render(request, "buy-confirm.html", context=context)
 
-    elif is_session.expire:
-        response = render(request, "buy-confirm.html", context={"session": "expires"})
-
-        for key in request.COOKIES:
-            if key.startswith("_Secure-"):
-                response.delete_cookie(key)
-        response.delete_cookie("LOGIN_STATUS")
-
-        # 期限切れ処理
-        return response
-
     else:
         # 未ログイン処理
         return redirect('/login')
-
