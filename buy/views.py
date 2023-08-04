@@ -13,7 +13,13 @@ def buy(request):
     if is_session.valid:
         info = config.functions.get_user_info.from_session(request).all()
 
-        user_cart_id = config.DBManager.get_utazon_user_cart(info["mc_uuid"])
+        item_id = request.GET.get("item")
+        if item_id:
+            user_cart_id = json.loads(item_id)
+            buy_now = True
+        else:
+            user_cart_id = config.DBManager.get_utazon_user_cart(info["mc_uuid"])
+            buy_now = False
 
         # アイテム情報を取得
         user_cart = []
@@ -55,6 +61,7 @@ def buy(request):
             "player_balance": player_balance,
             "item_total_float": float(item_total),
             "after_balance": player_balance - float(item_total),
+            "buy_now": buy_now,
         }
         return render(request, "buy.html", context=context)
 
@@ -76,7 +83,9 @@ def buy_confirm(request):
         order_item = request.GET.get("items")
 
         order = config.DBManager.add_order(order_item, mc_uuid)
-        config.DBManager.update_user_cart([], mc_uuid)
+
+        if request.GET.get("buynow"):
+            config.DBManager.update_user_cart([], mc_uuid)
 
         order_item_obj = []
         order_item = json.loads(order_item)

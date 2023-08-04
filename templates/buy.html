@@ -115,7 +115,11 @@
 		<div class="buy">
 			<div class="buy-title">
 				<h2>レジ</h2>
+				{% if buy_now %}
+				<a>{{ user_cart_number }}点の商品</a>
+				{% else %}
 				<a href="/cart">{{ user_cart_number }}点の商品</a>
+				{% endif %}
 			</div>
 			{% if user_cart_number %}
 			<div class="buy-receive buy-list">
@@ -190,9 +194,11 @@
 				</div>
 			</div>
 			<div class="buy-confirm">
+				{% if player_balance >= item_total_float %}
 				<div class="buy-confirm__btn">
-					<a id="order_confirm" style="cursor: pointer">注文を確定</a>
+					<a id="order_confirm" style="cursor: pointer" data-buynow="{{ buy_now }}">注文を確定</a>
 				</div>
+				{% endif %}
 				<div class="buy-confirm__description">
 					<h3>ご請求額： ${{ item_total }}</h3>
 					<p>「注文を確定する」ボタンを押してご注文いただくことで、請求がされます。<br>
