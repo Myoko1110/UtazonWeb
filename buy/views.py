@@ -2,7 +2,7 @@ import json
 
 from django.shortcuts import redirect, render
 from django.http import Http404
-from decimal import Decimal, getcontext
+from decimal import Decimal, getcontext, ROUND_UP
 
 import config.functions
 import config.DBManager
@@ -52,7 +52,10 @@ def buy(request):
         for i in range(len(user_cart)):
             user_cart_number += user_cart[i][10]
 
-        player_balance = config.VaultManager.get_balance("305d2e94-608f-4198-8381-5dc7bcf70f27")
+        player_balance = config.VaultManager.get_balance(info["mc_uuid"])
+
+        # 小数第2位まで切り上げ
+        player_balance = Decimal(f"{player_balance}").quantize(Decimal(".01"), rounding=ROUND_UP)
 
         context = {
             "session": True,
@@ -63,7 +66,7 @@ def buy(request):
             "item_total": f"{item_total:,.2f}",
             "player_balance": player_balance,
             "item_total_float": float(item_total),
-            "after_balance": player_balance - float(item_total),
+            "after_balance": Decimal(f"{player_balance}") - Decimal(f"{item_total}"),
             "buy_now": buy_now,
         }
         return render(request, "buy.html", context=context)
@@ -91,12 +94,12 @@ def buy_confirm(request):
 
         array = []
         for i in json.loads(order_item):
-            item_dict = f"{i[0]}({i[1]}個)"
+            price = config.DBManager.get_item(i[0])[2]
+
+            item_dict = f"{i[0]}({i[1]}個:{price})"
             array.append(item_dict)
 
-        order_item_list = "[" + ", ".join(array) + "]"
-
-        reason = f"Items:{order_item_list}, Total:{amount}"
+        reason = ", ".join(array)
         config.VaultManager.withdraw_player(mc_uuid, amount, reason)
 
         if request.GET.get("buynow") == "False":
