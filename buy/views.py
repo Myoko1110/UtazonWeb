@@ -89,15 +89,19 @@ def buy_confirm(request):
     if is_session.valid:
 
         info = config.functions.get_user_info.from_session(request).all()
-
         mc_uuid = info["mc_uuid"]
 
         # オーダーをdbに保存
         order_item = request.GET.get("items")
         order = config.DBManager.add_order(order_item, mc_uuid)
 
-        array = []
+        # ポイント減らす
+        point = int(request.GET.get("point"))
+        if point:
+            config.DBManager.deposit_utazon_user_point(mc_uuid, point)
 
+        # 合計金額を算出
+        array = []
         amount: float = 0
         order_item = json.loads(order_item)
         for i in order_item:
@@ -107,6 +111,7 @@ def buy_confirm(request):
             array.append(item_dict)
 
             amount += price * i[1]
+        amount -= point * 0.1  # <----- THIS
 
         # 履歴に追加
         history = config.DBManager.get_utazon_user_history(mc_uuid)
@@ -119,14 +124,19 @@ def buy_confirm(request):
         history.append(history_obj)
         config.DBManager.update_user_history(mc_uuid, json.dumps(history))
 
-        reason = ", ".join(array)
+        # 出金
+        if point:
+            reason = ", ".join(array) + f", ポイント使用({point}pt:{point * 0.1})"  # <----- THIS
+        else:
+            reason = ", ".join(array)
         config.VaultManager.withdraw_player(mc_uuid, amount, reason)
 
+        # カートから削除
         if request.GET.get("buynow") == "False":
             config.DBManager.update_user_cart([], mc_uuid)
 
+        # アイテム情報取得
         order_item_obj = []
-
         for i in order_item:
             result = config.DBManager.get_item(i[0])
 

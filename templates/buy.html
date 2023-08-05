@@ -9,6 +9,7 @@
 	<link rel="icon" href="{% static 'icon.svg' %}">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/9.0.0/decimal.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
 	<script src="{% static 'buy/script.js' %}"></script>
 </head>
@@ -94,7 +95,7 @@
 			</a>
         </div>
 	    <div class="nav-main">
-			<a class="nav-main__point">Utazonポイント:<span>100</span></a>
+			<a class="nav-main__point">Utazonポイント:<span>{{ info.point }}</span></a>
 			<div class="nav-main__category">
 				<a class="nav-main__category-child">ヘルプ</a>
 				<a class="nav-main__category-child">プライム</a>
@@ -194,6 +195,20 @@
 					</div>
 				</div>
 			</div>
+			<div class="buy-point buy-list">
+				<div class="buy-left">
+					<h3 class="buy-subtitle">
+					<span>4</span>
+					<span>ポイント</span>
+					</h3>
+				</div>
+				<div class="buy-right">
+					<p>Utazonポイント：<span class="point">{{ info.point }}</span></p>
+					<span>ポイントを使用：</span><input class="buy-point__input" type="number" value="0" id="card_add" min="0" max="{{ info.point }}">
+					<p style="font-size: 12px;color: #ad0000;display: none" id="error1">請求額を超えています</p>
+					<p style="font-size: 12px;color: #ad0000;display: none" id="error2">使用できるポイントを超えています</p>
+				</div>
+			</div>
 			<div class="buy-confirm">
 				{% if player_balance >= item_total_float %}
 				<div class="buy-confirm__btn">
@@ -201,7 +216,7 @@
 				</div>
 				{% endif %}
 				<div class="buy-confirm__description">
-					<h3>ご請求額： ${{ item_total }}</h3>
+					<h3>ご請求額： $<span>{{ item_total }}</span></h3>
 					<p>「注文を確定する」ボタンを押してご注文いただくことで、請求がされます。<br>
 					また、本サイトで現金を請求するようなことは一切ありません！！</p>
 				</div>

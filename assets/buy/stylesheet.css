@@ -54,6 +54,10 @@
 .buy-schedule{
     border-top: 1px solid #e8e8e8;
 }
+.buy-point{
+    border-top: 1px solid #e8e8e8;
+    margin: 0 0 20px;
+}
 .buy-schedule__date{
     color: #007600;
 }
@@ -91,6 +95,12 @@
     font-weight: 700;
     font-size: 18px;
     margin-top: 5px;
+}
+.buy-point__input{
+    border: 1px solid #DDD;
+    border-radius: 4px 4px 4px 4px;
+    padding: 3px 5px;
+    width: 75px;
 }
 .buy-confirm{
     border-top: 1px solid #e8e8e8;

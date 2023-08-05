@@ -52,6 +52,43 @@ def get_item(item_id):
     return result
 
 
+def get_utazon_user_point(mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
+            cursor.execute(sql, (mc_uuid,))
+
+            # mc_uuidのレコードを取得
+            result = cursor.fetchone()
+
+            if not result:
+                return False
+    return result[3]
+
+
+def deposit_utazon_user_point(mc_uuid, amount):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
+            cursor.execute(sql, (mc_uuid,))
+
+            # mc_uuidのレコードを取得
+            result = cursor.fetchone()
+
+            if not result:
+                return False
+            point = result[3] - amount
+            print(point)
+
+            sql = "UPDATE IGNORE utazon_user SET point=%s WHERE mc_uuid=%s"
+
+            cursor.execute(sql, (point, mc_uuid))
+            cnx.commit()
+    return True
+
+
 def get_item_from_category(cat_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
