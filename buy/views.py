@@ -55,7 +55,8 @@ def buy(request):
         player_balance = config.VaultManager.get_balance(info["mc_uuid"])
 
         # 小数第2位まで切り上げ
-        player_balance = Decimal(f"{player_balance}").quantize(Decimal(".01"), rounding=ROUND_UP)
+        if player_balance:
+            player_balance = Decimal(f"{player_balance}").quantize(Decimal(".01"), rounding=ROUND_UP)
 
         context = {
             "session": True,
@@ -85,19 +86,22 @@ def buy_confirm(request):
 
         info = config.functions.get_user_info.from_session(request).all()
 
-        mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
-        order_item = request.GET.get("items")
+        mc_uuid = info["mc_uuid"]
 
+        # オーダーをdbに保存
+        order_item = request.GET.get("items")
         order = config.DBManager.add_order(order_item, mc_uuid)
 
-        amount = request.GET.get("amount")
-
         array = []
+
+        amount: float = 0
         for i in json.loads(order_item):
             price = config.DBManager.get_item(i[0])[2]
 
             item_dict = f"{i[0]}({i[1]}個:{price})"
             array.append(item_dict)
+
+            amount += price * i[1]
 
         reason = ", ".join(array)
         config.VaultManager.withdraw_player(mc_uuid, amount, reason)

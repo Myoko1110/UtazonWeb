@@ -3,7 +3,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Utazon.com | うたかた鯖</title>
+    <title>注文を確定する | Utazon.com</title>
 	<link rel="stylesheet" href="{% static 'buy/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
@@ -196,7 +196,7 @@
 			<div class="buy-confirm">
 				{% if player_balance >= item_total_float %}
 				<div class="buy-confirm__btn">
-					<a id="order_confirm" style="cursor: pointer" data-buynow="{{ buy_now }}" data-amount="{{ item_total_float }}">注文を確定</a>
+					<a id="order_confirm" style="cursor: pointer" data-buynow="{{ buy_now }}">注文を確定</a>
 				</div>
 				{% endif %}
 				<div class="buy-confirm__description">
