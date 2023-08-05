@@ -58,6 +58,9 @@ def buy(request):
         # 小数第2位まで切り上げ
         if player_balance:
             player_balance = Decimal(f"{player_balance}").quantize(Decimal(".01"), rounding=ROUND_UP)
+            after_balance = Decimal(f"{player_balance}") - Decimal(f"{item_total}")
+        else:
+            after_balance = None
 
         context = {
             "session": True,
@@ -68,7 +71,7 @@ def buy(request):
             "item_total": f"{item_total:,.2f}",
             "player_balance": player_balance,
             "item_total_float": float(item_total),
-            "after_balance": Decimal(f"{player_balance}") - Decimal(f"{item_total}"),
+            "after_balance": after_balance,
             "buy_now": buy_now,
         }
         return render(request, "buy.html", context=context)
