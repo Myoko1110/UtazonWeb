@@ -2,10 +2,13 @@ import json
 
 from django.shortcuts import redirect, render
 from django.http import Http404
+from decimal import Decimal, getcontext
 
 import config.functions
 import config.DBManager
 import config.VaultManager
+
+getcontext().prec = 10
 
 
 def buy(request):
@@ -42,14 +45,14 @@ def buy(request):
         # 請求額算出
         item_total = 0
         for i in range(len(user_cart)):
-            item_price = user_cart[i][2] * user_cart[i][10]
+            item_price = Decimal(f"{user_cart[i][2]}") * Decimal(f"{user_cart[i][10]}")
             item_total += item_price
 
         user_cart_number = 0
         for i in range(len(user_cart)):
             user_cart_number += user_cart[i][10]
 
-        player_balance = config.VaultManager.get_player_balance("305d2e94-608f-4198-8381-5dc7bcf70f27")
+        player_balance = config.VaultManager.get_balance("305d2e94-608f-4198-8381-5dc7bcf70f27")
 
         context = {
             "session": True,
@@ -84,7 +87,19 @@ def buy_confirm(request):
 
         order = config.DBManager.add_order(order_item, mc_uuid)
 
-        if request.GET.get("buynow"):
+        amount = request.GET.get("amount")
+
+        array = []
+        for i in json.loads(order_item):
+            item_dict = f"{i[0]}({i[1]}個)"
+            array.append(item_dict)
+
+        order_item_list = "[" + ", ".join(array) + "]"
+
+        reason = f"Items:{order_item_list}, Total:{amount}"
+        config.VaultManager.withdraw_player(mc_uuid, amount, reason)
+
+        if request.GET.get("buynow") == "False":
             config.DBManager.update_user_cart([], mc_uuid)
 
         order_item_obj = []
