@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from django.shortcuts import redirect, render
@@ -95,13 +96,25 @@ def buy_confirm(request):
         array = []
 
         amount: float = 0
-        for i in json.loads(order_item):
+        order_item = json.loads(order_item)
+        for i in order_item:
             price = config.DBManager.get_item(i[0])[2]
 
             item_dict = f"{i[0]}({i[1]}個:{price})"
             array.append(item_dict)
 
             amount += price * i[1]
+
+        # 履歴に追加
+        history = config.DBManager.get_utazon_user_history(mc_uuid)
+        history_obj = {
+            "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "amount": amount,
+            "order_id": order[0],
+            "order_item": order_item,
+        }
+        history.append(history_obj)
+        config.DBManager.update_user_history(mc_uuid, json.dumps(history))
 
         reason = ", ".join(array)
         config.VaultManager.withdraw_player(mc_uuid, amount, reason)
@@ -110,7 +123,6 @@ def buy_confirm(request):
             config.DBManager.update_user_cart([], mc_uuid)
 
         order_item_obj = []
-        order_item = json.loads(order_item)
 
         for i in order_item:
             result = config.DBManager.get_item(i[0])

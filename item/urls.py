@@ -18,4 +18,5 @@ urlpatterns = [
     path('review/post/', views.review_post, name='review_post'),
     path('review/userful/', views.review_userful, name='review_userful'),
     path('category/', views.category, name='category'),
+    path('history/', views.history, name='history'),
 ]

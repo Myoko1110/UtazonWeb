@@ -595,3 +595,61 @@ def category(request):
         context["session"] = False
         # 未ログイン処理
         return render(request, 'category.html', context=context)
+
+
+def history(request):
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+        info = config.functions.get_user_info.from_session(request).all()
+
+        order_history = config.DBManager.get_utazon_user_history(info["mc_uuid"])
+
+        for i in range(len(order_history)):
+            order_history[i]["date"] = datetime.datetime.strptime(order_history[i]["date"], "%Y-%m-%d %H:%M:%S")
+            order_history[i]["amount"] = f"{order_history[i]['amount']:,.2f}"
+
+            order_obj = config.DBManager.get_order(order_history[i]["order_id"])
+            delivery_time = order_obj[2]
+
+            if datetime.datetime.now() >= delivery_time:
+                order_history[i]["status"] = True
+            order_history[i]["delivery_time"] = delivery_time
+
+            order_history_child = []
+
+            for child in order_history[i]["order_item"]:
+                result = config.DBManager.get_item(child[0])
+
+                # item_idのレコードを取得
+                item_info = list(result)
+                item_info[3] = json.loads(item_info[3])
+                order_history_child.append(item_info)
+
+            order_history[i]["order_item"] = order_history_child
+
+        if not order_history:
+            order_history = False
+
+        context = {
+            "order_history": order_history,
+            "session": True,
+            "info": info,
+        }
+        return render(request, 'history.html', context=context)
+
+    elif is_session.expire:
+        context = {
+            "session": "expires",
+        }
+        response = render(request, 'history.html', context=context)
+
+        for key in request.COOKIES:
+            if key.startswith('_Secure-'):
+                response.delete_cookie(key)
+        response.delete_cookie("LOGIN_STATUS")
+
+        # 期限切れ処理
+        return response
+    else:
+        # 未ログイン処理
+        return redirect("/login")

@@ -60,7 +60,8 @@ def table_create(sender, **kwargs):
                                                     mc_uuid VARCHAR(36) UNIQUE,
                                                     cart JSON,
                                                     later JSON,
-                                                    point INT
+                                                    point INT,
+                                                    history JSON
                                                     )"""
             cursor.execute(sql)
 

@@ -244,25 +244,58 @@ def add_order(items, mc_uuid):
                     return order_id, rand_time
 
 
-def get_order():
+def get_order(order_id=None):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
 
     with cnx:
-        with cnx.cursor(dictionary=True) as cursor:
-            sql = "SELECT * FROM `utazon_order`"
-            cursor.execute(sql)
+        if not order_id:
+            with cnx.cursor(dictionary=True) as cursor:
+                sql = "SELECT * FROM `utazon_order`"
+                cursor.execute(sql)
 
-            result = cursor.fetchall()
+                result = cursor.fetchall()
 
-            for i in range(len(result)):
-                result[i]["delivery_time"] = result[i]["delivery_time"].strftime("%Y-%m-%d %H:%M:%S")
-                result[i]["order_time"] = result[i]["order_time"].strftime("%Y-%m-%d %H:%M:%S")
-                order_item_load = json.loads(result[i]["order_item"])
+                for i in range(len(result)):
+                    result[i]["delivery_time"] = result[i]["delivery_time"].strftime("%Y-%m-%d %H:%M:%S")
+                    result[i]["order_time"] = result[i]["order_time"].strftime("%Y-%m-%d %H:%M:%S")
+                    order_item_load = json.loads(result[i]["order_item"])
 
-                order_item = []
-                for ii in range(len(order_item_load)):
-                    create_list = {"id": order_item_load[ii][0], "qty": order_item_load[ii][1]}
-                    order_item.append(create_list)
-                result[i]["order_item"] = order_item
+                    order_item = []
+                    for ii in range(len(order_item_load)):
+                        create_list = {"id": order_item_load[ii][0], "qty": order_item_load[ii][1]}
+                        order_item.append(create_list)
+                    result[i]["order_item"] = order_item
 
-            return result
+                return result
+        else:
+            with cnx.cursor() as cursor:
+                sql = "SELECT * FROM `utazon_order` WHERE order_id=%s"
+                cursor.execute(sql, (order_id,))
+
+                result = cursor.fetchone()
+                return result
+
+def get_utazon_user_history(mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
+            cursor.execute(sql, (mc_uuid,))
+
+            # mc_uuidのレコードを取得
+            result = cursor.fetchone()
+
+            if not result:
+                return False
+    return json.loads(result[4])
+
+
+def update_user_history(mc_uuid, value):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "UPDATE IGNORE utazon_user SET history=%s WHERE mc_uuid=%s"
+            cursor.execute(sql, (value, mc_uuid,))
+            cnx.commit()
+
+    return True
