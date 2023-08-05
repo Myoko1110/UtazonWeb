@@ -45,12 +45,10 @@ def buy(request):
 
         # 請求額算出
         item_total = 0
+        user_cart_number = 0
         for i in range(len(user_cart)):
             item_price = Decimal(f"{user_cart[i][2]}") * Decimal(f"{user_cart[i][10]}")
             item_total += item_price
-
-        user_cart_number = 0
-        for i in range(len(user_cart)):
             user_cart_number += user_cart[i][10]
 
         player_balance = config.VaultManager.get_balance(info["mc_uuid"])
@@ -61,6 +59,12 @@ def buy(request):
             after_balance = Decimal(f"{player_balance}") - Decimal(f"{item_total}")
         else:
             after_balance = None
+
+        now = datetime.datetime.now()
+        if now > datetime.datetime.strptime('13:00:00', '%H:%M:%S'):
+            rand_time = now + datetime.timedelta(days=2)
+        else:
+            rand_time = now + datetime.timedelta(days=1)
 
         context = {
             "session": True,
@@ -73,6 +77,7 @@ def buy(request):
             "item_total_float": float(item_total),
             "after_balance": after_balance,
             "buy_now": buy_now,
+            "rand_time": rand_time,
         }
         return render(request, "buy.html", context=context)
 
@@ -157,14 +162,7 @@ def buy_confirm(request):
             "session": True,
             "info": info,
             "order_id": order[0],
-            "order_time": {
-                "year": order[1].year,
-                "month": order[1].month,
-                "day": order[1].day,
-                "hour": order[1].hour,
-                "minute": order[1].minute,
-                "second": order[1].second,
-            },
+            "order_time": order[1],
             "order_item_obj": order_item_obj,
         }
 

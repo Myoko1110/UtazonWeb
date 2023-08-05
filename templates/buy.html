@@ -178,7 +178,7 @@
 					</h3>
 				</div>
 				<div class="buy-right">
-					<h3 class="buy-schedule__date">：◯年◯月◯日にお届け</h3>
+					<h3 class="buy-schedule__date">：{{ rand_time.year }}年{{ rand_time.month }}月{{ rand_time.day }}日にお届け</h3>
 					<div class="buy-items" data-items="{{ user_cart_id }}">
 						<ul>
 							{% for child in user_cart %}

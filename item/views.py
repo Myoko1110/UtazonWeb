@@ -76,6 +76,12 @@ def item(request):
 
     item_category = config.functions.get_category(result[7]).from_en()
 
+    now = datetime.datetime.now()
+    if now > datetime.datetime.strptime('13:00:00', '%H:%M:%S'):
+        rand_time = now + datetime.timedelta(days=2)
+    else:
+        rand_time = now + datetime.timedelta(days=1)
+
     context = {
         "item_id": result[0],
         "item_name": result[1],
@@ -87,7 +93,8 @@ def item(request):
         "item_review": reversed(item_review),
         "item_review_number": len(item_review),
         "item_review_av": item_review_av,
-        "item_category": item_category
+        "item_category": item_category,
+        "rand_time": rand_time,
     }
 
     is_session = config.functions.is_session(request)
@@ -631,7 +638,7 @@ def history(request):
             order_history = False
 
         context = {
-            "order_history": order_history,
+            "order_history": reversed(order_history),
             "session": True,
             "info": info,
         }

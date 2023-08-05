@@ -84,11 +84,15 @@
     display: block;
 }
 .history-list__value-product-rebuy{
-    background-color: rgb(53, 133, 239);
+    background-color: #3585ef;
     padding: 3px 14px;
     font-size: 14px;
     margin: 0 10px;
     border-radius: 5px;
+    color: #fff;
+}
+.history-list__value-product-rebuy:hover{
+    background-color: #2373da;
 }
 .history-list__value-product-view{
     background: #FFF;
@@ -98,6 +102,9 @@
     font-size: 14px;
     margin: 0 10px;
     border-radius: 5px;
+}
+.history-list__value-product-view:hover{
+    background: #fafafa;
 }
 .history-list__value-product-end{
     padding: 0 0 0 10px;
@@ -114,8 +121,11 @@
     text-align: center;
     margin: 2px;
 }
+.history-list__value-product-return:hover{
+    background-color: #1396e0;
+}
 .history-list__value-product-review{
-    background: #FFF;
+    background: #ffffff;
     box-shadow: 0 2px 5px 0 rgba(213,217,217,.5);
     border: #D5D9D9 solid 1px;
     padding: 7px 40px;
@@ -123,6 +133,9 @@
     border-radius: 8px;
     text-align: center;
     margin: 2px;
+}
+.history-list__value-product-review:hover{
+    background: #fafafa;
 }
 
 .history ul{
