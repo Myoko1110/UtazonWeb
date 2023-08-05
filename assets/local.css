@@ -169,7 +169,16 @@ a{
 }
 .nav-belt__returns{
     color: #ffffff;
-    margin: 0 10px;
+    margin: 0 5px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid transparent;
+    padding: 0 10px;
+}
+.nav-belt__returns:hover{
+    border: 1px solid #ffffff;
 }
 .nav-belt__returns p{
     margin: 0;

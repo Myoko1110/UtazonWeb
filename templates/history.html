@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+	<script src="{% static 'local.js' %}"></script>
 </head>
 <body>
 <div class="global-header">
@@ -68,11 +70,12 @@
 				{% endif %}
 	        </div>
 			</a>
-
-	        <div class="nav-belt__returns">
-		        <p>返品もこちら</p>
-		        <h1>注文履歴</h1>
-	        </div>
+			<a href="/history" class="nav-link">
+	        	<div class="nav-belt__returns">
+		        	<p>返品もこちら</p>
+		        	<h1>注文履歴</h1>
+	        	</div>
+			</a>
 			<a href="/cart" class="nav-link">
 	        	<div class="nav-belt__cart">
 		        	<div class="nav-belt__cart-ui">
