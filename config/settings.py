@@ -28,6 +28,9 @@ ORDER_LIST_PASS = os.environ["ORDER_LIST_PASS"]
 SOCKET_PORT = os.environ["SOCKET_PORT"]
 SOCKET_HOST = os.environ["SOCKET_HOST"]
 
+PER_POINT = os.environ["PER_POINT"]
+POINT_RETURN = os.environ["POINT_RETURN"]
+
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     'default': {

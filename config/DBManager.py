@@ -79,8 +79,11 @@ def deposit_utazon_user_point(mc_uuid, amount):
 
             if not result:
                 return False
+
+            if result[3] < amount:
+                raise Exception("使用できるポイントを超えています")
+
             point = result[3] - amount
-            print(point)
 
             sql = "UPDATE IGNORE utazon_user SET point=%s WHERE mc_uuid=%s"
 

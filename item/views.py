@@ -2,6 +2,7 @@ import datetime
 import json
 import random
 from statistics import mean
+from decimal import Decimal, getcontext
 
 from django.shortcuts import redirect, render
 from django.http import Http404
@@ -9,6 +10,9 @@ from django.http import Http404
 import config.DBManager
 import config.functions
 import config.settings as settings
+
+getcontext().prec = 10
+point_return = Decimal(settings.POINT_RETURN)
 
 
 def index_view(request):
@@ -86,7 +90,7 @@ def item(request):
         "item_id": result[0],
         "item_name": result[1],
         "item_price": f"{result[2]:,.2f}",
-        "item_point": int(result[2] * 0.1),
+        "item_point": int(Decimal(str(result[2])) * point_return),
         "item_images": json.loads(result[3]),
         "item_stock": result[5],
         "item_kind": json.loads(result[6]),
@@ -95,6 +99,7 @@ def item(request):
         "item_review_av": item_review_av,
         "item_category": item_category,
         "rand_time": rand_time,
+        "point_return": int(point_return * 100),
     }
 
     is_session = config.functions.is_session(request)
@@ -144,7 +149,7 @@ def cart(request):
 
             item_price = item_info[2]
 
-            item_info.append(int(item_price / 10))
+            item_info.append(int(Decimal(str(item_price)) * point_return))
             item_info.append(f"{item_price:,.2f}")
             item_info.append(i[1])
 
@@ -163,7 +168,7 @@ def cart(request):
 
             item_price = item_info[2]
 
-            item_info.append(int(item_price / 10))
+            item_info.append(int(Decimal(str(item_price)) * point_return))
             item_info.append(f"{item_price:,.2f}")
             item_info.append(i)
 
@@ -171,7 +176,7 @@ def cart(request):
 
         item_total = 0
         for i in range(len(user_cart)):
-            item_price = user_cart[i][2] * user_cart[i][10]
+            item_price = int(Decimal(str(user_cart[i][2])) * Decimal(str(user_cart[i][10])))
 
             item_total += item_price
 
@@ -193,6 +198,7 @@ def cart(request):
             "item_total": f"{item_total:,.2f}",
             "buy_able": buy_able,
             "info": info,
+            "point_return": int(point_return * 100),
         }
         # 既ログイン処理
         return render(request, 'cart.html', context=context)
@@ -398,7 +404,7 @@ def search(request):
         result[i].append(item_review_av)
 
         # ポイントを計算
-        result[i].append(int(result[i][2] * 0.1))
+        result[i].append(int(Decimal(str(result[i][2])) * point_return))
 
         result[i][3] = json.loads(result[i][3])
         result[i][2] = f"{result[i][2]:,.2f}"
@@ -407,6 +413,7 @@ def search(request):
         "result": result,
         "query": query,
         "search_results": search_results,
+        "point_return": int(point_return * 100),
     }
 
     is_session = config.functions.is_session(request)
@@ -566,7 +573,7 @@ def category(request):
             result[i].append(item_review_av)
 
             # ポイントを計算
-            result[i].append(int(result[i][2] * 0.1))
+            result[i].append(int(Decimal(str(result[i][2])) * point_return))
 
             result[i][3] = json.loads(result[i][3])
             result[i][2] = f"{result[i][2]:,.2f}"

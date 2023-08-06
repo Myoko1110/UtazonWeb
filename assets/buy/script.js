@@ -1,25 +1,35 @@
 $(function(){
-    total = $(".buy-confirm__description h3 span").text();
-    user_point = Number($(".point").text());
+    const total = new Decimal($(".buy-confirm__description h3 span").text());
+    const user_point = Number($(".point").text());
+    const per_point = new Decimal(Number($(".point").data("perpoint")));
+    const items = $(".buy-items").data("items");
+    const player_balance = new Decimal($("#player_balance").data("float"));
 
-    if ($(".buy-point__input").attr("max") > Number(total) * 10){
-        $(".buy-point__input").attr("max", Number(total) * 10);
+    if ($(".buy-point__input").attr("max") > total.div(per_point).toNumber()){
+        $(".buy-point__input").attr("max", total.div(per_point).toNumber());
     }
-
-    total = new Decimal(total);
 
     $("#order_confirm").on("click", function (e){
         e.preventDefault();
 
-        items = $(".buy-items").data("items");
-        point = $(".buy-point__input").val();
+        let point = Number($(".buy-point__input").val());
 
-        if ($(".buy-point__input").val() > Number(total) * 10){
+        if (point > total.div(per_point).toNumber()){
             $("#error1").css("display", "block");
+            $("#error2").css("display", "none");
+            $("#error3").css("display", "none");
             return;
         }
-        if ($(".buy-point__input").val() > user_point){
+        if (point > user_point || point < 0){
             $("#error2").css("display", "block");
+            $("#error1").css("display", "none");
+            $("#error3").css("display", "none");
+            return;
+        }
+        if (!Number.isInteger(point)){
+            $("#error3").css("display", "block");
+            $("#error1").css("display", "none");
+            $("#error2").css("display", "none");
             return;
         }
         location.href = "confirm/?items=" + JSON.stringify(items) + "&buynow=" + $("#order_confirm").data("buynow") + "&point=" + point;
@@ -27,13 +37,12 @@ $(function(){
 
     $(".buy-point__input").on("input", function (e){
 
-        point = new Decimal(String($(".buy-point__input").val()));
-        frac = new Decimal("0.1");
+        let InputPoint = new Decimal(String($(".buy-point__input").val()));
+        let PointToPrice = InputPoint.mul(per_point);
+        let ViewPrice = total.sub(PointToPrice);
 
-        PointToPrice = point.mul(frac).toNumber();
+        $(".buy-confirm__description h3 span").text(ViewPrice.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        $("#after_balance").text(player_balance.sub(ViewPrice).toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
-        viewPrice = total.sub(PointToPrice).toNumber();
-        $(".buy-confirm__description h3 span").text(total.sub(PointToPrice).toNumber());
-
-    })
+    });
 });

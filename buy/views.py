@@ -8,8 +8,11 @@ from decimal import Decimal, getcontext, ROUND_UP
 import config.functions
 import config.DBManager
 import config.VaultManager
+import config.settings as settings
 
 getcontext().prec = 10
+per_point = Decimal(settings.PER_POINT)
+point_return = Decimal(settings.POINT_RETURN)
 
 
 def buy(request):
@@ -37,7 +40,7 @@ def buy(request):
 
             item_price = item_info[2]
 
-            item_info.append(int(item_price / 10))
+            item_info.append(int(Decimal(str(item_price)) * point_return))
             item_info.append(f"{item_price:,.2f}")
             item_info.append(i[1])
 
@@ -73,11 +76,14 @@ def buy(request):
             "user_cart_number": user_cart_number,
             "user_cart_id": user_cart_id,
             "item_total": f"{item_total:,.2f}",
-            "player_balance": player_balance,
-            "item_total_float": float(item_total),
-            "after_balance": after_balance,
+            "player_balance": f"{player_balance:,.2f}",
+            "player_balance_float": player_balance,
+            "item_total_float": f"{float(item_total):,.2f}",
+            "after_balance": f"{after_balance:,.2f}",
+            "buy_able": player_balance >= float(item_total),
             "buy_now": buy_now,
             "rand_time": rand_time,
+            "per_point": per_point,
         }
         return render(request, "buy.html", context=context)
 
@@ -96,45 +102,57 @@ def buy_confirm(request):
         info = config.functions.get_user_info.from_session(request).all()
         mc_uuid = info["mc_uuid"]
 
-        # オーダーをdbに保存
+        # アイテム処理系
         order_item = request.GET.get("items")
-        order = config.DBManager.add_order(order_item, mc_uuid)
-
-        # ポイント減らす
-        point = int(request.GET.get("point"))
-        if point:
-            config.DBManager.deposit_utazon_user_point(mc_uuid, point)
-
-        # 合計金額を算出
         array = []
-        amount: float = 0
-        order_item = json.loads(order_item)
-        for i in order_item:
+        amount: Decimal = Decimal("0")
+        order_item_list = json.loads(order_item)
+        for i in order_item_list:
             price = config.DBManager.get_item(i[0])[2]
 
             item_dict = f"{i[0]}({i[1]}個:{price})"
             array.append(item_dict)
 
-            amount += price * i[1]
-        amount -= point * 0.1  # <----- THIS
+            amount = amount + Decimal(str(price)) * Decimal(str(i[1]))
+
+        # ポイント関係
+        point = request.GET.get("point")
+        if point:
+            if not float(point).is_integer():
+                raise Exception("ポイントが整数値ではありません")
+
+            point = int(point)
+            if not amount >= Decimal(str(point)) * per_point:
+                raise Exception("ポイントが請求額を超えています")
+
+            config.DBManager.deposit_utazon_user_point(mc_uuid, point)
+
+            # 合計金額からポイント引く
+            amount_float = float(amount - Decimal(str(point)) * per_point)
+
+        else:
+            amount_float = float(amount)
+
+        # オーダーをdbに保存
+        order = config.DBManager.add_order(order_item, mc_uuid)
+
+        # 出金
+        if point:
+            reason = ", ".join(array) + f", ポイント使用({point}pt:{Decimal(str(point)) * per_point})"
+        else:
+            reason = ", ".join(array)
+        config.VaultManager.withdraw_player(mc_uuid, amount_float, reason)
 
         # 履歴に追加
         history = config.DBManager.get_utazon_user_history(mc_uuid)
         history_obj = {
             "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "amount": amount,
+            "amount": amount_float,
             "order_id": order[0],
-            "order_item": order_item,
+            "order_item": order_item_list,
         }
         history.append(history_obj)
         config.DBManager.update_user_history(mc_uuid, json.dumps(history))
-
-        # 出金
-        if point:
-            reason = ", ".join(array) + f", ポイント使用({point}pt:{point * 0.1})"  # <----- THIS
-        else:
-            reason = ", ".join(array)
-        config.VaultManager.withdraw_player(mc_uuid, amount, reason)
 
         # カートから削除
         if request.GET.get("buynow") == "False":
@@ -142,7 +160,7 @@ def buy_confirm(request):
 
         # アイテム情報取得
         order_item_obj = []
-        for i in order_item:
+        for i in order_item_list:
             result = config.DBManager.get_item(i[0])
 
             # item_idのレコードを取得
@@ -152,7 +170,7 @@ def buy_confirm(request):
 
             item_price = item_info[2]
 
-            item_info.append(int(item_price / 10))
+            item_info.append(int(Decimal(str(item_price)) * point_return))
             item_info.append(f"{item_price:,.2f}")
             item_info.append(i[1])
 
