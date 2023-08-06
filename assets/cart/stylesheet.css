@@ -316,5 +316,7 @@
 }
 html, body{
     background-color: #E3E6E6;
+}
+html{
     height: 100%;
 }

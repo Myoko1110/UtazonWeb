@@ -64,7 +64,8 @@ def buy(request):
         # 小数第2位まで切り上げ
         if player_balance:
             player_balance = Decimal(f"{player_balance}").quantize(Decimal(".01"), rounding=ROUND_UP)
-            after_balance = Decimal(f"{player_balance}") - Decimal(f"{item_total}")
+            after_balance_float = Decimal(f"{player_balance}") - Decimal(f"{item_total}")
+            after_balance = f"{after_balance_float:,.2f}"
         else:
             after_balance = None
 
@@ -84,7 +85,7 @@ def buy(request):
             "player_balance": f"{player_balance:,.2f}",
             "player_balance_float": player_balance,
             "item_total_float": f"{float(item_total):,.2f}",
-            "after_balance": f"{after_balance:,.2f}",
+            "after_balance": after_balance,
             "buy_able": player_balance >= float(item_total),
             "buy_now": buy_now,
             "rand_time": rand_time,

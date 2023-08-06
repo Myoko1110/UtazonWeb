@@ -176,8 +176,8 @@ def cart(request):
 
         item_total = 0
         for i in range(len(user_cart)):
-            item_price = int(Decimal(str(user_cart[i][2])) * Decimal(str(user_cart[i][10])))
-
+            item_price = float(Decimal(str(user_cart[i][2])) * Decimal(str(user_cart[i][10])))
+            print(item_price)
             item_total += item_price
 
         if 0 not in [i[5] for i in user_cart]:
@@ -643,9 +643,11 @@ def history(request):
 
         if not order_history:
             order_history = False
+        else:
+            order_history = reversed(order_history)
 
         context = {
-            "order_history": reversed(order_history),
+            "order_history": order_history,
             "session": True,
             "info": info,
         }

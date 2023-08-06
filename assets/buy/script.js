@@ -3,8 +3,10 @@ $(function(){
     const user_point = Number($(".point").text());
     const per_point = new Decimal(Number($(".point").data("perpoint")));
     const items = $(".buy-items").data("items");
-    const player_balance = new Decimal($("#player_balance").data("float"));
-
+    let player_balance = null;
+    if ($("#player_balance").data("float")) {
+        player_balance = new Decimal($("#player_balance").data("float"));
+    }
     if ($(".buy-point__input").attr("max") > total.div(per_point).toNumber()){
         $(".buy-point__input").attr("max", total.div(per_point).toNumber());
     }
