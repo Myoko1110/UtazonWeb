@@ -7,7 +7,7 @@ import mysql.connector
 import config.settings as settings
 
 
-def get_utazon_user_cart(mc_uuid):
+def get_user_cart(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
@@ -22,7 +22,7 @@ def get_utazon_user_cart(mc_uuid):
     return json.loads(result[1])
 
 
-def get_utazon_user_later(mc_uuid):
+def get_user_later(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
@@ -52,7 +52,7 @@ def get_item(item_id):
     return result
 
 
-def get_utazon_user_point(mc_uuid):
+def get_user_point(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
@@ -67,7 +67,7 @@ def get_utazon_user_point(mc_uuid):
     return result[3]
 
 
-def deposit_utazon_user_point(mc_uuid, amount):
+def withdraw_user_point(mc_uuid, amount):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
@@ -92,7 +92,7 @@ def deposit_utazon_user_point(mc_uuid, amount):
     return True
 
 
-def withdraw_utazon_user_point(mc_uuid, amount):
+def deposit_user_point(mc_uuid, amount):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
@@ -144,7 +144,6 @@ def search_item(item_query):
 def update_user_cart(cart_value, mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     user_cart = json.dumps(cart_value)
-
     with cnx:
         with cnx.cursor() as cursor:
             sql = "UPDATE IGNORE utazon_user SET cart=%s WHERE mc_uuid=%s"
@@ -157,7 +156,6 @@ def update_user_cart(cart_value, mc_uuid):
 def update_user_later(later_value, mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     user_later = json.dumps(later_value)
-
     with cnx:
         with cnx.cursor() as cursor:
             sql = "UPDATE IGNORE utazon_user SET later=%s WHERE mc_uuid=%s"
@@ -180,7 +178,6 @@ def update_item_review(item_id, value):
 
 def get_session(session_id, session_val):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
-
     with cnx:
         with cnx.cursor() as cursor:
             sql = "SELECT * FROM utazon_session WHERE session_id=%s and session_val=%s"
@@ -196,7 +193,6 @@ def get_session(session_id, session_val):
 
 def get_discord_id(uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["linked"])
-
     with cnx:
         with cnx.cursor() as cursor:
 
@@ -212,7 +208,6 @@ def get_discord_id(uuid):
 
 def get_mc_uuid(discord_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
-
     with cnx:
         with cnx.cursor() as cursor:
 
@@ -229,7 +224,6 @@ def get_mc_uuid(discord_id):
 
 def delete_session(session_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
-
     with cnx:
         with cnx.cursor() as cursor:
             sql = "DELETE IGNORE FROM utazon_session WHERE session_id=%s"
@@ -240,7 +234,6 @@ def delete_session(session_id):
 
 def create_user_info(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
-
     with cnx:
         with cnx.cursor() as cursor:
             sql = """INSERT IGNORE INTO `utazon_user` (  
@@ -253,7 +246,6 @@ def create_user_info(mc_uuid):
 
 def save_session(session_id, session_value, mc_uuid, access_token, now, expires, logged_IP):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
-    
     with cnx:
         with cnx.cursor() as cursor:
             # すでにidがあるときの対策
@@ -276,7 +268,6 @@ def save_session(session_id, session_value, mc_uuid, access_token, now, expires,
 
 def add_order(items, mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
-
     with cnx:
         with cnx.cursor() as cursor:
 
@@ -308,7 +299,6 @@ def add_order(items, mc_uuid):
 
 def get_order(order_id=None):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
-
     with cnx:
         if not order_id:
             with cnx.cursor(dictionary=True) as cursor:
@@ -337,7 +327,8 @@ def get_order(order_id=None):
                 result = cursor.fetchone()
                 return result
 
-def get_utazon_user_history(mc_uuid):
+
+def get_user_history(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:

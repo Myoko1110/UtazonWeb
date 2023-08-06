@@ -115,8 +115,8 @@ class get_user_info:
 
                     profile = get_user_info.from_uuid(mc_uuid).all()
 
-                    cart = len(config.DBManager.get_utazon_user_cart(mc_uuid))
-                    point = config.DBManager.get_utazon_user_point(mc_uuid)
+                    cart = len(config.DBManager.get_user_cart(mc_uuid))
+                    point = config.DBManager.get_user_point(mc_uuid)
 
                     return {
                         "discord_id": profile["discord_id"],

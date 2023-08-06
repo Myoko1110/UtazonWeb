@@ -25,7 +25,7 @@ def buy(request):
             user_cart_id = json.loads(item_id)
             buy_now = True
         else:
-            user_cart_id = config.DBManager.get_utazon_user_cart(info["mc_uuid"])
+            user_cart_id = config.DBManager.get_user_cart(info["mc_uuid"])
             buy_now = False
 
         # アイテム情報を取得
@@ -132,7 +132,7 @@ def buy_confirm(request):
             if not amount >= Decimal(str(point)) * per_point:
                 raise Exception("ポイントが請求額を超えています")
 
-            config.DBManager.deposit_utazon_user_point(mc_uuid, point)
+            config.DBManager.withdraw_user_point(mc_uuid, point)
 
             # 合計金額からポイント引く
             amount_float = float(amount - Decimal(str(point)) * per_point)
@@ -151,7 +151,7 @@ def buy_confirm(request):
         config.VaultManager.withdraw_player(mc_uuid, amount_float, reason)
 
         # 履歴に追加
-        history = config.DBManager.get_utazon_user_history(mc_uuid)
+        history = config.DBManager.get_user_history(mc_uuid)
         history_obj = {
             "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "amount": amount_float,
@@ -189,7 +189,7 @@ def buy_confirm(request):
             order_item_obj.append(item_info)
 
         # ポイント付与
-        config.DBManager.withdraw_utazon_user_point(mc_uuid, total_point)
+        config.DBManager.deposit_user_point(mc_uuid, total_point)
 
         context = {
             "session": True,

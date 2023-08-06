@@ -136,7 +136,7 @@ def cart(request):
         info = config.functions.get_user_info.from_session(request).all()
 
         # dbに接続
-        user_cart_id = config.DBManager.get_utazon_user_cart(info["mc_uuid"])
+        user_cart_id = config.DBManager.get_user_cart(info["mc_uuid"])
 
         user_cart = []
         for i in user_cart_id:
@@ -155,7 +155,7 @@ def cart(request):
 
             user_cart.append(item_info)
 
-        user_later_id = config.DBManager.get_utazon_user_later(info["mc_uuid"])
+        user_later_id = config.DBManager.get_user_later(info["mc_uuid"])
 
         user_later = []
         for i in user_later_id:
@@ -177,7 +177,6 @@ def cart(request):
         item_total = 0
         for i in range(len(user_cart)):
             item_price = float(Decimal(str(user_cart[i][2])) * Decimal(str(user_cart[i][10])))
-            print(item_price)
             item_total += item_price
 
         if 0 not in [i[5] for i in user_cart]:
@@ -232,7 +231,7 @@ def cart_delete(request):
             raise Http404
 
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
-        user_cart_id = config.DBManager.get_utazon_user_cart(mc_uuid)
+        user_cart_id = config.DBManager.get_user_cart(mc_uuid)
 
         if item_id:
             for i in range(len(user_cart_id)):
@@ -258,7 +257,7 @@ def cart_add(request):
 
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
 
-        user_cart_id = list(config.DBManager.get_utazon_user_cart(mc_uuid))
+        user_cart_id = list(config.DBManager.get_user_cart(mc_uuid))
 
         if item_id and number:
 
@@ -287,7 +286,7 @@ def cart_update(request):
 
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
 
-        user_cart_id = list(config.DBManager.get_utazon_user_cart(mc_uuid))
+        user_cart_id = list(config.DBManager.get_user_cart(mc_uuid))
 
         if item_id and number:
 
@@ -311,7 +310,7 @@ def later_delete(request):
             raise Http404
 
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
-        user_later_id = config.DBManager.get_utazon_user_later(mc_uuid)
+        user_later_id = config.DBManager.get_user_later(mc_uuid)
 
         if item_id:
             user_later_id.remove(item_id)
@@ -331,8 +330,8 @@ def later_to_cart(request):
 
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
 
-        user_later_id = config.DBManager.get_utazon_user_later(mc_uuid)
-        user_cart_id = list(config.DBManager.get_utazon_user_cart(mc_uuid))
+        user_later_id = config.DBManager.get_user_later(mc_uuid)
+        user_cart_id = list(config.DBManager.get_user_cart(mc_uuid))
 
         if item_id:
             user_later_id.remove(item_id)
@@ -361,7 +360,7 @@ def cart_to_later(request):
             raise Http404
 
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
-        user_cart_id = config.DBManager.get_utazon_user_cart(mc_uuid)
+        user_cart_id = config.DBManager.get_user_cart(mc_uuid)
 
         if item_id:
             for i in range(len(user_cart_id)):
@@ -373,7 +372,7 @@ def cart_to_later(request):
 
                     config.DBManager.update_user_cart(user_cart_id, mc_uuid)
 
-        user_later_id = config.DBManager.get_utazon_user_later(mc_uuid)
+        user_later_id = config.DBManager.get_user_later(mc_uuid)
 
         if item_id and item_id not in user_later_id:
             user_later_id.append(item_id)
@@ -616,7 +615,7 @@ def history(request):
     if is_session.valid:
         info = config.functions.get_user_info.from_session(request).all()
 
-        order_history = config.DBManager.get_utazon_user_history(info["mc_uuid"])
+        order_history = config.DBManager.get_user_history(info["mc_uuid"])
 
         for i in range(len(order_history)):
             order_history[i]["date"] = datetime.datetime.strptime(order_history[i]["date"], "%Y-%m-%d %H:%M:%S")
