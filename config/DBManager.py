@@ -352,3 +352,44 @@ def update_user_history(mc_uuid, value):
             cnx.commit()
 
     return True
+
+
+def get_user_view_history(mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
+            cursor.execute(sql, (mc_uuid,))
+
+            # mc_uuidのレコードを取得
+            result = cursor.fetchone()
+
+            if not result:
+                return False
+    return json.loads(result[5])
+
+
+def add_user_view_history(mc_uuid, item_id):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
+            cursor.execute(sql, (mc_uuid,))
+
+            # mc_uuidのレコードを取得
+            result = cursor.fetchone()
+
+            if not result:
+                return False
+
+            result = json.loads(result[5])
+
+            item_id = int(item_id)
+            if result[-1] == item_id:
+                return
+
+            result.append(item_id)
+            sql = "UPDATE IGNORE utazon_user SET view_history=%s WHERE mc_uuid=%s"
+            cursor.execute(sql, (json.dumps(result), mc_uuid,))
+            cnx.commit()
+    return True

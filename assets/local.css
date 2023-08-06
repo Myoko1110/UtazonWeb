@@ -187,6 +187,7 @@ a{
 .nav-belt__returns h1{
     margin: 0;
     font-size: 15px;
+    text-align: center;
 }
 .nav-belt__cart{
     display: flex;

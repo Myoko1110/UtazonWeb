@@ -61,7 +61,8 @@ def table_create(sender, **kwargs):
                                                     cart JSON,
                                                     later JSON,
                                                     point INT,
-                                                    history JSON
+                                                    history JSON,
+                                                    view_history JSON
                                                     )"""
             cursor.execute(sql)
 

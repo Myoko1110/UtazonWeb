@@ -23,6 +23,20 @@
     border-bottom: 1px solid #dddddd;
     margin-bottom: 0;
 }
+.history-title ul{
+    display: flex;
+    margin: 10px 0!important;
+    padding: 0!important;
+}
+.history-title ul li{
+    margin: 0 10px;
+}
+.history-title ul li a{
+    color: #007185;
+}
+.history-title ul li a:hover{
+    color: #C7511F;
+}
 .history-list{
     margin: 20px 0;
 }
@@ -76,7 +90,7 @@
     color: #000000;
 }
 .history-list__value-product-name:hover{
-    color: #007185;
+    color: #006cc4;
 }
 .history-list__value-product-middle span{
     font-size: 12px;

@@ -10,22 +10,45 @@
     width: 100%;
     justify-content: center;
 }
-.category{
+.history{
     background-color: #ffffff;
-    max-width: 1400px;
+    max-width: 1300px;
     width: 100%;
     padding: 20px;
 }
-.category a{
+.history a{
     margin: 0 20px 0 0;
     font-size: 12px;
 }
-.category-title{
+.history{
+    background-color: #ffffff;
+    max-width: 1300px;
+    width: 100%;
+    padding: 20px;
+}
+.history-title h2{
     font-weight: 400;
     font-size: 28px;
     padding: 0 0 15px;
     border-bottom: 1px solid #dddddd;
+    margin-bottom: 0;
+}
+.history-title ul{
+    display: flex;
+    margin: 10px 0!important;
+    padding: 0!important;
+    list-style: none;
+}
+.history-title ul li{
+    margin: 0 10px;
+}
+.history-title ul li a{
+    color: #007185;
+    font-size: 16px;
     margin: 0;
+}
+.history-title ul li a:hover{
+    color: #C7511F;
 }
 .main-list{
     list-style: none;

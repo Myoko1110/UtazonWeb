@@ -106,6 +106,9 @@ def item(request):
     if is_session.valid:
         info = config.functions.get_user_info.from_session(request).all()
 
+        # 閲覧履歴に追加
+        config.DBManager.add_user_view_history(info["mc_uuid"], item_id)
+
         context["info"] = info
         context["session"] = True
 
@@ -667,4 +670,45 @@ def history(request):
         return response
     else:
         # 未ログイン処理
+        return redirect("/login")
+
+
+def view_history(request):
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+        info = config.functions.get_user_info.from_session(request).all()
+        view_history = config.DBManager.get_user_view_history(info["mc_uuid"])
+
+        result = []
+        for i in view_history:
+            item_result = config.DBManager.get_item(i)
+            result.append(item_result)
+
+        for i in range(len(result)):
+
+            result[i] = list(result[i])
+
+            # レビューの平均を算出
+            item_review = json.loads(result[i][4].replace("\n", "<br>"))
+            if item_review:
+                item_review_av = float("{:.1f}".format(round(mean([i["star"] for i in item_review]), 1)))
+            else:
+                item_review_av = None
+            result[i].append(item_review_av)
+
+            # ポイントを計算
+            result[i].append(int(Decimal(str(result[i][2])) * point_return))
+
+            result[i][3] = json.loads(result[i][3])
+            result[i][2] = f"{result[i][2]:,.2f}"
+
+        context = {
+            "result": reversed(result),
+            "info": info,
+            "session": True,
+        }
+
+        return render(request, "view-history.html", context=context)
+
+    else:
         return redirect("/login")

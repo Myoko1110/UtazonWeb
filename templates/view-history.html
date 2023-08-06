@@ -3,14 +3,13 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>カート | Utazon.com</title>
-	<link rel="stylesheet" href="{% static 'cart/stylesheet.css' %}">
+    <title>閲覧履歴 | Utazon.com</title>
+    <link rel="stylesheet" href="{% static 'view-history/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
-	<script src="{% static 'cart/script.js' %}"></script>
 </head>
 <body>
 <div class="global-header">
@@ -113,112 +112,60 @@
 </div>
 <div class="wrapper">
 	<div class="subwrapper">
-		<div class="cart-parent">
-			<div class="cart">
-				{% if user_cart_number == 0 %}
-				<div class="cart-notexist">
-					<h2>お客様のUtazonカートに商品はありません。</h2>
-					<p>商品をカートに追加してください。</p>
-				</div>
-				{% else %}
-				<div class="cart-exist">
-					<h2>ショッピングカート</h2>
-					{% if session == "expires" %}
-					<p>ログインしてください</p>
-					{% endif %}
-					<ul class="cart-list">
-						{% for child in user_cart %}
-						<li class="cart-child">
-							<img src="{{ child.3.0 }}">
-							<div class="cart-box">
-								<div class="cart-product">
-									<a class="cart-title" href="../item?id={{ child.0 }}">{{ child.1 }}</a>
-									{% if child.5 != 0 %}
-									<p class="cart-product__y">在庫あり</p>
-									{% if child.5 <= 15 %}
-									<p class="cart-product__n">残り{{ child.5 }}点 ご注文はお早めに</p>
-									{% endif %}
-									{% else %}
-									<p class="cart-product__n">在庫なし</p>
-									{% endif %}
-								<div class="cart-product__number">
-									<p>数量:</p>
-									<input class="cart-product__number-input" type="number" value="{{ child.10 }}" data-id="{{ child.0 }}">
-									<a href="delete/?id={{ child.0 }}" style="border-left: #d7d7d7 1px solid;margin-left: 20px">削除</a>
-									<a href="../cart-to-later/?id={{ child.0 }}">あとで買う</a>
-								</div>
-							</div>
-							<div class="cart-price">
-								{% if child.5 != 0 %}
-								<h3>${{ child.9 }}</h3>
-								<p>ポイント：<span>{{ child.8 }}pt ({{ point_return }}%)</span></p>
-								{% else %}
-								<h3 style="color: #b12704">在庫なし</h3>
+		<div class="history">
+			<div class="history-title">
+				<h2>閲覧履歴</h2>
+				<ul>
+					<li><a href="/history">注文履歴</a></li>
+					<li><a style="color: #afafaf">閲覧履歴</a></li>
+				</ul>
+			</div>
+			<div class="main">
+				<ul class="main-list">
+					{% for child in result %}
+					<li>
+						<img class="main-img" src="{{ child.3.0 }}" onclick="location.href='../item/?id={{ child.0 }}'">
+						<div class="main-info">
+							<a href="../item/?id={{ child.0 }}">{{ child.1 }}</a>
+							{% if child.8 %}
+							<div class="main-star__box">
+								{% if child.8 >= 4.8 %}
+								<div class="main-star" style="background-position: -2px -2px;">
+								{% elif child.8 >= 4.3  and child.8 < 4.8 %}
+								<div class="main-star" style="background-position: -2px -42px;">
+								{% elif child.8 >= 3.8  and child.8 < 4.3 %}
+								<div class="main-star" style="background-position: -2px -22px;">
+								{% elif child.8 >= 3.3  and child.8 < 3.8 %}
+								<div class="main-star" style="background-position: -2px -82px;">
+								{% elif child.8 >= 2.8  and child.8 < 3.3 %}
+								<div class="main-star" style="background-position: -2px -62px;">
+								{% elif child.8 >= 2.3  and child.8 < 2.8 %}
+								<div class="main-star" style="background-position: -2px -122px;">
+								{% elif child.8 >= 1.8  and child.8 < 2.3 %}
+								<div class="main-star" style="background-position: -2px -102px;">
+								{% elif child.8 >= 1.3  and child.8 < 1.8 %}
+								<div class="main-star" style="background-position: -2px -162px;">
+								{% elif child.8 >= 0.8  and child.8 < 1.3 %}
+								<div class="main-star" style="background-position: -2px -142px;">
+								{% elif child.8 >= 0.3  and child.8 < 0.8 %}
+								<div class="main-star" style="background-position: -2px -202px;">
+								{% elif  child.8 < 0.3 %}
+								<div class="main-star" style="background-position: -2px -182px;">
 								{% endif %}
-							</div>
-							</div>
-						</li>
-						{% endfor %}
-					</ul>
-				</div>
-				{% endif %}
-			</div>
-			{% if user_later_number != 0 %}
-			<div class="later">
-				<div class="later-exist">
-					<h2>あとで買う</h2>
-					{% if session == "expires" %}
-					<p>ログインしてください</p>
-					{% endif %}
-					<ul class="later-list">
-						{% for child in user_later %}
-						<li class="later-child">
-							<img src="{{ child.3.0 }}">
-							<div class="later-box">
-								<div class="later-product">
-									<a class="later-title" href="../item?id={{ child.0 }}">{{ child.1 }}</a>
-									{% if child.5 != 0 %}
-									<p class="later-product__y">在庫あり</p>
-									{% if child.5 <= 15 %}
-									<p class="later-product__n">残り{{ child.5 }}点 ご注文はお早めに</p>
-									{% endif %}
-									{% else %}
-									<p class="later-product__n">在庫なし</p>
-									{% endif %}
-								<div class="later-product__number">
-									<a href="../later/delete/?id={{ child.0 }}">削除</a>
-									<a href="../later-to-cart/?id={{ child.0 }}">カートに戻す</a>
+									<span style="opacity: 0;">5つ星のうち{{ child.8 }}</span>
 								</div>
+								<p>{{ child.8 }}</p>
 							</div>
-							<div class="later-price">
-								{% if child.5 != 0 %}
-								<h3>${{ child.9 }}</h3>
-								<p>ポイント：<span>{{ child.8 }}pt ({{ point_return }}%)</span></p>
-								{% else %}
-								<h3 style="color: #b12704">在庫なし</h3>
-								{% endif %}
+							{% endif %}
+							<div class="main-price">
+								<a href="../item/?id={{ child.0 }}"><span>$</span>{{ child.2 }}</a>
 							</div>
-							</div>
-						</li>
-						{% endfor %}
-					</ul>
-				</div>
+							<p class="main-point">{{ child.9 }}ポイント(10%)</p>
+						</div>
+					</li>
+					{% endfor %}
+				</ul>
 			</div>
-			{% endif %}
-		</div>
-		<div class="buy">
-			<div class="buy-delivery">
-				<i></i>
-				<p>通常配送無料</p>
-			</div>
-			<h2>小計 ({{ user_cart_number }} 個の商品) : <span>${{ item_total }}</span></h2>
-			{% if user_cart_number != 0 %}
-			{% if buy_able %}
-			<input class="buy-continue" type="submit" value="レジに進む" onclick="location.href='/buy'">
-			{% else %}
-			<input class="buy-continue" type="submit" value="在庫なしを削除してください" style="background-color: #cccccc;cursor: not-allowed">
-			{% endif %}
-			{% endif %}
 		</div>
 	</div>
 </div>
