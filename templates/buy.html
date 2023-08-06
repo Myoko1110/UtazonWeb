@@ -127,8 +127,8 @@
 			<div class="buy-receive buy-list">
 				<div class="buy-left">
 					<h3 class="buy-subtitle">
-					<span>1</span>
-					<span>お届け先</span>
+						<span>1</span>
+						<span>お届け先</span>
 					</h3>
 				</div>
 				<div class="buy-right">
@@ -141,8 +141,8 @@
 			<div class="buy-balance buy-list">
 				<div class="buy-left">
 					<h3 class="buy-subtitle">
-					<span>2</span>
-					<span>残高</span>
+						<span>2</span>
+						<span>残高</span>
 					</h3>
 				</div>
 				{% if not player_balance %}
@@ -173,8 +173,8 @@
 			<div class="buy-schedule buy-list">
 				<div class="buy-left">
 					<h3 class="buy-subtitle">
-					<span>3</span>
-					<span>商品情報</span>
+						<span>3</span>
+						<span>商品情報</span>
 					</h3>
 				</div>
 				<div class="buy-right">
@@ -198,9 +198,10 @@
 			<div class="buy-point buy-list">
 				<div class="buy-left">
 					<h3 class="buy-subtitle">
-					<span>4</span>
-					<span>ポイント</span>
+						<span>4</span>
+						<span>ポイント</span>
 					</h3>
+					<p>※1ptあたり${{ per_point }}</p>
 				</div>
 				<div class="buy-right">
 					<p>Utazonポイント：<span class="point" data-perpoint="{{ per_point }}">{{ info.point }}</span></p>
@@ -218,6 +219,7 @@
 				{% endif %}
 				<div class="buy-confirm__description">
 					<h3>ご請求額： $<span>{{ item_total }}</span></h3>
+					<a>獲得ポイント：{{ total_point }}pt</a>
 					<p>「注文を確定する」ボタンを押してご注文いただくことで、請求がされます。<br>
 					また、本サイトで現金を請求するようなことは一切ありません！！</p>
 				</div>

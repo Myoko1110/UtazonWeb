@@ -29,6 +29,7 @@ def buy(request):
             buy_now = False
 
         # アイテム情報を取得
+        total_point = 0
         user_cart = []
         for i in user_cart_id:
             result = config.DBManager.get_item(i[0])
@@ -40,7 +41,11 @@ def buy(request):
 
             item_price = item_info[2]
 
-            item_info.append(int(Decimal(str(item_price)) * point_return))
+            point = int(Decimal(str(item_price)) * point_return)
+            item_info.append(point)
+
+            total_point += int(Decimal(str(point)) * Decimal(str(i[1])))
+
             item_info.append(f"{item_price:,.2f}")
             item_info.append(i[1])
 
@@ -84,6 +89,7 @@ def buy(request):
             "buy_now": buy_now,
             "rand_time": rand_time,
             "per_point": per_point,
+            "total_point": total_point,
         }
         return render(request, "buy.html", context=context)
 
@@ -160,6 +166,7 @@ def buy_confirm(request):
 
         # アイテム情報取得
         order_item_obj = []
+        total_point = 0
         for i in order_item_list:
             result = config.DBManager.get_item(i[0])
 
@@ -170,11 +177,18 @@ def buy_confirm(request):
 
             item_price = item_info[2]
 
-            item_info.append(int(Decimal(str(item_price)) * point_return))
+            point = int(Decimal(str(item_price)) * point_return)
+            item_info.append(point)
+
+            total_point += int(Decimal(str(point)) * Decimal(str(i[1])))
+
             item_info.append(f"{item_price:,.2f}")
             item_info.append(i[1])
 
             order_item_obj.append(item_info)
+
+        # ポイント付与
+        config.DBManager.withdraw_utazon_user_point(mc_uuid, total_point)
 
         context = {
             "session": True,

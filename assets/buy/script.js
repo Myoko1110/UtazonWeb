@@ -43,6 +43,5 @@ $(function(){
 
         $(".buy-confirm__description h3 span").text(ViewPrice.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         $("#after_balance").text(player_balance.sub(ViewPrice).toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-
     });
 });

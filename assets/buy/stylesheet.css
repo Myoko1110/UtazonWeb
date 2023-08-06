@@ -67,6 +67,9 @@
 .buy-subtitle span{
     margin: 0 10px 0 0;
 }
+.buy-point p{
+    font-size: 13px;
+}
 .buy-left{
     width: 200px;
 }
@@ -128,7 +131,10 @@
 .buy-confirm__description p{
     color: #565959;
     font-size: 12px;
-    margin: 0;
+    margin: 10px 0;
+}
+.buy-confirm__description a{
+    font-size: 14px;
 }
 html, body{
     background-color: #E3E6E6;
