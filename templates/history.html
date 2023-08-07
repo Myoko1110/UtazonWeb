@@ -129,6 +129,12 @@
 							<span>合計</span>
 							<p>${{ child.amount }}</p>
 						</div>
+						{% if child.point %}
+						<div class="history-list__info-child">
+							<span>利用ポイント</span>
+							<p style="text-align: right">{{ child.point }}pt</p>
+						</div>
+						{% endif %}
 						<div class="history-list__info-child">
 							<span>注文番号</span>
 							<p>{{ child.order_id }}</p>
@@ -150,7 +156,8 @@
 								{% if child.status %}
 								<span>返品期間：2023/04/06まで</span>
 								{% endif %}
-								<div style="display: flex; margin-top: 5px">
+								<div style="display: flex; margin-top: 5px;align-items: center">
+									<p style="margin: 0 10px 0 0;font-size: 14px">個数：{{ item.8 }}</p>
 									<a class="history-list__value-product-rebuy" href="../buy/?item=[[{{ item.0 }}, 1]]">再度購入</a>
 									<a class="history-list__value-product-view" href="../item/?id={{ item.0 }}">商品を表示</a>
 								</div>

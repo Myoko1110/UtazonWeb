@@ -643,6 +643,7 @@ def history(request):
                 # item_idのレコードを取得
                 item_info = list(result)
                 item_info[3] = json.loads(item_info[3])
+                item_info.append(child[1])
                 order_history_child.append(item_info)
 
             order_history[i]["order_item"] = order_history_child

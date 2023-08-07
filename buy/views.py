@@ -3,7 +3,7 @@ import json
 
 from django.shortcuts import redirect, render
 from django.http import Http404
-from decimal import Decimal, getcontext, ROUND_UP
+from decimal import Decimal, getcontext, ROUND_UP, ROUND_DOWN
 
 import config.functions
 import config.DBManager
@@ -147,7 +147,7 @@ def buy_confirm(request):
         if point:
             reason = ", ".join(array) + f", ポイント使用({point}pt:{Decimal(str(point)) * per_point})(OrderID: {order[0]})"
         else:
-            reason = ", ".join(array)
+            reason = ", ".join(array) + f"(OrderID: {order[0]})"
         config.VaultManager.withdraw_player(mc_uuid, amount_float, reason)
 
         # 履歴に追加
@@ -158,6 +158,7 @@ def buy_confirm(request):
             "order_id": order[0],
             "order_item": order_item_list,
             "cancel": False,
+            "point": point,
         }
         history.append(history_obj)
         config.DBManager.update_user_history(mc_uuid, json.dumps(history))
@@ -220,10 +221,12 @@ def buy_cancel(request):
             if i["order_id"] == order_id:
                 i["cancel"] = True
                 amount = i["amount"]
-                amount_twenty_per = float(Decimal("0.8") * Decimal(str(amount)))
+                amount_twenty_per = Decimal("0.8") * Decimal(str(amount))
+                amount_twenty_per = float(amount_twenty_per.quantize(Decimal(".01"), rounding=ROUND_DOWN))
 
                 reason = f"注文のキャンセル(OrderID: {order_id})(入金額: {amount}の80%(キャンセル料20%))"
                 config.VaultManager.deposit_player(mc_uuid, amount_twenty_per, reason)
 
         config.DBManager.update_user_history(mc_uuid, json.dumps(user_history))
-        return redirect("/history")
+
+    return redirect("/history")
