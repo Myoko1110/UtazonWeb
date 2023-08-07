@@ -134,6 +134,7 @@
     border-radius: 8px;
     text-align: center;
     margin: 2px;
+    cursor: pointer;
 }
 .history-list__value-product-return:hover{
     background-color: #1396e0;
@@ -166,7 +167,9 @@
         width: 100%;
     }
 }
-
+#order_cancel{
+    display: none;
+}
 html,body{
     background-color: #E3E6E6;
     height: 100%;

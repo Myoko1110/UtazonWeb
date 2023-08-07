@@ -10,6 +10,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
+	<script src="{% static 'history/script.js' %}"></script>
 </head>
 <body>
 <div class="global-header">
@@ -97,15 +98,10 @@
 			<div class="nav-main__category">
 				<a class="nav-main__category-child">ヘルプ</a>
 				<a class="nav-main__category-child">プライム</a>
-				<a class="nav-main__category-child">建築ブロック</a>
-				<a class="nav-main__category-child">装飾ブロック</a>
-				<a class="nav-main__category-child">レッドストーン</a>
-				<a class="nav-main__category-child">運送</a>
-				<a class="nav-main__category-child">食料</a>
-				<a class="nav-main__category-child">道具</a>
-				<a class="nav-main__category-child">戦闘</a>
-				<a class="nav-main__category-child">醸造</a>
-				<a class="nav-main__category-child">再購入</a>
+				{% for jp, en in info.categories.items %}
+				<a class="nav-main__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
+				{% endfor %}
+				<a class="nav-main__category-child" href="/history">再度購入</a>
 			</div>
 	    </div>
     </header>
@@ -141,6 +137,8 @@
 					<div class="history-list__value">
 						{% if child.status %}
 						<h2>{{ child.delivery_time.year }}年{{ child.delivery_time.month }}月{{ child.delivery_time.day }}日に配達しました</h2>
+						{% elif child.cancel %}
+						<h2>注文がキャンセルされました</h2>
 						{% else %}
 						<h2>{{ child.delivery_time.year }}年{{ child.delivery_time.month }}月{{ child.delivery_time.day }}日 {{ child.delivery_time.hour }}時に配達予定です</h2>
 						{% endif %}
@@ -158,11 +156,13 @@
 								</div>
 							</div>
 							<div class="history-list__value-product-end">
+								{% if not child.cancel %}
 								{% if child.status %}
 								<a class="history-list__value-product-return">商品を返品する</a>
 								<a class="history-list__value-product-review" href="../review/?id={{ item.0 }}">商品をレビューする</a>
 								{% else %}
-								<a class="history-list__value-product-return">商品をキャンセルする</a>
+								<a class="history-list__value-product-return" data-id="{{ child.order_id }}" onclick="order_cancel(this)">注文をキャンセルする</a>
+								{% endif %}
 								{% endif %}
 							</div>
 						</div>
@@ -197,6 +197,20 @@
 		<h1>確認</h1>
 		<p>本当にログアウトしますか？</p>
 		<a href="/login/out">ログアウト</a>
+	</div>
+</div>
+<div class="box" id="order_cancel">
+	<div class="box__box" style="max-width: 475px; padding: 10px;">
+		<div class="box__close" style="max-width: 475px">
+			<svg onclick="close_box()" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+		</div>
+		<h1>確認</h1>
+		<p style="margin-bottom: 0;">本当に注文をキャンセルしますか？<br>キャンセルされる場合は以下のことにご留意ください。</p>
+		<ul>
+			<li><span style="font-weight: 700;border-bottom: 2px dashed #000;">購入額20%分のキャンセル料</span>がかかります。</li>
+			<li>購入時にご利用いただいたポイントは返還されません。</li>
+		</ul>
+		<a href="" style="background-color: #ad0000">注文をキャンセル</a>
 	</div>
 </div>
 </body>

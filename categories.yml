@@ -114,7 +114,7 @@ farming:
   pumpkins: カボチャ
 
 misc:
-  JAPANESE: その他
+  JAPANESE: その他のアイテム
   mob_heads: MOBの頭
   dragon_egg: エンダードラゴンの卵
   netherstar_beacon: ネザースター・ビーコン
@@ -255,4 +255,4 @@ natural:
   saplings: 苗木
   leaves: 葉
 
-other: その他
+other: 該当なし

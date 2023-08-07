@@ -542,21 +542,23 @@ def category(request):
         # 親カテゴリを参照
         if cat_id in settings.CATEGORIES.keys():
 
-            # resultをリセット
-            result = []
-            for i in settings.CATEGORIES[cat_id].keys():
+            try:
+                result = []
+                for i in settings.CATEGORIES[cat_id].keys():
 
-                # カテゴリずつ追加
-                child_category = config.DBManager.get_item_from_category(i)
+                    # カテゴリずつ追加
+                    child_category = config.DBManager.get_item_from_category(i)
 
-                # カテゴリにアイテムがなかったらスキップ
-                if not child_category:
-                    continue
+                    # カテゴリにアイテムがなかったらスキップ
+                    if not child_category:
+                        continue
 
-                # resultに追加
-                else:
-                    for child in child_category:
-                        result.append(child)
+                    # resultに追加
+                    else:
+                        for child in child_category:
+                            result.append(child)
+            except AttributeError:
+                result = config.DBManager.get_item_from_category(cat_id)
 
         else:
             raise Http404
@@ -625,11 +627,13 @@ def history(request):
             order_history[i]["amount"] = f"{order_history[i]['amount']:,.2f}"
 
             order_obj = config.DBManager.get_order(order_history[i]["order_id"])
-            delivery_time = order_obj[2]
 
-            if datetime.datetime.now() >= delivery_time:
-                order_history[i]["status"] = True
-            order_history[i]["delivery_time"] = delivery_time
+            if not order_history[i]["cancel"]:
+                delivery_time = order_obj[2]
+
+                if datetime.datetime.now() >= delivery_time:
+                    order_history[i]["status"] = True
+                order_history[i]["delivery_time"] = delivery_time
 
             order_history_child = []
 

@@ -328,6 +328,16 @@ def get_order(order_id=None):
                 return result
 
 
+def delete_order(order_id):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "DELETE IGNORE FROM utazon_order WHERE order_id=%s"
+            cursor.execute(sql, (order_id,))
+            cnx.commit()
+    return True
+
+
 def get_user_history(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:

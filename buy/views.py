@@ -145,7 +145,7 @@ def buy_confirm(request):
 
         # 出金
         if point:
-            reason = ", ".join(array) + f", ポイント使用({point}pt:{Decimal(str(point)) * per_point})"
+            reason = ", ".join(array) + f", ポイント使用({point}pt:{Decimal(str(point)) * per_point})(OrderID: {order[0]})"
         else:
             reason = ", ".join(array)
         config.VaultManager.withdraw_player(mc_uuid, amount_float, reason)
@@ -157,6 +157,7 @@ def buy_confirm(request):
             "amount": amount_float,
             "order_id": order[0],
             "order_item": order_item_list,
+            "cancel": False,
         }
         history.append(history_obj)
         config.DBManager.update_user_history(mc_uuid, json.dumps(history))
@@ -204,3 +205,25 @@ def buy_confirm(request):
     else:
         # 未ログイン処理
         return redirect('/login')
+
+
+def buy_cancel(request):
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+        mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
+        order_id = request.GET.get("id")
+
+        config.DBManager.delete_order(order_id)
+        user_history = config.DBManager.get_user_history(mc_uuid)
+
+        for i in user_history:
+            if i["order_id"] == order_id:
+                i["cancel"] = True
+                amount = i["amount"]
+                amount_twenty_per = float(Decimal("0.8") * Decimal(str(amount)))
+
+                reason = f"注文のキャンセル(OrderID: {order_id})(入金額: {amount}の80%(キャンセル料20%))"
+                config.VaultManager.deposit_player(mc_uuid, amount_twenty_per, reason)
+
+        config.DBManager.update_user_history(mc_uuid, json.dumps(user_history))
+        return redirect("/history")

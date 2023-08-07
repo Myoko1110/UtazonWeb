@@ -102,6 +102,8 @@ class get_user_info:
             except AttributeError as exc:
                 raise TypeError("Pass a Request object on request argument.") from exc
 
+            categories = get_categories()
+
             for child in session:
                 if child.startswith('_Secure-'):
 
@@ -124,6 +126,7 @@ class get_user_info:
                         "mc_id": profile["mc_id"],
                         "user_cart": cart,
                         "point": point,
+                        "categories": categories,
                     }
 
             else:
@@ -217,11 +220,18 @@ class get_category:
         categories = settings.CATEGORIES
         for category, value in categories.items():
             if category == self.value:
-                list = {
-                    "jp": value["JAPANESE"],
-                    "en": self.value,
-                    "parent": None,
-                }
+                try:
+                    list = {
+                        "jp": value["JAPANESE"],
+                        "en": self.value,
+                        "parent": None,
+                    }
+                except TypeError:
+                    list = {
+                        "jp": value,
+                        "en": self.value,
+                        "parent": None,
+                    }
                 return list
             for en, jp in value.items():
                 if en == self.value:
@@ -264,3 +274,18 @@ class get_category:
                     return list
         else:
             return False
+
+
+def get_categories():
+    categories = settings.CATEGORIES
+    categories_key = categories.keys()
+    result = {}
+
+    for i in categories_key:
+        try:
+            category_jp = categories[i]["JAPANESE"]
+            result[category_jp] = i
+        except TypeError:
+            pass
+
+    return result

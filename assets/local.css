@@ -289,6 +289,9 @@ a{
     flex-direction: column;
     align-items: center;
 }
+.box__box p{
+    text-align: center;
+}
 .box__box h1{
     margin: 20px 0 0;
 }

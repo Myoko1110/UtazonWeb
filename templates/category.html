@@ -97,15 +97,10 @@
 			<div class="nav-main__category">
 				<a class="nav-main__category-child">ヘルプ</a>
 				<a class="nav-main__category-child">プライム</a>
-				<a class="nav-main__category-child">建築ブロック</a>
-				<a class="nav-main__category-child">装飾ブロック</a>
-				<a class="nav-main__category-child">レッドストーン</a>
-				<a class="nav-main__category-child">運送</a>
-				<a class="nav-main__category-child">食料</a>
-				<a class="nav-main__category-child">道具</a>
-				<a class="nav-main__category-child">戦闘</a>
-				<a class="nav-main__category-child">醸造</a>
-				<a class="nav-main__category-child">再購入</a>
+				{% for jp, en in info.categories.items %}
+				<a class="nav-main__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
+				{% endfor %}
+				<a class="nav-main__category-child" href="/history">再度購入</a>
 			</div>
 	    </div>
     </header>
@@ -163,7 +158,7 @@
 					</li>
 					{% endfor %}
 					{% else %}
-					<h2>カテゴリのアイテムがありません</h2>
+					<h2>カテゴリーのアイテムがありません</h2>
 					{% endif %}
 				</ul>
 			</div>

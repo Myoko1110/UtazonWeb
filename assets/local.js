@@ -40,6 +40,7 @@ $(function() {
 function close_box(){
     $("#expires").css("display", "none");
     $("#logout").css("display", "none");
+    $("#order_cancel").css("display", "none");
 }
 
 function logout_confirm(){
