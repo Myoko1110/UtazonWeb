@@ -275,7 +275,7 @@ def add_order(items, mc_uuid):
                 try:
                     # お届け時間を計算
                     now = datetime.datetime.now().replace(microsecond=0)
-                    if now > datetime.datetime.strptime('13:00:00', '%H:%M:%S'):
+                    if now > datetime.datetime.strptime("13:00:00", "%H:%M:%S"):
                         rand_time = now.replace(hour=random.randint(8, 18), minute=random.randint(1, 59), second=0,
                                                 microsecond=0) + datetime.timedelta(days=2)
                     else:

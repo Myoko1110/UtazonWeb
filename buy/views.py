@@ -70,7 +70,7 @@ def buy(request):
             after_balance = None
 
         now = datetime.datetime.now()
-        if now > datetime.datetime.strptime('13:00:00', '%H:%M:%S'):
+        if now > datetime.datetime.strptime("13:00:00", "%H:%M:%S"):
             rand_time = now + datetime.timedelta(days=2)
         else:
             rand_time = now + datetime.timedelta(days=1)
@@ -96,7 +96,7 @@ def buy(request):
 
     else:
         # 未ログイン処理
-        return redirect('/')
+        return redirect("/")
 
 
 def buy_confirm(request):
@@ -205,7 +205,7 @@ def buy_confirm(request):
 
     else:
         # 未ログイン処理
-        return redirect('/login')
+        return redirect("/login")
 
 
 def buy_cancel(request):

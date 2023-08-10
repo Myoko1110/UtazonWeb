@@ -12,11 +12,11 @@ import config.DBManager
 def order(request):
 
     # クライアントのIPを取得
-    forwarded_addresses = request.META.get('HTTP_X_FORWARDED_FOR')
+    forwarded_addresses = request.META.get("HTTP_X_FORWARDED_FOR")
     if forwarded_addresses:
-        client_addr = forwarded_addresses.split(',')[0]
+        client_addr = forwarded_addresses.split(",")[0]
     else:
-        client_addr = request.META.get('REMOTE_ADDR')
+        client_addr = request.META.get("REMOTE_ADDR")
 
     if request.method != "POST":
         logging.warning(f"order_listにGETメゾットでアクセスされましたが失敗しました(IP:{client_addr})")
@@ -35,6 +35,6 @@ def order(request):
     order_list = json.dumps(config.DBManager.get_order(), indent=4)
 
     response = HttpResponse(order_list)
-    response['Content-Disposition'] = 'application/json'
+    response["Content-Disposition"] = "application/json"
 
     return response

@@ -27,15 +27,15 @@ def index_view(request):
             "info": info,
         }
         # 既ログイン処理
-        return render(request, 'index.html', context=context)
+        return render(request, "index.html", context=context)
     elif is_session.expire:
         context = {
             "session": "expires",
         }
-        response = render(request, 'index.html', context=context)
+        response = render(request, "index.html", context=context)
 
         for key in request.COOKIES:
-            if key.startswith('_Secure-'):
+            if key.startswith("_Secure-"):
                 response.delete_cookie(key)
         response.delete_cookie("LOGIN_STATUS")
 
@@ -46,12 +46,12 @@ def index_view(request):
             "session": False,
         }
         # 未ログイン処理
-        return render(request, 'index.html', context=context)
+        return render(request, "index.html", context=context)
 
 
 def item(request):
     # アイテムIDを指定
-    item_id = request.GET.get('id')
+    item_id = request.GET.get("id")
 
     # item_idのレコードを取得
     result = config.DBManager.get_item(item_id)
@@ -81,7 +81,7 @@ def item(request):
     item_category = config.functions.get_category(result[7]).from_en()
 
     now = datetime.datetime.now()
-    if now > datetime.datetime.strptime('13:00:00', '%H:%M:%S'):
+    if now > datetime.datetime.strptime("13:00:00", "%H:%M:%S"):
         rand_time = now + datetime.timedelta(days=2)
     else:
         rand_time = now + datetime.timedelta(days=1)
@@ -113,14 +113,14 @@ def item(request):
         context["session"] = True
 
         # 既ログイン処理
-        return render(request, 'item.html', context=context)
+        return render(request, "item.html", context=context)
 
     elif is_session.expire:
         context["session"] = "expires"
-        response = render(request, 'item.html', context=context)
+        response = render(request, "item.html", context=context)
 
         for key in request.COOKIES:
-            if key.startswith('_Secure-'):
+            if key.startswith("_Secure-"):
                 response.delete_cookie(key)
         response.delete_cookie("LOGIN_STATUS")
 
@@ -130,7 +130,7 @@ def item(request):
     else:
         context["session"] = False
         # 未ログイン処理
-        return render(request, 'item.html', context=context)
+        return render(request, "item.html", context=context)
 
 
 def cart(request):
@@ -203,16 +203,16 @@ def cart(request):
             "point_return": int(point_return * 100),
         }
         # 既ログイン処理
-        return render(request, 'cart.html', context=context)
+        return render(request, "cart.html", context=context)
 
     elif is_session.expire:
         context = {
             "session": "expires",
         }
-        response = render(request, 'cart.html', context=context)
+        response = render(request, "cart.html", context=context)
 
         for key in request.COOKIES:
-            if key.startswith('_Secure-'):
+            if key.startswith("_Secure-"):
                 response.delete_cookie(key)
         response.delete_cookie("LOGIN_STATUS")
 
@@ -221,14 +221,14 @@ def cart(request):
 
     else:
         # 未ログイン処理
-        return redirect('/login')
+        return redirect("/login")
 
 
 def cart_delete(request):
     is_session = config.functions.is_session(request)
     if is_session.valid:
 
-        item_id = int(request.GET.get('id'))
+        item_id = int(request.GET.get("id"))
 
         if not item_id:
             raise Http404
@@ -252,8 +252,8 @@ def cart_add(request):
     is_session = config.functions.is_session(request)
     if is_session.valid:
 
-        item_id = int(request.GET.get('id'))
-        number = int(request.GET.get('n'))
+        item_id = int(request.GET.get("id"))
+        number = int(request.GET.get("n"))
 
         if not item_id or not number:
             raise Http404
@@ -281,8 +281,8 @@ def cart_update(request):
     is_session = config.functions.is_session(request)
     if is_session.valid:
 
-        item_id = int(request.GET.get('id'))
-        number = int(request.GET.get('n'))
+        item_id = int(request.GET.get("id"))
+        number = int(request.GET.get("n"))
 
         if not item_id or not number:
             raise Http404
@@ -307,7 +307,7 @@ def later_delete(request):
     is_session = config.functions.is_session(request)
     if is_session.valid:
 
-        item_id = int(request.GET.get('id'))
+        item_id = int(request.GET.get("id"))
 
         if not item_id:
             raise Http404
@@ -326,7 +326,7 @@ def later_to_cart(request):
     is_session = config.functions.is_session(request)
     if is_session.valid:
 
-        item_id = int(request.GET.get('id'))
+        item_id = int(request.GET.get("id"))
 
         if not item_id:
             raise Http404
@@ -357,7 +357,7 @@ def cart_to_later(request):
     is_session = config.functions.is_session(request)
     if is_session.valid:
 
-        item_id = int(request.GET.get('id'))
+        item_id = int(request.GET.get("id"))
 
         if not item_id:
             raise Http404
@@ -385,9 +385,11 @@ def cart_to_later(request):
 
 
 def search(request):
-    query = request.GET.get('q')
+    query = request.GET.get("q")
     if not query:
-        return redirect('/')
+        return redirect("/")
+
+    category = request.GET.get("category")
 
     result = config.DBManager.search_item(query)
 
@@ -424,14 +426,14 @@ def search(request):
         context["info"] = info
         context["session"] = True
 
-        return render(request, 'search.html', context=context)
+        return render(request, "search.html", context=context)
 
     elif is_session.expire:
         context["session"] = "expires"
-        response = render(request, 'search.html', context=context)
+        response = render(request, "search.html", context=context)
 
         for key in request.COOKIES:
-            if key.startswith('_Secure-'):
+            if key.startswith("_Secure-"):
                 response.delete_cookie(key)
         response.delete_cookie("LOGIN_STATUS")
 
@@ -441,11 +443,11 @@ def search(request):
     else:
         context["session"] = False
         # 未ログイン処理
-        return render(request, 'search.html', context=context)
+        return render(request, "search.html", context=context)
 
 
 def review(request):
-    item_id = request.GET.get('id')
+    item_id = request.GET.get("id")
     if not item_id:
         raise Http404
 
@@ -463,13 +465,13 @@ def review(request):
             "info": info,
         }
 
-        return render(request, 'review.html', context=context)
+        return render(request, "review.html", context=context)
     else:
         return redirect(f"item?id={item_id}")
 
 
 def review_post(request):
-    item_id = request.GET.get('id')
+    item_id = request.GET.get("id")
     if not item_id:
         raise Http404
 
@@ -478,9 +480,9 @@ def review_post(request):
 
         mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
 
-        review_star = request.GET.get('star')
-        review_title = request.GET.get('title')
-        review_text = request.GET.get('text')
+        review_star = request.GET.get("star")
+        review_title = request.GET.get("title")
+        review_text = request.GET.get("text")
 
         result = config.DBManager.get_item(item_id)
         item_review = json.loads(result[4])
@@ -508,8 +510,8 @@ def review_post(request):
 
 
 def review_userful(request):
-    item_id = request.GET.get('id')
-    review_id = request.GET.get('review_id')
+    item_id = request.GET.get("id")
+    review_id = request.GET.get("review_id")
 
     if not item_id or not review_id:
         raise Http404
@@ -534,7 +536,7 @@ def review_userful(request):
 
 
 def category(request):
-    cat_id = request.GET.get('name')
+    cat_id = request.GET.get("name")
     result = config.DBManager.get_item_from_category(cat_id)
 
     if not result:
@@ -599,10 +601,10 @@ def category(request):
 
     elif is_session.expire:
         context["session"] = "expires"
-        response = render(request, 'category.html', context=context)
+        response = render(request, "category.html", context=context)
 
         for key in request.COOKIES:
-            if key.startswith('_Secure-'):
+            if key.startswith("_Secure-"):
                 response.delete_cookie(key)
         response.delete_cookie("LOGIN_STATUS")
 
@@ -612,7 +614,7 @@ def category(request):
     else:
         context["session"] = False
         # 未ログイン処理
-        return render(request, 'category.html', context=context)
+        return render(request, "category.html", context=context)
 
 
 def history(request):
@@ -658,16 +660,16 @@ def history(request):
             "session": True,
             "info": info,
         }
-        return render(request, 'history.html', context=context)
+        return render(request, "history.html", context=context)
 
     elif is_session.expire:
         context = {
             "session": "expires",
         }
-        response = render(request, 'history.html', context=context)
+        response = render(request, "history.html", context=context)
 
         for key in request.COOKIES:
-            if key.startswith('_Secure-'):
+            if key.startswith("_Secure-"):
                 response.delete_cookie(key)
         response.delete_cookie("LOGIN_STATUS")
 

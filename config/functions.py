@@ -22,7 +22,7 @@ class is_session:
 
         # 一つずつ処理
         for child in session:
-            if child.startswith('_Secure-'):
+            if child.startswith("_Secure-"):
 
                 result = config.DBManager.get_session(child, session[child])
 
@@ -67,7 +67,7 @@ class get_user_info:
             self.mc_uuid = mc_uuid
 
         def all(self):
-            profile = requests.get(f'https://sessionserver.mojang.com/session/minecraft/profile/{self.mc_uuid}').json()
+            profile = requests.get(f"https://sessionserver.mojang.com/session/minecraft/profile/{self.mc_uuid}").json()
 
             # mc_idを取得
             mc_id = profile["name"]
@@ -81,7 +81,7 @@ class get_user_info:
             }
 
         def mc_id(self):
-            profile = requests.get(f'https://sessionserver.mojang.com/session/minecraft/profile/{self.mc_uuid}').json()
+            profile = requests.get(f"https://sessionserver.mojang.com/session/minecraft/profile/{self.mc_uuid}").json()
 
             # mc_idを取得
             mc_id = profile["name"]
@@ -105,7 +105,7 @@ class get_user_info:
             categories = get_categories()
 
             for child in session:
-                if child.startswith('_Secure-'):
+                if child.startswith("_Secure-"):
 
                     result = config.DBManager.get_session(child, session[child])
 
@@ -139,7 +139,7 @@ class get_user_info:
                 raise TypeError("Pass a Request object on request argument.") from exc
 
             for child in session:
-                if child.startswith('_Secure-'):
+                if child.startswith("_Secure-"):
 
                     result = config.DBManager.get_session(child, session[child])
 
@@ -163,7 +163,7 @@ class get_user_info:
                 raise TypeError("Pass a Request object on request argument.") from exc
 
             for child in session:
-                if child.startswith('_Secure-'):
+                if child.startswith("_Secure-"):
 
                     result = config.DBManager.get_session(child, session[child])
 
@@ -185,7 +185,7 @@ class get_user_info:
                 raise TypeError("Pass a Request object on request argument.") from exc
 
             for child in session:
-                if child.startswith('_Secure-'):
+                if child.startswith("_Secure-"):
 
                     result = config.DBManager.get_session(child, session[child])
 
