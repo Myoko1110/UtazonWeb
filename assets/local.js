@@ -1,3 +1,4 @@
+let selected = "all";
 $(function() {
     logo = $(".nav-belt__logo").outerWidth(true);
     address = $(".nav-belt__address").outerWidth(true);
@@ -17,7 +18,12 @@ $(function() {
     $("#search").submit(function (e){
         e.preventDefault();
         let query = $("#search_query").val();
-        location.href = `//${host}/search/?q=${query}`;
+
+        if (selected === "all"){
+            location.href = `//${host}/search/?q=${query}`;
+        }else{
+            location.href = `//${host}/search/?q=${query}&category=${selected}`;
+        }
     });
 
     window.addEventListener('resize', function() {
@@ -34,6 +40,10 @@ $(function() {
             width = window_width - (logo + account + cart) - 165;
         }
         $(".nav-belt__search-input").css("width", width);
+    });
+
+    $(".nav-belt__search-select").on("change", function (){
+        selected = $("option:selected").val();
     });
 });
 

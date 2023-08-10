@@ -391,7 +391,7 @@ def search(request):
 
     category = request.GET.get("category")
 
-    result = config.DBManager.search_item(query)
+    result = config.DBManager.search_item(query, category)
 
     search_results = len(result)
 

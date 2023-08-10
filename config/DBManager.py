@@ -5,6 +5,7 @@ import random
 import mysql.connector
 
 import config.settings as settings
+import config.functions
 
 
 def get_user_cart(mc_uuid):
@@ -129,15 +130,28 @@ def get_item_from_category(cat_id):
     return result
 
 
-def search_item(item_query):
+def search_item(item_query, category=None):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s"
-            cursor.execute(sql, (f"%{item_query}%",))
+            if category:
+                result = []
+                for i in config.functions.get_child_categories(category):
+                    print(i)
+                    sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s AND category=%s"
+                    cursor.execute(sql, (f"%{item_query}%", i))
 
-            # mc_uuidのレコードを取得
-            result = list(cursor.fetchall())
+                    fetch = list(cursor.fetchall())
+
+                    for i in fetch:
+                        result.append(list(i))
+
+            else:
+                sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s"
+                cursor.execute(sql, (f"%{item_query}%",))
+
+                # mc_uuidのレコードを取得
+                result = list(cursor.fetchall())
     return result
 
 
@@ -180,7 +194,7 @@ def get_session(session_id, session_val):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_session WHERE session_id=%s and session_val=%s"
+            sql = "SELECT * FROM utazon_session WHERE session_id=%s AND session_val=%s"
             cursor.execute(sql, (session_id, session_val,))
 
             # session_idのレコードを取得

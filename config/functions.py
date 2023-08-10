@@ -289,3 +289,14 @@ def get_categories():
             pass
 
     return result
+
+
+def get_child_categories(parent_category):
+    categories = settings.CATEGORIES
+
+    child_categories = {}
+    for i in categories.keys():
+        if parent_category == i:
+            child_categories = categories[i].copy()
+            child_categories.pop("JAPANESE")
+    return child_categories

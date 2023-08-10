@@ -39,15 +39,10 @@
             <div class="nav-belt__search">
 	            <form id="search">
 		            <select class="nav-belt__search-select">
-			            <option>すべて</option>
-			            <option>建築ブロック</option>
-			            <option>装飾ブロック</option>
-			            <option>レッドストーン</option>
-			            <option>運送</option>
-			            <option>食料</option>
-			            <option>道具</option>
-			            <option>戦闘</option>
-			            <option>醸造</option>
+						<option value="all">すべて</option>
+						{% for jp, en in info.categories.items %}
+			            <option value="{{ en }}">{{ jp }}</option>
+						{% endfor %}
 		            </select>
 	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com" value="{{ query }}" id="search_query">
 		            <label class="nav-belt__search-label">
