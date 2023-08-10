@@ -712,8 +712,54 @@ def view_history(request):
             "info": info,
             "session": True,
         }
-
         return render(request, "view-history.html", context=context)
 
     else:
         return redirect("/login")
+
+
+def status(request):
+    is_session = config.functions.is_session(request)
+    if is_session.valid:
+        info = config.functions.get_user_info.from_session(request).all()
+        mc_uuid = info["mc_uuid"]
+
+        order_id = request.GET.get("id")
+        order_obj = config.DBManager.get_order(order_id)
+
+        order_time = order_obj[3]
+        order_delivery = order_obj[2]
+
+        status_per = calc_status_per(order_time, order_delivery)
+
+        arrive_today = order_delivery.date() == datetime.datetime.now().date()
+
+        context = {
+            "order_obj": order_obj,
+            "status_per": status_per,
+            "arrive_today": arrive_today,
+            "info": info,
+            "session": True,
+        }
+        return render(request, "order-status.html", context=context)
+
+    return redirect("/login")
+
+
+def calc_status_per(past_time, future_time):
+    current_time = datetime.datetime.now()
+
+    if past_time > future_time:
+        past_time, future_time = future_time, past_time
+
+    total_duration = future_time - past_time
+    elapsed_duration = current_time - past_time
+
+    if elapsed_duration.total_seconds() < 0:
+        percentage = 0.0
+    elif elapsed_duration.total_seconds() > total_duration.total_seconds():
+        percentage = 100.0
+    else:
+        percentage = (elapsed_duration.total_seconds() / total_duration.total_seconds()) * 100
+
+    return round(percentage)

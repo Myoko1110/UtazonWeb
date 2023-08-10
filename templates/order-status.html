@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>配送状況 | Utazon.com</title>
+    <link rel="stylesheet" href="{% static 'order-status/stylesheet.css' %}">
+    <link rel="stylesheet" href="{% static 'local.css' %}">
+	<link rel="icon" href="{% static 'icon.svg' %}">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+	<script src="{% static 'local.js' %}"></script>
+	<script src="{% static 'order-status/script.js' %}"></script>
+</head>
+<body>
+<div class="global-header">
+    <header>
+        <div class="nav-belt">
+            <div class="nav-belt__logo">
+                <a href="/" class="nav-link">
+                    <img src="{% static 'logo.svg' %}">
+                </a>
+            </div>
+            <div class="nav-belt__address">
+                <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
+	            <div class="nav-belt__address-dir">
+		            <div class="nav-belt__address-name">
+			            <p class="nav-belt__address-to">お届け先</p>
+		            </div>
+		            <div class="nav-belt__address-number">
+						{% if session is True %}
+						<h1>1-0001仮</h1>
+						{% else %}
+						<h1>ログイン</h1>
+						{% endif %}
+		            </div>
+	            </div>
+            </div>
+            <div class="nav-belt__search">
+	            <form id="search">
+		            <select class="nav-belt__search-select">
+			            <option>すべて</option>
+			            <option>建築ブロック</option>
+			            <option>装飾ブロック</option>
+			            <option>レッドストーン</option>
+			            <option>運送</option>
+			            <option>食料</option>
+			            <option>道具</option>
+			            <option>戦闘</option>
+			            <option>醸造</option>
+		            </select>
+	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com" value="{{ query }}" id="search_query">
+		            <label class="nav-belt__search-label">
+			            <input class="nav-belt__search-submit" type="submit" value="">
+			            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960"><path d="M796 935 533 672q-30 26-69.959 40.5T378 727q-108.162 0-183.081-75Q120 577 120 471t75-181q75-75 181.5-75t181 75Q632 365 632 471.15 632 514 618 554q-14 40-42 75l264 262-44 44ZM377 667q81.25 0 138.125-57.5T572 471q0-81-56.875-138.5T377 275q-82.083 0-139.542 57.5Q180 390 180 471t57.458 138.5Q294.917 667 377 667Z"/></svg>
+		            </label>
+	            </form>
+            </div>
+			{% if session is True %}
+			<a onclick="logout_confirm()" class="nav-link">
+			{% else %}
+			<a href="/login" class="nav-link">
+			{% endif %}
+				<div class="nav-belt__account">
+				{% if session is True %}
+		        	<p>{{ info.mc_id }}さん</p>
+		        	<h1>ログアウト</h1>
+				{% else %}
+					<p>ゲストさん</p>
+		        	<h1>ログイン</h1>
+				{% endif %}
+	        </div>
+			</a>
+			<a href="/history" class="nav-link">
+	        	<div class="nav-belt__returns">
+		        	<p>返品もこちら</p>
+		        	<h1>履歴</h1>
+	        	</div>
+			</a>
+			<a href="/cart" class="nav-link">
+	        	<div class="nav-belt__cart">
+		        	<div class="nav-belt__cart-ui">
+			        	<img src="{% static 'cart.png' %}">
+						{% if session is True %}
+			        	<p>{{ info.user_cart }}</p>
+						{% else %}
+						<p>0</p>
+						{% endif %}
+		        	</div>
+		        	<div class="nav-belt__cart-text">
+			        	<h1>カート</h1>
+		        	</div>
+	        	</div>
+			</a>
+        </div>
+	    <div class="nav-main">
+			<a class="nav-main__point">Utazonポイント:<span>{{ info.point }}</span></a>
+			<div class="nav-main__category">
+				<a class="nav-main__category-child">ヘルプ</a>
+				<a class="nav-main__category-child">プライム</a>
+				{% for jp, en in info.categories.items %}
+				<a class="nav-main__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
+				{% endfor %}
+				<a class="nav-main__category-child" href="/history">再度購入</a>
+			</div>
+	    </div>
+    </header>
+</div>
+<div class="wrapper">
+	<div class="status">
+		<a style="font-weight: 700;font-size: 20px;display: flex;align-items: center" href="../">
+			<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
+			戻る
+		</a>
+		<div class="status-title">
+			<div>
+				<p>配送状況：</p>
+				{% if status_per == 100 %}
+				<h1>配達済み</h1>
+				{% elif arrive_today %}
+				<h1>本日到着予定</h1>
+				{% else %}
+				<h1>{{ order_obj.2.year }}年{{ order_obj.2.month }}日{{ order_obj.2.day }}日に配達予定</h1>
+				{% endif %}
+			</div>
+			<div>
+				<p>注文番号：{{ order_obj.4 }}</p>
+				<p>発注日：{{ order_obj.3.year }}年{{ order_obj.3.month }}日{{ order_obj.3.day }}日</p>
+			</div>
+		</div>
+		<div class="status-container">
+		<div class="progress-container">
+    		<div class="progress-bar" id="progress" data-percent="{{ status_per }}"></div>
+			<div class="milestone" style="left: 0;" id="order1">
+				<div class="milestone-box isActive">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
+				</div>
+				<p>注文済み</p>
+			</div>
+			<div class="milestone" style="left: 33%;" id="order2">
+				<div class="milestone-box">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
+				</div>
+				<p style="color: #cccccc;">発送済み</p>
+			</div>
+			<div class="milestone" style="left: 66%;" id="order3">
+				<div class="milestone-box">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
+				</div>
+				<p style="color: #cccccc;">配達中</p>
+			</div>
+			<div class="milestone" style="left: 100%;" id="order4">
+				<div class="milestone-box">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
+				</div>
+				<p style="white-space: nowrap;color: #cccccc;">到着</p>
+			</div>
+  		</div>
+	</div>
+	</div>
+</body>
+</html>

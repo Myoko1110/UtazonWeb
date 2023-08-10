@@ -169,6 +169,7 @@
 								<a class="history-list__value-product-review" href="../review/?id={{ item.0 }}">商品をレビューする</a>
 								{% else %}
 								<a class="history-list__value-product-return" data-id="{{ child.order_id }}" onclick="order_cancel(this)">注文をキャンセルする</a>
+								<a class="history-list__value-product-review" href="status/?id={{ child.order_id }}">配送状況</a>
 								{% endif %}
 								{% endif %}
 							</div>

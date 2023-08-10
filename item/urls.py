@@ -20,4 +20,5 @@ urlpatterns = [
     path('category/', views.category, name='category'),
     path('history/', views.history, name='history'),
     path('view-history/', views.view_history, name='view_history'),
+    path('history/status/', views.status, name='status'),
 ]
