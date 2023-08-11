@@ -40,7 +40,7 @@
 		            <select class="nav-belt__search-select">
 						<option value="all">すべて</option>
 						{% for jp, en in info.categories.items %}
-			            <option value="{{ en }}">{{ jp }}</option>
+			            <option value="{{ en }}"{% if category == en %} selected{% endif %}>{{ jp }}</option>
 						{% endfor %}
 		            </select>
 	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com" value="{{ query }}" id="search_query">

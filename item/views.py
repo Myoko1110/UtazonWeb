@@ -416,6 +416,7 @@ def search(request):
     context = {
         "result": result,
         "query": query,
+        "category": category,
         "search_results": search_results,
         "point_return": int(point_return * 100),
     }
