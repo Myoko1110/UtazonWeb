@@ -137,7 +137,6 @@ def search_item(item_query, category=None):
             if category:
                 result = []
                 for i in config.functions.get_child_categories(category):
-                    print(i)
                     sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s AND category=%s"
                     cursor.execute(sql, (f"%{item_query}%", i))
 

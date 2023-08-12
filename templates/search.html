@@ -20,6 +20,11 @@
                     <img src="{% static 'logo.svg' %}">
                 </a>
             </div>
+			<div class="nav-belt__menu">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
             <div class="nav-belt__address">
                 <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
 	            <div class="nav-belt__address-dir">
@@ -63,7 +68,7 @@
 					<p>ゲストさん</p>
 		        	<h1>ログイン</h1>
 				{% endif %}
-	        </div>
+	        	</div>
 			</a>
 			<a href="/history" class="nav-link">
 	        	<div class="nav-belt__returns">
@@ -88,8 +93,8 @@
 			</a>
         </div>
 	    <div class="nav-main">
-			<a class="nav-main__point">Utazonポイント:<span>{{ info.point }}</span></a>
 			<div class="nav-main__category">
+				<a class="nav-main__point">Utazonポイント:<span>{{ info.point }}</span></a>
 				<a class="nav-main__category-child">ヘルプ</a>
 				<a class="nav-main__category-child">プライム</a>
 				{% for jp, en in info.categories.items %}
@@ -98,6 +103,73 @@
 				<a class="nav-main__category-child" href="/history">再度購入</a>
 			</div>
 	    </div>
+		<nav class="nav-mobile">
+			<div class="nav-mobile__account">
+				{% if session is True %}
+				<p>{{ info.mc_id }}さん</p>
+				<a onclick="logout_confirm()">ログアウト</a>
+				{% else %}
+				<p>ゲストさん</p>
+				<a href="login">ログイン</a>
+				{% endif %}
+			</div>
+			<div class="nav-mobile__logo">
+                <a href="/" class="nav-link">
+                    <img src="{% static 'logo-black.svg' %}">
+                </a>
+            </div>
+			<div class="nav-mobile__address">
+				<img class="nav-mobile__address-map" src="{% static 'pin-black.svg' %}">
+				<div class="nav-mobile__address-dir">
+					<div class="nav-mobile__address-name">
+						<p class="nav-mobile__address-to">お届け先</p>
+					</div>
+					<div class="nav-mobile__address-number">
+						{% if session is True %}
+						<h1>1-0001仮</h1>
+						{% else %}
+						<h1>ログイン</h1>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			<a href="/history">
+	        	<div class="nav-mobile__returns">
+		        	<p>返品もこちら</p>
+		        	<h1>注文履歴・閲覧履歴</h1>
+	        	</div>
+			</a>
+			<a href="/cart">
+	        	<div class="nav-mobile__cart">
+		        	<div class="nav-mobile__cart-ui">
+			        	<img src="{% static 'cart-black.png' %}">
+						{% if session is True %}
+			        	<p>{{ info.user_cart }}</p>
+						{% else %}
+						<p>0</p>
+						{% endif %}
+		        	</div>
+		        	<div class="nav-mobile__cart-text">
+			        	<h1>カート</h1>
+		        	</div>
+	        	</div>
+			</a>
+			<div>
+				<a class="nav-mobile__point">Utazonポイント:<span>{{ info.point }}</span></a>
+				<a class="nav-mobile__category-child">ヘルプ</a>
+				<a class="nav-mobile__category-child">プライム</a>
+			</div>
+			<div class="nav-mobile__category">
+				<p>カテゴリー</p>
+				<div class="nav-mobile__list">
+					{% for jp, en in info.categories.items %}
+					<a class="nav-mobile__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
+					{% endfor %}
+					<a class="nav-mobile__category-child" href="/history">再度購入</a>
+				</div>
+			</div>
+		</nav>
+		<div class="nav-mobile__background"></div>
     </header>
 </div>
 <div class="wrapper">
@@ -111,7 +183,7 @@
 			<li>
 				<img class="main-img" src="{{ child.3.0 }}" onclick="location.href='../item/?id={{ child.0 }}'">
 				<div class="main-info">
-					<a href="../item/?id={{ child.0 }}">{{ child.1 }}</a>
+					<a href="../item/?id={{ child.0 }}" class="main-name">{{ child.1 }}</a>
 					{% if child.8 %}
 					<div class="main-star__box">
 						{% if child.8 >= 4.8 %}

@@ -21,6 +21,11 @@
                     <img src="{% static 'logo.svg' %}">
                 </a>
             </div>
+			<div class="nav-belt__menu">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
             <div class="nav-belt__address">
                 <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
 	            <div class="nav-belt__address-dir">
@@ -64,7 +69,7 @@
 					<p>ゲストさん</p>
 		        	<h1>ログイン</h1>
 				{% endif %}
-	        </div>
+	        	</div>
 			</a>
 			<a href="/history" class="nav-link">
 	        	<div class="nav-belt__returns">
@@ -89,8 +94,8 @@
 			</a>
         </div>
 	    <div class="nav-main">
-			<a class="nav-main__point">Utazonポイント:<span>{{ info.point }}</span></a>
 			<div class="nav-main__category">
+				<a class="nav-main__point">Utazonポイント:<span>{{ info.point }}</span></a>
 				<a class="nav-main__category-child">ヘルプ</a>
 				<a class="nav-main__category-child">プライム</a>
 				{% for jp, en in info.categories.items %}
@@ -99,6 +104,73 @@
 				<a class="nav-main__category-child" href="/history">再度購入</a>
 			</div>
 	    </div>
+		<nav class="nav-mobile">
+			<div class="nav-mobile__account">
+				{% if session is True %}
+				<p>{{ info.mc_id }}さん</p>
+				<a onclick="logout_confirm()">ログアウト</a>
+				{% else %}
+				<p>ゲストさん</p>
+				<a href="login">ログイン</a>
+				{% endif %}
+			</div>
+			<div class="nav-mobile__logo">
+                <a href="/" class="nav-link">
+                    <img src="{% static 'logo-black.svg' %}">
+                </a>
+            </div>
+			<div class="nav-mobile__address">
+				<img class="nav-mobile__address-map" src="{% static 'pin-black.svg' %}">
+				<div class="nav-mobile__address-dir">
+					<div class="nav-mobile__address-name">
+						<p class="nav-mobile__address-to">お届け先</p>
+					</div>
+					<div class="nav-mobile__address-number">
+						{% if session is True %}
+						<h1>1-0001仮</h1>
+						{% else %}
+						<h1>ログイン</h1>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			<a href="/history">
+	        	<div class="nav-mobile__returns">
+		        	<p>返品もこちら</p>
+		        	<h1>注文履歴・閲覧履歴</h1>
+	        	</div>
+			</a>
+			<a href="/cart">
+	        	<div class="nav-mobile__cart">
+		        	<div class="nav-mobile__cart-ui">
+			        	<img src="{% static 'cart-black.png' %}">
+						{% if session is True %}
+			        	<p>{{ info.user_cart }}</p>
+						{% else %}
+						<p>0</p>
+						{% endif %}
+		        	</div>
+		        	<div class="nav-mobile__cart-text">
+			        	<h1>カート</h1>
+		        	</div>
+	        	</div>
+			</a>
+			<div>
+				<a class="nav-mobile__point">Utazonポイント:<span>{{ info.point }}</span></a>
+				<a class="nav-mobile__category-child">ヘルプ</a>
+				<a class="nav-mobile__category-child">プライム</a>
+			</div>
+			<div class="nav-mobile__category">
+				<p>カテゴリー</p>
+				<div class="nav-mobile__list">
+					{% for jp, en in info.categories.items %}
+					<a class="nav-mobile__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
+					{% endfor %}
+					<a class="nav-mobile__category-child" href="/history">再度購入</a>
+				</div>
+			</div>
+		</nav>
+		<div class="nav-mobile__background"></div>
     </header>
 </div>
 <div class="wrapper">
@@ -119,6 +191,15 @@
 				</div>
 				<div class="item-about__img-index">
 					<img class="item-about__img-index-img" src="{{ item_images.0 }}">
+				</div>
+				<div class="item-about__img-slider">
+					{% for child in item_images %}
+				  	<div class="item-about__img-slide">
+						<div class="item-about__img-slide-content">
+							<img src="{{ child }}">
+						</div>
+				  	</div>
+					{% endfor %}
 				</div>
 			</div>
 			<div class="item-about__description">
@@ -161,6 +242,42 @@
 				<div class="item-about__description-below">
 					<h1><span>$</span>{{ item_price }}</h1>
 					<p>ポイント:<span>{{ item_point }}pt</span><span>({{ point_return }}%)</span><a>詳細はこちら</a></p>
+				</div>
+				<div class="item-about__description-buy">
+					<div class="item-about__buy-delivery">
+						<p class="item-about__buy-delivery-box">
+							<span class="item-about__buy-delivery-type">無料配送</span>
+							<span class="item-about__buy-delivery-date">{{ rand_time.month }}月{{ rand_time.day }}日</span>
+							<span class="item-about__buy-delivery-dateafter">にお届け</span>
+						</p>
+					</div>
+					<div class="item-about__buy-address">
+						<svg class="item-about__buy-address-map" viewBox="0 0 210 210" xmlns="http://www.w3.org/2000/svg"><defs id="defs2" /><g><path id="path790" style="fill:none;stroke:#000000;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers;stop-color:#000000;stroke-opacity:1;stroke-dasharray:none" d="m 175.59797,93.153942 c 0,39.039728 -70.6877,95.819318 -70.6877,95.819318 0,0 -70.6877,-56.77957 -70.687702,-95.819318 2e-6,-39.039739 31.647965,-70.687702 70.687702,-70.6877 39.03974,3e-6 70.6877,31.647964 70.6877,70.6877 z" /><circle style="fill:none;stroke:#000000;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers;stop-color:#000000" id="path790-3" cx="104.60429" cy="93.153938" r="34.623932" /></g></svg>
+						<p>〇〇 - 1-0001 にお届け</p>
+					</div>
+					<div class="item-about__buy-stock">
+						<p>
+							{% if item_stock > 15 %}
+							<span class="item-about__buy-stock-in">在庫あり。</span>
+							{% elif item_stock <= 15 and item_stock >= 1%}
+							<span class="item-about__buy-stock-out">残り{{ item_stock }}点 ご注文はお早めに</span>
+							{% endif %}
+							<span><span class="item-about__buy-stock-status">在庫状況</span>について</span>
+					</div>
+					<div class="item-about__buy-order">
+						{% if session %}
+						<form method="get" action="">
+							<div class="item-about__buy-order-number">
+								<p>数量:</p>
+								<input class="item-about__buy-order-number-input" type="number" value="1" id="card_add">
+							</div>
+							<a onclick="location.href=`../buy?item=[[{{ item_id }}, ${cart_number}]]`" class="item-about__buy-order-input">今すぐ買う</a>
+							<a onclick="location.href=`../cart/add/?id={{ item_id }}&n=${cart_number}`" class="item-about__buy-order-cart">カートに入れる</a>
+						</form>
+						{% else %}
+						<a href="../login" class="item-about__buy-order-cart" type="submit">ログインして購入</a>
+						{% endif %}
+					</div>
 				</div>
 				<div class="item-about__description-safe">
 					<div class="item-about__description-safe-child">

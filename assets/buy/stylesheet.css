@@ -2,7 +2,6 @@
     background-color: #E3E6E6;
     display: flex;
     justify-content: center;
-    margin: 100px 0 0;
 }
 .subwrapper{
     display: flex;
@@ -99,6 +98,12 @@
     font-size: 18px;
     margin-top: 5px;
 }
+.buy-items__box h3{
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
 .buy-point__input{
     border: 1px solid #DDD;
     border-radius: 4px 4px 4px 4px;
@@ -141,4 +146,29 @@ html, body{
 }
 html{
     height: 100%;
+}
+@media(max-width: 799px){
+    .subwrapper{
+        margin: 10px;
+    }
+    .buy-right{
+        display: block!important;
+    }
+    .buy-items__box h3{
+        font-size: 15px;
+    }
+    .buy-confirm{
+        display: block;
+    }
+    .buy-confirm__description{
+        margin-top: 10px;
+    }
+}
+@media(max-width: 499px){
+    .buy-items__list img{
+        width: 100px;
+    }
+    .buy-schedule__date{
+        font-size: 16px;
+    }
 }

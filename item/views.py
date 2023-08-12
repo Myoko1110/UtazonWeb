@@ -749,7 +749,7 @@ def status(request):
     return redirect("/login")
 
 
-def calc_status_per(past_time, future_time):
+def calc_status_per(past_time: datetime.datetime, future_time: datetime.datetime):
     current_time = datetime.datetime.now()
 
     if past_time > future_time:

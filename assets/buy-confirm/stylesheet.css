@@ -2,7 +2,6 @@
     background-color: #E3E6E6;
     display: flex;
     justify-content: center;
-    margin: 100px 0 0;
 }
 .subwrapper{
     display: flex;
@@ -13,7 +12,7 @@
 .buy{
     background-color: #ffffff;
     max-width: 1100px;
-    width: calc(100% - 300px);
+    width: 100%;
     padding: 20px;
 }
 .buy-title{
@@ -35,6 +34,7 @@
     display: flex;
     margin: 20px 0 0;
     padding: 20px 0 0;
+    width: 100%;
 }
 .buy-receive{
     padding: 0;
@@ -53,6 +53,9 @@
 }
 .buy-left{
     width: 200px;
+}
+.buy-right{
+    width: calc(100% - 200px);
 }
 .buy-right p{
     font-size: 15px;
@@ -100,4 +103,51 @@
     color: #565959;
     font-size: 12px;
     margin: 0;
+}
+.buy-items__box h3{
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+@media(max-width: 799px){
+    .buy-items ul{
+        padding: 0;
+    }
+    .buy{
+        padding: 10px;
+    }
+    .subwrapper{
+        margin: 10px;
+    }
+    .buy-title h2{
+        font-size: 22px;
+    }
+    .buy-items__list div{
+        width: calc(100% - 150px);
+    }
+    .buy-items__box h3{
+        font-size: 18px;
+    }
+}
+@media(max-width: 499px){
+    .buy-items__box h3{
+        font-size: 16px;
+    }
+    .buy-items__list img{
+        width: 100px;
+    }
+    .buy-items__list div{
+        width: calc(100% - 100px);
+    }
+    .buy-left{
+        width: 130px;
+    }
+    .buy-right{
+        width: 100%;
+    }
+    .buy-list{
+        display: block;
+        padding: 20px 10px;
+    }
 }
