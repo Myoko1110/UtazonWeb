@@ -509,6 +509,11 @@
     font-weight: 400;
     margin: 0 0 10px;
 }
+@media(min-width: 800px){
+    .item-about__mobile-title{
+        display: none;
+    }
+}
 @media(max-width: 799px){
     .item-about__description-above h1{
         display: none;

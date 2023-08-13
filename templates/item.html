@@ -285,7 +285,7 @@
 					{% endif %}
 				</div>
 				<div class="item-about__description-below">
-					<h1><span>$</span>{{ item_price }}</h1>
+					<h1><span>{{ money_unit }}</span>{{ item_price }}</h1>
 					<p>ポイント:<span>{{ item_point }}pt</span><span>({{ point_return }}%)</span><a>詳細はこちら</a></p>
 				</div>
 				<div class="item-about__description-buy">
@@ -361,7 +361,7 @@
 			</div>
 			<div class="item-about__buy">
 				<div class="item-about__buy-price">
-					<h1><span>$</span>{{ item_price }}</h1>
+					<h1><span>{{ money_unit }}</span>{{ item_price }}</h1>
 				</div>
 				<div class="item-about__buy-point">
 					<p>ポイント:<span>{{ item_point }}pt</span><span>({{ point_return }}%)</span><a>詳細はこちら</a></p>

@@ -30,6 +30,7 @@ SOCKET_HOST = os.environ["SOCKET_HOST"]
 
 PER_POINT = os.environ["PER_POINT"]
 POINT_RETURN = os.environ["POINT_RETURN"]
+MONEY_UNIT = os.environ["MONEY_UNIT"]
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {

@@ -103,7 +103,8 @@ def item(request):
         "item_category": item_category,
         "rand_time": rand_time,
         "point_return": int(point_return * 100),
-        "categories": config.functions.get_categories()
+        "categories": config.functions.get_categories(),
+        "money_unit": settings.MONEY_UNIT,
     }
 
     is_session = config.functions.is_session(request)
@@ -205,7 +206,8 @@ def cart(request):
             "buy_able": buy_able,
             "info": info,
             "point_return": int(point_return * 100),
-            "categories": config.functions.get_categories()
+            "categories": config.functions.get_categories(),
+            "money_unit": settings.MONEY_UNIT,
         }
         # 既ログイン処理
         return render(request, "cart.html", context=context)
@@ -425,7 +427,8 @@ def search(request):
         "category": category,
         "search_results": search_results,
         "point_return": int(point_return * 100),
-        "categories": config.functions.get_categories()
+        "categories": config.functions.get_categories(),
+        "money_unit": settings.MONEY_UNIT,
     }
 
     is_session = config.functions.is_session(request)
@@ -600,6 +603,7 @@ def category(request):
         "result": result,
         "category": category,
         "categories": config.functions.get_categories(),
+        "money_unit": settings.MONEY_UNIT,
     }
 
     is_session = config.functions.is_session(request)
@@ -665,7 +669,8 @@ def history(request):
             "order_history": order_history,
             "session": True,
             "info": info,
-            "categories": config.functions.get_categories()
+            "categories": config.functions.get_categories(),
+            "money_unit": settings.MONEY_UNIT,
         }
         return render(request, "history.html", context=context)
 
@@ -721,7 +726,8 @@ def view_history(request):
             "result": reversed(result),
             "info": info,
             "session": True,
-            "categories": config.functions.get_categories()
+            "categories": config.functions.get_categories(),
+            "money_unit": settings.MONEY_UNIT,
         }
         return render(request, "view-history.html", context=context)
 
@@ -733,7 +739,6 @@ def status(request):
     is_session = config.functions.is_session(request)
     if is_session.valid:
         info = config.functions.get_user_info.from_session(request).all()
-        mc_uuid = info["mc_uuid"]
 
         order_id = request.GET.get("id")
         order_obj = config.DBManager.get_order(order_id)
