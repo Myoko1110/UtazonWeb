@@ -142,25 +142,23 @@
     .main-info{
         width: calc(100% - 210px);
     }
-    .subwrapper{
-        margin: 10px;
-    }
-    .history{
-        padding: 10px;
-    }
 }
-@media(max-width: 499px){
-    .main-name{
-        font-size: 15px!important;
+@media(max-width: 499px) {
+    .main-name {
+        font-size: 15px !important;
     }
-    .main-info{
+
+    .main-info {
         margin-right: 0;
     }
-    .main-img{
+
+    .main-img {
         width: 130px;
-        height: 180px;
+        height: 166px;
     }
-    .main-info{
-        width: calc(100% - 130px);
+
+    .main-info {
+        width: calc(100% - 100px);
+        padding-right: 0;
     }
 }

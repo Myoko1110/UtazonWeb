@@ -408,8 +408,11 @@ def add_user_view_history(mc_uuid, item_id):
             result = json.loads(result[5])
 
             item_id = int(item_id)
-            if result[-1] == item_id:
-                return
+            try:
+                if result[-1] == item_id:
+                    return
+            except IndexError:
+                pass
 
             result.append(item_id)
             sql = "UPDATE IGNORE utazon_user SET view_history=%s WHERE mc_uuid=%s"

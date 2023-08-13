@@ -359,9 +359,9 @@
         margin: 10px;
     }
 }
-html, body{
+body{
     background-color: #E3E6E6;
 }
-html{
+html, body{
     height: 100%;
 }

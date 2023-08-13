@@ -155,6 +155,7 @@ def buy_confirm(request):
         history = config.DBManager.get_user_history(mc_uuid)
         history_obj = {
             "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "delivery_time": order[1].strftime("%Y-%m-%d %H:%M:%S"),
             "amount": amount_float,
             "order_id": order[0],
             "order_item": order_item_list,

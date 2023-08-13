@@ -637,16 +637,11 @@ def history(request):
 
         for i in range(len(order_history)):
             order_history[i]["date"] = datetime.datetime.strptime(order_history[i]["date"], "%Y-%m-%d %H:%M:%S")
+            order_history[i]["delivery_time"] = datetime.datetime.strptime(order_history[i]["delivery_time"], "%Y-%m-%d %H:%M:%S")
             order_history[i]["amount"] = f"{order_history[i]['amount']:,.2f}"
 
-            order_obj = config.DBManager.get_order(order_history[i]["order_id"])
-
-            if not order_history[i]["cancel"]:
-                delivery_time = order_obj[2]
-
-                if datetime.datetime.now() >= delivery_time:
-                    order_history[i]["status"] = True
-                order_history[i]["delivery_time"] = delivery_time
+            if datetime.datetime.now() >= order_history[i]["delivery_time"]:
+                order_history[i]["status"] = True
 
             order_history_child = []
 

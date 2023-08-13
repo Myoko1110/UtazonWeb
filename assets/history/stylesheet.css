@@ -218,7 +218,9 @@
 #order_cancel{
     display: none;
 }
-html,body{
+body{
     background-color: #E3E6E6;
+}
+html, body{
     height: 100%;
 }

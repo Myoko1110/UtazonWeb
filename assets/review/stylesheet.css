@@ -80,6 +80,8 @@
     display: none;
 }
 html, body{
-    background-color: #E3E6E6;
     height: 100%;
+}
+body{
+    background-color: #E3E6E6;
 }

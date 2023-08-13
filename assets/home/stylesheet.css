@@ -104,12 +104,13 @@
 body, html{
     margin: 0;
     padding: 0;
+    height: 100%;
 }
 
 *{
     box-sizing: border-box;
     font-family: 'Hiragino Kaku Gothic ProN','Hiragino Sans',Meiryo,sans-serif;
 }
-html, body{
+body{
     background-color: #E3E6E6;
 }

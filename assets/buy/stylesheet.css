@@ -141,10 +141,10 @@
 .buy-confirm__description a{
     font-size: 14px;
 }
-html, body{
+body{
     background-color: #E3E6E6;
 }
-html{
+html, body{
     height: 100%;
 }
 @media(max-width: 799px){

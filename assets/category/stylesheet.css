@@ -119,12 +119,6 @@
     .main-info{
         width: calc(100% - 210px);
     }
-    .category{
-        padding: 10px;
-    }
-    .subwrapper{
-        margin: 10px;
-    }
 }
 @media(max-width: 499px) {
     .main-name {
@@ -137,10 +131,11 @@
 
     .main-img {
         width: 130px;
-        height: 180px;
+        height: 166px;
     }
 
     .main-info {
-        width: calc(100% - 130px);
+        width: calc(100% - 100px);
+        padding-right: 0;
     }
 }

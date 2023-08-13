@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#232f3e">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
 	<script src="{% static 'item/script.js' %}"></script>
@@ -225,6 +226,7 @@
 			{% endif %}
 			<a href="../category/?name={{ item_category.en }}">{{ item_category.jp }}</a>
 		</div>
+        <h1 class="item-about__mobile-title">{{ item_name }}</h1>
 		<div class="item-about">
 			<div class="item-about__img">
 				<div class="item-about__img-list">
