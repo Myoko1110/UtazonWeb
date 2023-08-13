@@ -128,12 +128,13 @@
     }
 
     .main-img {
-        width: 130px;
-        height: 180px;
+        width: 100px;
+        height: 150px;
     }
 
     .main-info {
-        width: calc(100% - 130px);
+        width: calc(100% - 100px);
+        padding-right: 0;
     }
 }
 

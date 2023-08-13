@@ -17,6 +17,32 @@
 </head>
 <body>
 <div class="global-header">
+	<div class="nav-mobile__top">
+		<div class="nav-mobile__top-left">
+			<div class="nav-belt__menu">
+					<span></span>
+					<span></span>
+					<span></span>
+			</div>
+			<div class="nav-mobile__top-logo">
+				<a href="/">
+					<img src="{% static 'logo.svg' %}">
+				</a>
+			</div>
+		</div>
+		<a href="/cart">
+	        	<div class="nav-mobile__top-cart">
+		        	<div class="nav-mobile__top-cart-ui">
+			        	<img src="{% static 'cart.png' %}">
+						{% if session is True %}
+			        	<p>{{ info.user_cart }}</p>
+						{% else %}
+						<p>0</p>
+						{% endif %}
+		        	</div>
+	        	</div>
+			</a>
+	</div>
     <header>
         <div class="nav-belt">
             <div class="nav-belt__logo">
@@ -24,11 +50,6 @@
                     <img src="{% static 'logo.svg' %}">
                 </a>
             </div>
-			<div class="nav-belt__menu">
-				<span></span>
-				<span></span>
-				<span></span>
-			</div>
             <div class="nav-belt__address">
                 <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
 	            <div class="nav-belt__address-dir">
@@ -48,8 +69,8 @@
 	            <form id="search">
 		            <select class="nav-belt__search-select">
 						<option value="all">すべて</option>
-						{% for jp, en in info.categories.items %}
-			            <option value="{{ en }}">{{ jp }}</option>
+						{% for jp, en in categories.items %}
+			            <option value="{{ en }}"{% if category == en %} selected{% endif %}>{{ jp }}</option>
 						{% endfor %}
 		            </select>
 	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com" value="{{ query }}" id="search_query">
@@ -61,10 +82,7 @@
             </div>
 			{% if session is True %}
 			<a onclick="logout_confirm()" class="nav-link">
-			{% else %}
-			<a href="/login" class="nav-link">
-			{% endif %}
-				<div class="nav-belt__account">
+                <div class="nav-belt__account">
 				{% if session is True %}
 		        	<p>{{ info.mc_id }}さん</p>
 		        	<h1>ログアウト</h1>
@@ -74,6 +92,19 @@
 				{% endif %}
 	        	</div>
 			</a>
+			{% else %}
+			<a href="/login" class="nav-link">
+                <div class="nav-belt__account">
+				{% if session is True %}
+		        	<p>{{ info.mc_id }}さん</p>
+		        	<h1>ログアウト</h1>
+				{% else %}
+					<p>ゲストさん</p>
+		        	<h1>ログイン</h1>
+				{% endif %}
+	        	</div>
+			</a>
+			{% endif %}
 			<a href="/history" class="nav-link">
 	        	<div class="nav-belt__returns">
 		        	<p>返品もこちら</p>
@@ -98,10 +129,16 @@
         </div>
 	    <div class="nav-main">
 			<div class="nav-main__category">
-				<a class="nav-main__point">Utazonポイント:<span>{{ info.point }}</span></a>
+				<a class="nav-main__point">Utazonポイント:
+                    {% if session is True %}
+                    <span>{{ info.point }}</span>
+                    {% else %}
+                    <span>0</span>
+                    {% endif %}
+                </a>
 				<a class="nav-main__category-child">ヘルプ</a>
 				<a class="nav-main__category-child">プライム</a>
-				{% for jp, en in info.categories.items %}
+				{% for jp, en in categories.items %}
 				<a class="nav-main__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 				{% endfor %}
 				<a class="nav-main__category-child" href="/history">再度購入</a>
@@ -159,14 +196,20 @@
 	        	</div>
 			</a>
 			<div>
-				<a class="nav-mobile__point">Utazonポイント:<span>{{ info.point }}</span></a>
+                <a class="nav-mobile__point">Utazonポイント:
+                {% if session is True %}
+				<span>{{ info.point }}</span>
+                {% else %}
+                <span>0</span>
+                {% endif %}
+                </a>
 				<a class="nav-mobile__category-child">ヘルプ</a>
 				<a class="nav-mobile__category-child">プライム</a>
 			</div>
 			<div class="nav-mobile__category">
 				<p>カテゴリー</p>
 				<div class="nav-mobile__list">
-					{% for jp, en in info.categories.items %}
+					{% for jp, en in categories.items %}
 					<a class="nav-mobile__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 					{% endfor %}
 					<a class="nav-mobile__category-child" href="/history">再度購入</a>

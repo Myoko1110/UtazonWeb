@@ -102,8 +102,6 @@ class get_user_info:
             except AttributeError as exc:
                 raise TypeError("Pass a Request object on request argument.") from exc
 
-            categories = get_categories()
-
             for child in session:
                 if child.startswith("_Secure-"):
 
@@ -126,7 +124,6 @@ class get_user_info:
                         "mc_id": profile["mc_id"],
                         "user_cart": cart,
                         "point": point,
-                        "categories": categories,
                     }
 
             else:

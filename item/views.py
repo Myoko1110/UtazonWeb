@@ -25,12 +25,14 @@ def index_view(request):
         context = {
             "session": True,
             "info": info,
+            "categories": config.functions.get_categories()
         }
         # 既ログイン処理
         return render(request, "index.html", context=context)
     elif is_session.expire:
         context = {
             "session": "expires",
+            "categories": config.functions.get_categories()
         }
         response = render(request, "index.html", context=context)
 
@@ -44,6 +46,7 @@ def index_view(request):
     else:
         context = {
             "session": False,
+            "categories": config.functions.get_categories()
         }
         # 未ログイン処理
         return render(request, "index.html", context=context)
@@ -100,6 +103,7 @@ def item(request):
         "item_category": item_category,
         "rand_time": rand_time,
         "point_return": int(point_return * 100),
+        "categories": config.functions.get_categories()
     }
 
     is_session = config.functions.is_session(request)
@@ -201,6 +205,7 @@ def cart(request):
             "buy_able": buy_able,
             "info": info,
             "point_return": int(point_return * 100),
+            "categories": config.functions.get_categories()
         }
         # 既ログイン処理
         return render(request, "cart.html", context=context)
@@ -208,6 +213,7 @@ def cart(request):
     elif is_session.expire:
         context = {
             "session": "expires",
+            "categories": config.functions.get_categories()
         }
         response = render(request, "cart.html", context=context)
 
@@ -419,6 +425,7 @@ def search(request):
         "category": category,
         "search_results": search_results,
         "point_return": int(point_return * 100),
+        "categories": config.functions.get_categories()
     }
 
     is_session = config.functions.is_session(request)
@@ -464,6 +471,7 @@ def review(request):
             "item_image": item_image,
             "session": True,
             "info": info,
+            "categories": config.functions.get_categories()
         }
 
         return render(request, "review.html", context=context)
@@ -497,7 +505,8 @@ def review_post(request):
             "title": review_title,
             "value": review_text,
             "useful": 0,
-            "mc_uuid": mc_uuid
+            "mc_uuid": mc_uuid,
+            "categories": config.functions.get_categories(),
         }
 
         item_review.append(new_review)
@@ -590,6 +599,7 @@ def category(request):
     context = {
         "result": result,
         "category": category,
+        "categories": config.functions.get_categories(),
     }
 
     is_session = config.functions.is_session(request)
@@ -660,12 +670,14 @@ def history(request):
             "order_history": order_history,
             "session": True,
             "info": info,
+            "categories": config.functions.get_categories()
         }
         return render(request, "history.html", context=context)
 
     elif is_session.expire:
         context = {
             "session": "expires",
+            "categories": config.functions.get_categories()
         }
         response = render(request, "history.html", context=context)
 
@@ -714,6 +726,7 @@ def view_history(request):
             "result": reversed(result),
             "info": info,
             "session": True,
+            "categories": config.functions.get_categories()
         }
         return render(request, "view-history.html", context=context)
 
@@ -743,6 +756,7 @@ def status(request):
             "arrive_today": arrive_today,
             "info": info,
             "session": True,
+            "categories": config.functions.get_categories()
         }
         return render(request, "order-status.html", context=context)
 

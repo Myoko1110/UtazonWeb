@@ -527,7 +527,7 @@
   position: relative;
   top: 0;
   left: 0;
-  transition: all 0.6s ease-in-out;
+  transition: all 0.1s ease-in-out;
 }
 
 .item-about__img-slide-content {
@@ -592,10 +592,6 @@
 .dot.isActive {
     background-color: #007cc5;
     border: transparent 1px solid;
-}
-
-.dot:hover {
-    background-color: #dcdcdc;
 }
 
 body, html{

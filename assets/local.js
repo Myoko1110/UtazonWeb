@@ -13,7 +13,7 @@ $(function() {
     }else if(window_width >= 800){
         width = window_width - (logo + account + cart) - 165;
     }else{
-        width = window_width - menu - 75;
+        width = window_width - 75;
     }
     $(".nav-belt__search-input").css("width", width);
 
@@ -43,7 +43,7 @@ $(function() {
         }else if(window_width >= 800){
             width = window_width - (logo + account + cart) - 165;
         }else{
-            width = window_width - menu - 75;
+            width = window_width - 75;
 
         }
         $(".nav-belt__search-input").css("width", width);
