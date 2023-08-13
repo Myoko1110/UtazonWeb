@@ -648,3 +648,20 @@ a{
 .wrapper.isActive{
     overflow: hidden;
 }
+
+footer{
+    background-color: #232f3e;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px 0;
+    padding: 10px;
+}
+footer img{
+    width: 130px;
+}
+footer p{
+    margin: 0;
+    font-size: 13px;
+}

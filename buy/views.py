@@ -91,7 +91,8 @@ def buy(request):
             "rand_time": rand_time,
             "per_point": per_point,
             "total_point": total_point,
-            "categories": config.functions.get_categories()
+            "categories": config.functions.get_categories(),
+            "money_unit": settings.MONEY_UNIT,
         }
         return render(request, "buy.html", context=context)
 
@@ -201,7 +202,8 @@ def buy_confirm(request):
             "order_id": order[0],
             "order_time": order[1],
             "order_item_obj": order_item_obj,
-            "categories": config.functions.get_categories()
+            "categories": config.functions.get_categories(),
+            "money_unit": settings.MONEY_UNIT,
         }
 
         return render(request, "buy-confirm.html", context=context)

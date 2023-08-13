@@ -756,7 +756,7 @@ def status(request):
             "arrive_today": arrive_today,
             "info": info,
             "session": True,
-            "categories": config.functions.get_categories()
+            "categories": config.functions.get_categories(),
         }
         return render(request, "order-status.html", context=context)
 

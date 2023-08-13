@@ -254,27 +254,28 @@
 				{% if not player_balance_float %}
 				<div class="buy-right" style="display: flex">
 					<p>
-						<span class="buy-balance__money">エラーが発生しました</span>
+						<span class="buy-balance__money">サーバーへの接続に失敗しました</span>
+                        <span style="font-size: 14px;display: block;margin-left: 10px;">時間をおいてから再度お試しください。問題が続くようであれば、運営にお問い合わせ下さい。</span>
 					</p>
 				{% elif buy_able %}
 				<div class="buy-right" style="display: flex;align-items: center;">
 					<p>
 						<span>購入後の残高</span>
 					</p>
-					<div>
+					<div class="buy-right__box">
 						<p>
-							<span class="buy-balance__money">$<span id="player_balance" data-float="{{ player_balance_float }}">{{ player_balance }}</span></span>
+							<span class="buy-balance__money">{{ money_unit }}<span id="player_balance" data-float="{{ player_balance_float }}">{{ player_balance }}</span></span>
 						</p>
 						<p style="margin: 0 0 0 20px">
 							<span>→</span>
-							<span class="buy-balance__money">$<span id="after_balance">{{ after_balance }}</span></span>
+							<span class="buy-balance__money">{{ money_unit }}<span id="after_balance">{{ after_balance }}</span></span>
 						</p>
 					</div>
 				{% else %}
 				<div class="buy-right">
 					<p>
 						<span>残高</span>
-						<span class="buy-balance__money">${{ player_balance }}</span>
+						<span class="buy-balance__money">{{ money_unit }}{{ player_balance }}</span>
 					</p>
 					<p style="color: #b12704;font-weight: 700">残高不足です</p>
 				{% endif %}
@@ -296,7 +297,7 @@
 								<img src="{{ child.3.0 }}">
 								<div class="buy-items__box">
 									<h3>{{ child.1 }}</h3>
-									<p>${{ child.9 }}</p>
+									<p>{{ money_unit }}{{ child.9 }}</p>
 									<p style="font-weight: 400;font-size: 14px;margin: 0;">個数: {{ child.10 }}</p>
 								</div>
 							</li>
@@ -311,7 +312,7 @@
 						<span>4</span>
 						<span>ポイント</span>
 					</h3>
-					<p>※1ptあたり${{ per_point }}</p>
+					<p>※1ptあたり{{ money_unit }}{{ per_point }}</p>
 				</div>
 				<div class="buy-right">
 					<p>Utazonポイント：<span class="point" data-perpoint="{{ per_point }}">{{ info.point }}</span></p>
@@ -322,13 +323,16 @@
 				</div>
 			</div>
 			<div class="buy-confirm">
+                <div class="buy-confirm__btn">
 				{% if buy_able %}
-				<div class="buy-confirm__btn">
 					<a id="order_confirm" style="cursor: pointer" data-buynow="{{ buy_now }}">注文を確定</a>
-				</div>
+                {% else %}
+                    <a id="order_confirm" style="cursor: not-allowed;background-color: #f3f3f3;color: #d5d5d5;display: block;" data-buynow="couldn't access">注文を確定</a>
+                    <span style="font-size: 14px;display: block;margin-left: 10px;">サーバーへの接続に失敗しました。</span>
 				{% endif %}
+                </div>
 				<div class="buy-confirm__description">
-					<h3>ご請求額： $<span>{{ item_total }}</span></h3>
+					<h3>ご請求額： {{ money_unit }}<span>{{ item_total }}</span></h3>
 					<a>獲得ポイント：{{ total_point }}pt</a>
 					<p>「注文を確定する」ボタンを押してご注文いただくことで、請求がされます。<br>
 					また、本サイトで現金を請求するようなことは一切ありません！！</p>

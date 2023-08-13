@@ -3,6 +3,7 @@ $(function(){
     const user_point = Number($(".point").text());
     const per_point = new Decimal(Number($(".point").data("perpoint")));
     const items = $(".buy-items").data("items");
+    const buynow = $("#order_confirm").data("buynow");
     let player_balance = null;
     if ($("#player_balance").data("float")) {
         player_balance = new Decimal($("#player_balance").data("float"));
@@ -10,9 +11,12 @@ $(function(){
     if ($(".buy-point__input").attr("max") > total.div(per_point).toNumber()){
         $(".buy-point__input").attr("max", total.div(per_point).toNumber());
     }
-
     $("#order_confirm").on("click", function (e){
         e.preventDefault();
+        console.log(buynow)
+        if(buynow === "couldn't access"){
+            return;
+        }
 
         let point = Number($(".buy-point__input").val());
 
@@ -34,7 +38,7 @@ $(function(){
             $("#error2").css("display", "none");
             return;
         }
-        location.href = "confirm/?items=" + JSON.stringify(items) + "&buynow=" + $("#order_confirm").data("buynow") + "&point=" + point;
+        location.href = "confirm/?items=" + JSON.stringify(items) + "&buynow=" + buynow + "&point=" + point;
     });
 
     $(".buy-point__input").on("input", function (e){

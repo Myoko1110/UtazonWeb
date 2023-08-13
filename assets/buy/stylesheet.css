@@ -120,6 +120,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    width: 145px;
 }
 .buy-confirm__btn a{
     background-color: #14adff;
@@ -147,12 +149,18 @@ body{
 html, body{
     height: 100%;
 }
+@media(min-width: 800px){
+    .buy-right__box{
+        display: flex;
+    }
+}
 @media(max-width: 799px){
     .subwrapper{
         margin: 10px;
     }
     .buy-right{
         display: block!important;
+        margin-left: 10px;
     }
     .buy-items__box h3{
         font-size: 15px;
