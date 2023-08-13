@@ -650,13 +650,36 @@ a{
 }
 
 footer{
-    background-color: #232f3e;
+    background-color: #131921;
     color: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 10px 0;
+    margin: 10px 0 0;
     padding: 10px;
+}
+.footer__link ul{
+    display: flex;
+}
+.footer__link-list{
+     margin: 0 5px;
+}
+.footer__link-list a{
+    display: flex;
+    align-items: center;
+}
+.footer__link-list a div{
+    background-color: #1d2734;
+    border-radius: 100px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+footer ul{
+    list-style: none;
+    padding: 0;
 }
 footer img{
     width: 130px;

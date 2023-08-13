@@ -4,8 +4,11 @@ import random
 from statistics import mean
 from decimal import Decimal, getcontext
 
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.http import Http404
+from django.db.models import Max
+from .models import Banner
+
 
 import config.DBManager
 import config.functions
@@ -15,25 +18,37 @@ getcontext().prec = 10
 point_return = Decimal(settings.POINT_RETURN)
 
 
+def get_banners():
+    mobile_record = Banner.objects.filter(view_type='mobile').aggregate(Max('id'))["id__max"]
+    mobile_img = get_object_or_404(Banner, id=mobile_record)
+
+    pc_record = Banner.objects.filter(view_type='pc').aggregate(Max('id'))["id__max"]
+    pc_img = get_object_or_404(Banner, id=pc_record)
+
+    return pc_img, mobile_img
+
+
 def index_view(request):
+    banner_obj = get_banners()
+
+    context = {
+        "categories": config.functions.get_categories(),
+        "banner_obj": banner_obj,
+    }
+
     is_session = config.functions.is_session(request)
     if is_session.valid:
 
         # ユーザー情報を取得
         info = config.functions.get_user_info.from_session(request).all()
 
-        context = {
-            "session": True,
-            "info": info,
-            "categories": config.functions.get_categories()
-        }
+        context["session"] = True
+        context["info"] = info
+
         # 既ログイン処理
         return render(request, "index.html", context=context)
     elif is_session.expire:
-        context = {
-            "session": "expires",
-            "categories": config.functions.get_categories()
-        }
+        context["session"] = "expires"
         response = render(request, "index.html", context=context)
 
         for key in request.COOKIES:
@@ -44,10 +59,7 @@ def index_view(request):
         # 期限切れ処理
         return response
     else:
-        context = {
-            "session": False,
-            "categories": config.functions.get_categories()
-        }
+        context["session"] = False
         # 未ログイン処理
         return render(request, "index.html", context=context)
 
