@@ -1,9 +1,9 @@
 import datetime
 import json
+from decimal import Decimal, getcontext, ROUND_UP, ROUND_DOWN
 
 from django.shortcuts import redirect, render
 from django.http import Http404
-from decimal import Decimal, getcontext, ROUND_UP, ROUND_DOWN
 
 import config.functions
 import config.DBManager
@@ -76,7 +76,7 @@ def buy(request):
             rand_time = now + datetime.timedelta(days=1)
 
         context = {
-            "session": True,
+            "session": is_session,
             "info": info,
             "user_cart": user_cart,
             "user_cart_number": user_cart_number,
@@ -197,7 +197,7 @@ def buy_confirm(request):
         config.DBManager.deposit_user_point(mc_uuid, total_point)
 
         context = {
-            "session": True,
+            "session": is_session,
             "info": info,
             "order_id": order[0],
             "order_time": order[1],

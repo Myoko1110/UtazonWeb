@@ -7,12 +7,11 @@ from decimal import Decimal, getcontext
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import Http404
 from django.db.models import Max
-from .models import Banner
-
 
 import config.DBManager
 import config.functions
 import config.settings as settings
+from item.models import Banner
 
 getcontext().prec = 10
 point_return = Decimal(settings.POINT_RETURN)
@@ -31,24 +30,20 @@ def get_banners():
 def index_view(request):
     banner_obj = get_banners()
 
+    is_session = config.functions.is_session(request)
     context = {
         "categories": config.functions.get_categories(),
         "banner_obj": banner_obj,
+        "session": is_session,
     }
-
-    is_session = config.functions.is_session(request)
     if is_session.valid:
-
         # ユーザー情報を取得
         info = config.functions.get_user_info.from_session(request).all()
-
-        context["session"] = True
         context["info"] = info
 
         # 既ログイン処理
         return render(request, "index.html", context=context)
     elif is_session.expire:
-        context["session"] = "expires"
         response = render(request, "index.html", context=context)
 
         for key in request.COOKIES:
@@ -59,7 +54,6 @@ def index_view(request):
         # 期限切れ処理
         return response
     else:
-        context["session"] = False
         # 未ログイン処理
         return render(request, "index.html", context=context)
 
@@ -101,6 +95,7 @@ def item(request):
     else:
         rand_time = now + datetime.timedelta(days=1)
 
+    is_session = config.functions.is_session(request)
     context = {
         "item_id": result[0],
         "item_name": result[1],
@@ -117,9 +112,8 @@ def item(request):
         "point_return": int(point_return * 100),
         "categories": config.functions.get_categories(),
         "money_unit": settings.MONEY_UNIT,
+        "session": is_session,
     }
-
-    is_session = config.functions.is_session(request)
     if is_session.valid:
         info = config.functions.get_user_info.from_session(request).all()
 
@@ -127,13 +121,11 @@ def item(request):
         config.DBManager.add_user_view_history(info["mc_uuid"], item_id)
 
         context["info"] = info
-        context["session"] = True
 
         # 既ログイン処理
         return render(request, "item.html", context=context)
 
     elif is_session.expire:
-        context["session"] = "expires"
         response = render(request, "item.html", context=context)
 
         for key in request.COOKIES:
@@ -145,7 +137,6 @@ def item(request):
         return response
 
     else:
-        context["session"] = False
         # 未ログイン処理
         return render(request, "item.html", context=context)
 
@@ -209,7 +200,7 @@ def cart(request):
             user_cart_number += user_cart[i][10]
 
         context = {
-            "session": True,
+            "session": is_session,
             "user_cart": user_cart,
             "user_cart_number": user_cart_number,
             "user_later": user_later,
@@ -226,7 +217,7 @@ def cart(request):
 
     elif is_session.expire:
         context = {
-            "session": "expires",
+            "session": is_session,
             "categories": config.functions.get_categories()
         }
         response = render(request, "cart.html", context=context)
@@ -409,9 +400,9 @@ def search(request):
     if not query:
         return redirect("/")
 
-    category = request.GET.get("category")
+    category_en = request.GET.get("category")
 
-    result = config.DBManager.search_item(query, category)
+    result = config.DBManager.search_item(query, category_en)
 
     search_results = len(result)
 
@@ -433,6 +424,7 @@ def search(request):
         result[i][3] = json.loads(result[i][3])
         result[i][2] = f"{result[i][2]:,.2f}"
 
+    is_session = config.functions.is_session(request)
     context = {
         "result": result,
         "query": query,
@@ -441,18 +433,15 @@ def search(request):
         "point_return": int(point_return * 100),
         "categories": config.functions.get_categories(),
         "money_unit": settings.MONEY_UNIT,
+        "session": is_session,
     }
-
-    is_session = config.functions.is_session(request)
     if is_session.valid:
         info = config.functions.get_user_info.from_session(request).all()
         context["info"] = info
-        context["session"] = True
 
         return render(request, "search.html", context=context)
 
     elif is_session.expire:
-        context["session"] = "expires"
         response = render(request, "search.html", context=context)
 
         for key in request.COOKIES:
@@ -464,7 +453,6 @@ def search(request):
         return response
 
     else:
-        context["session"] = False
         # 未ログイン処理
         return render(request, "search.html", context=context)
 
@@ -484,9 +472,9 @@ def review(request):
         context = {
             "item_name": item_name,
             "item_image": item_image,
-            "session": True,
+            "session": is_session,
             "info": info,
-            "categories": config.functions.get_categories()
+            "categories": config.functions.get_categories(),
         }
 
         return render(request, "review.html", context=context)
@@ -609,25 +597,23 @@ def category(request):
             result[i][3] = json.loads(result[i][3])
             result[i][2] = f"{result[i][2]:,.2f}"
 
-    category = config.functions.get_category(cat_id).from_en()
-
-    context = {
-        "result": result,
-        "category": category,
-        "categories": config.functions.get_categories(),
-        "money_unit": settings.MONEY_UNIT,
-    }
+    category_obj = config.functions.get_category(cat_id).from_en()
 
     is_session = config.functions.is_session(request)
+    context = {
+        "result": result,
+        "category": category_obj,
+        "categories": config.functions.get_categories(),
+        "money_unit": settings.MONEY_UNIT,
+        "session": is_session,
+    }
     if is_session.valid:
         info = config.functions.get_user_info.from_session(request).all()
         context["info"] = info
-        context["session"] = True
 
         return render(request, "category.html", context=context)
 
     elif is_session.expire:
-        context["session"] = "expires"
         response = render(request, "category.html", context=context)
 
         for key in request.COOKIES:
@@ -639,7 +625,6 @@ def category(request):
         return response
 
     else:
-        context["session"] = False
         # 未ログイン処理
         return render(request, "category.html", context=context)
 
@@ -679,7 +664,7 @@ def history(request):
 
         context = {
             "order_history": order_history,
-            "session": True,
+            "session": is_session,
             "info": info,
             "categories": config.functions.get_categories(),
             "money_unit": settings.MONEY_UNIT,
@@ -688,7 +673,7 @@ def history(request):
 
     elif is_session.expire:
         context = {
-            "session": "expires",
+            "session": is_session,
             "categories": config.functions.get_categories()
         }
         response = render(request, "history.html", context=context)
@@ -709,10 +694,10 @@ def view_history(request):
     is_session = config.functions.is_session(request)
     if is_session.valid:
         info = config.functions.get_user_info.from_session(request).all()
-        view_history = config.DBManager.get_user_view_history(info["mc_uuid"])
+        view_history_obj = config.DBManager.get_user_view_history(info["mc_uuid"])
 
         result = []
-        for i in view_history:
+        for i in view_history_obj:
             item_result = config.DBManager.get_item(i)
             result.append(item_result)
 
@@ -737,7 +722,7 @@ def view_history(request):
         context = {
             "result": reversed(result),
             "info": info,
-            "session": True,
+            "session": is_session,
             "categories": config.functions.get_categories(),
             "money_unit": settings.MONEY_UNIT,
         }
@@ -767,7 +752,7 @@ def status(request):
             "status_per": status_per,
             "arrive_today": arrive_today,
             "info": info,
-            "session": True,
+            "session": is_session,
             "categories": config.functions.get_categories(),
         }
         return render(request, "order-status.html", context=context)
