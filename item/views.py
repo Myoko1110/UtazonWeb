@@ -18,11 +18,11 @@ point_return = Decimal(settings.POINT_RETURN)
 
 
 def get_banners():
-    mobile_record = Banner.objects.filter(view_type='mobile').aggregate(Max('id'))["id__max"]
-    mobile_img = get_object_or_404(Banner, id=mobile_record)
-
     pc_record = Banner.objects.filter(view_type='pc').aggregate(Max('id'))["id__max"]
     pc_img = get_object_or_404(Banner, id=pc_record)
+
+    mobile_record = Banner.objects.filter(view_type='mobile').aggregate(Max('id'))["id__max"]
+    mobile_img = get_object_or_404(Banner, id=mobile_record)
 
     return pc_img, mobile_img
 
@@ -30,8 +30,11 @@ def get_banners():
 def index_view(request):
     banner_obj = get_banners()
 
+    popular_item = config.DBManager.get_popular_item()
+
     is_session = config.functions.is_session(request)
     context = {
+        "popular_item": popular_item,
         "categories": config.functions.get_categories(),
         "banner_obj": banner_obj,
         "session": is_session,

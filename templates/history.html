@@ -265,9 +265,11 @@
 								<img src="{{ item.3.0 }}">
 								<div class="history-list__value-product-middle">
 									<a class="history-list__value-product-name" href="../item/?id={{ item.0 }}">{{ item.1 }}</a>
+                                <!--
 									{% if child.status %}
 									<span>返品期間：2023/04/06まで</span>
 									{% endif %}
+								-->
 									<div style="display: flex; margin-top: 5px;align-items: center">
 										<p style="margin: 0 10px 0 0;font-size: 14px">個数：{{ item.8 }}</p>
 										<div>
@@ -280,11 +282,11 @@
 							<div class="history-list__value-product-end">
 								{% if not child.cancel %}
 								{% if child.status %}
-								<a class="history-list__value-product-return">商品を返品する</a>
-								<a class="history-list__value-product-review" href="../review/?id={{ item.0 }}">商品をレビューする</a>
+								<!--<a class="history-list__value-product-review">商品を返品する</a>-->
+								<a class="history-list__value-product-return" href="../review/?id={{ item.0 }}">商品をレビューする</a>
 								{% else %}
-								<a class="history-list__value-product-return" data-id="{{ child.order_id }}" onclick="order_cancel(this)">注文をキャンセルする</a>
-								<a class="history-list__value-product-review" href="status/?id={{ child.order_id }}">配送状況</a>
+								<a class="history-list__value-product-review" data-id="{{ child.order_id }}" onclick="order_cancel(this)">注文をキャンセルする</a>
+								<a class="history-list__value-product-return" href="status/?id={{ child.order_id }}">配送状況</a>
 								{% endif %}
 								{% endif %}
 							</div>

@@ -52,7 +52,8 @@ def table_create(sender, **kwargs):
                                                     review JSON,
                                                     stock BIGINT,
                                                     kind JSON,
-                                                    category VARCHAR(64)
+                                                    category VARCHAR(64),
+                                                    purchases_number BIGINT
                                                     )"""
             cursor.execute(sql)
 

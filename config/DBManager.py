@@ -142,8 +142,8 @@ def search_item(item_query, category=None):
 
                     fetch = list(cursor.fetchall())
 
-                    for i in fetch:
-                        result.append(list(i))
+                    for j in fetch:
+                        result.append(list(j))
 
             else:
                 sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s"
@@ -184,7 +184,7 @@ def update_item_review(item_id, value):
         with cnx.cursor() as cursor:
             sql = "UPDATE utazon_item SET review=%s WHERE item_id=%s"
 
-            cursor.execute(sql, (value ,item_id,))
+            cursor.execute(sql, (value, item_id,))
             cnx.commit()
     return True
 
@@ -419,3 +419,17 @@ def add_user_view_history(mc_uuid, item_id):
             cursor.execute(sql, (json.dumps(result), mc_uuid,))
             cnx.commit()
     return True
+
+
+def get_popular_item():
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_item ORDER BY `purchases_number` DESC LIMIT 4"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+
+            for i in range(len(result)):
+                result[i] = list(result[i])
+                result[i][3] = json.loads(result[i][3])
+    return result

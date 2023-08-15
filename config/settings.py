@@ -32,6 +32,9 @@ PER_POINT = os.environ["PER_POINT"]
 POINT_RETURN = os.environ["POINT_RETURN"]
 MONEY_UNIT = os.environ["MONEY_UNIT"]
 
+if float(POINT_RETURN) > 1.0:
+    raise ValueError("POINT_RETURNは1以下にして下さい。")
+
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     'default': {
@@ -43,21 +46,24 @@ DATABASES = {
 DATABASE_CONFIG = {
     'utazon': {
         'host': os.environ["DB_UTAZON_HOST"],
-        'user': os.environ["DB_UTAZON_USERNAME"],
+        'port': os.environ["DB_UTAZON_PORT"],
+        'user': os.environ["DB_UTAZON_USER"],
         'password': os.environ["DB_UTAZON_PASS"],
-        'database': os.environ["DB_UTAZON_DBNAME"],
+        'database': os.environ["DB_UTAZON_DB"],
     },
     'address': {
         'host': os.environ["DB_ADDRESS_HOST"],
-        'user': os.environ["DB_ADDRESS_USERNAME"],
+        'port': os.environ["DB_ADDRESS_PORT"],
+        'user': os.environ["DB_ADDRESS_USER"],
         'password': os.environ["DB_ADDRESS_PASS"],
-        'database': os.environ["DB_ADDRESS_DBNAME"],
+        'database': os.environ["DB_ADDRESS_DB"],
     },
     'linked': {
         'host': os.environ["DB_LINKED_HOST"],
-        'user': os.environ["DB_LINKED_USERNAME"],
+        'port': os.environ["DB_LINKED_PORT"],
+        'user': os.environ["DB_LINKED_USER"],
         'password': os.environ["DB_LINKED_PASS"],
-        'database': os.environ["DB_LINKED_DBNAME"],
+        'database': os.environ["DB_LINKED_DB"],
     },
 }
 
