@@ -123,6 +123,16 @@
     font-size: 12px;
     vertical-align: top;
 }
+.main-price p{
+    margin: 3px;
+    padding: 4px 8px;
+    background-color: #b12704;
+    color: #ffffff;
+    font-weight: 700;
+    width: fit-content;
+    font-size: 14px;
+    border-radius: 5px;
+}
 .main-point{
     color: #b12704;
     margin: 0;

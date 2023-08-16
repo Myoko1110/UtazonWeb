@@ -263,10 +263,15 @@
 								<p>{{ child.9 }}</p>
 							</div>
 							{% endif %}
-							<div class="main-price">
-								<a href="../item/?id={{ child.0 }}"><span>{{ money_unit }}</span>{{ child.2 }}</a>
-							</div>
-							<p class="main-point">{{ child.10 }}ポイント(10%)</p>
+					        <div class="main-price">
+                                {% if child.11.status %}
+                                <p>タイムセール</p>
+						        <a href="../item/?id={{ child.0 }}"><span>{{ money_unit }}</span>{{ child.2 }}</a><small style="color: #565959;margin-left: 5px">過去価格: <del>{{ money_unit }}{{ child.11.past_price }}</del></small>
+					            {% else %}
+						        <a href="../item/?id={{ child.0 }}"><span>{{ money_unit }}</span>{{ child.2 }}</a>
+                                {% endif %}
+                            </div>
+							<p class="main-point">{{ child.10 }}ポイント({{ point_return }}%)</p>
 						</div>
 					</li>
 					{% endfor %}

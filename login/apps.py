@@ -77,6 +77,16 @@ def table_create(sender, **kwargs):
                                                     )"""
             cursor.execute(sql)
 
+            sql = """CREATE TABLE IF NOT EXISTS `utazon_sale` (
+                                                    id INT AUTO_INCREMENT UNIQUE,
+                                                    item_id BIGINT UNIQUE,
+                                                    sale_status BOOLEAN,
+                                                    discount_rate INT,
+                                                    sale_start DATETIME,
+                                                    sale_end DATETIME
+                                                    )"""
+            cursor.execute(sql)
+
             # DiscordConnectに従う
             sql = """CREATE TABLE IF NOT EXISTS `linked` (
                                                     mc_uuid VARCHAR(36) UNIQUE,

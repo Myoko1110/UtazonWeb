@@ -2,7 +2,7 @@ import datetime
 import json
 import random
 from statistics import mean
-from decimal import Decimal, getcontext
+from decimal import Decimal, getcontext, ROUND_UP
 
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import Http404
@@ -94,6 +94,20 @@ def item(request):
 
     item_category = config.functions.get_category(result[7]).from_en()
 
+    sale_id = config.DBManager.get_id_from_item(item_id)
+    item_sale = config.DBManager.get_item_sale(sale_id)
+    past_price = 0
+    if item_sale and item_sale[2]:
+        if calc_status_per(item_sale[4], item_sale[5]) != 0.0 and calc_status_per(item_sale[4], item_sale[5]) != 100.0:
+            sale = {"status": True, "discount_rate": item_sale[3]}
+            past_price = result[2]
+            result[2] = Decimal(str(result[2])) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
+            result[2] = result[2].quantize(Decimal(".01"), rounding=ROUND_UP)
+        else:
+            sale = {"status": False}
+    else:
+        sale = {"status": False}
+
     now = datetime.datetime.now()
     if now > datetime.datetime.strptime("13:00:00", "%H:%M:%S"):
         rand_time = now + datetime.timedelta(days=2)
@@ -105,6 +119,7 @@ def item(request):
         "item_id": result[0],
         "item_name": result[1],
         "item_price": f"{result[2]:,.2f}",
+        "past_price": f"{past_price:,.2f}",
         "item_point": int(Decimal(str(result[2])) * point_return),
         "item_images": json.loads(result[3]),
         "item_stock": result[5],
@@ -117,6 +132,7 @@ def item(request):
         "point_return": int(point_return * 100),
         "categories": config.functions.get_categories(),
         "money_unit": settings.MONEY_UNIT,
+        "sale": sale,
         "session": is_session,
     }
     if is_session.valid:
@@ -155,6 +171,7 @@ def cart(request):
         user_cart_id = config.DBManager.get_user_cart(info["mc_uuid"])
 
         user_cart = []
+        item_total = 0.0
         for i in user_cart_id:
             result = config.DBManager.get_item(i[0])
 
@@ -165,9 +182,19 @@ def cart(request):
 
             item_price = item_info[2]
 
+            sale_id = config.DBManager.get_id_from_item(i[0])
+            item_sale = config.DBManager.get_item_sale(sale_id)
+            if item_sale and item_sale[2]:
+                if calc_status_per(item_sale[4], item_sale[5]) != 0.0 or calc_status_per(item_sale[4],
+                                                                                         item_sale[5]) != 100.0:
+                    item_price = Decimal(str(item_price)) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
+                    item_price = item_price.quantize(Decimal(".01"), rounding=ROUND_UP)
+
             item_info.append(int(Decimal(str(item_price)) * point_return))
             item_info.append(f"{item_price:,.2f}")
             item_info.append(i[1])
+
+            item_total += float(Decimal(str(item_price)) * Decimal(str(i[1])))
 
             user_cart.append(item_info)
 
@@ -184,16 +211,25 @@ def cart(request):
 
             item_price = item_info[2]
 
+            sale_id = config.DBManager.get_id_from_item(i)
+            item_sale = config.DBManager.get_item_sale(sale_id)
+            if item_sale and item_sale[2]:
+                if calc_status_per(item_sale[4], item_sale[5]) != 0.0 or calc_status_per(item_sale[4],
+                                                                                         item_sale[5]) != 100.0:
+                    sale = {"status": True, "discount_rate": item_sale[3]}
+                    item_price = Decimal(str(item_price)) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
+                    item_price = item_price.quantize(Decimal(".01"), rounding=ROUND_UP)
+                else:
+                    sale = {"status": False}
+            else:
+                sale = {"status": False}
+
             item_info.append(int(Decimal(str(item_price)) * point_return))
             item_info.append(f"{item_price:,.2f}")
             item_info.append(i)
+            item_info.append(sale)
 
             user_later.append(item_info)
-
-        item_total = 0
-        for i in range(len(user_cart)):
-            item_price = float(Decimal(str(user_cart[i][2])) * Decimal(str(user_cart[i][11])))
-            item_total += item_price
 
         if 0 not in [i[5] for i in user_cart]:
             buy_able = True
@@ -426,6 +462,22 @@ def search(request):
         # ポイントを計算
         result[i].append(int(Decimal(str(result[i][2])) * point_return))
 
+        sale_id = config.DBManager.get_id_from_item(result[i][0])
+        item_sale = config.DBManager.get_item_sale(sale_id)
+        if item_sale and item_sale[2]:
+            if calc_status_per(item_sale[4], item_sale[5]) != 0.0 or calc_status_per(item_sale[4],
+                                                                                     item_sale[5]) != 100.0:
+                past_price = f"{result[i][2]:,.2f}"
+                sale = {"status": True, "discount_rate": item_sale[3], "past_price": past_price}
+                result[i][2] = Decimal(str(result[i][2])) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
+                result[i][2] = result[i][2].quantize(Decimal(".01"), rounding=ROUND_UP)
+            else:
+                sale = {"status": False}
+        else:
+            sale = {"status": False}
+
+        result[i].append(sale)
+
         result[i][3] = json.loads(result[i][3])
         result[i][2] = f"{result[i][2]:,.2f}"
 
@@ -599,6 +651,22 @@ def category(request):
             # ポイントを計算
             result[i].append(int(Decimal(str(result[i][2])) * point_return))
 
+            sale_id = config.DBManager.get_id_from_item(result[i][0])
+            item_sale = config.DBManager.get_item_sale(sale_id)
+            if item_sale and item_sale[2]:
+                if calc_status_per(item_sale[4], item_sale[5]) != 0.0 or calc_status_per(item_sale[4],
+                                                                                         item_sale[5]) != 100.0:
+                    past_price = f"{result[i][2]:,.2f}"
+                    sale = {"status": True, "discount_rate": item_sale[3], "past_price": past_price}
+                    result[i][2] = Decimal(str(result[i][2])) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
+                    result[i][2] = result[i][2].quantize(Decimal(".01"), rounding=ROUND_UP)
+                else:
+                    sale = {"status": False}
+            else:
+                sale = {"status": False}
+
+            result[i].append(sale)
+
             result[i][3] = json.loads(result[i][3])
             result[i][2] = f"{result[i][2]:,.2f}"
 
@@ -610,6 +678,7 @@ def category(request):
         "category": category_obj,
         "categories": config.functions.get_categories(),
         "money_unit": settings.MONEY_UNIT,
+        "point_return": int(point_return * 100),
         "session": is_session,
     }
     if is_session.valid:
@@ -721,6 +790,21 @@ def view_history(request):
             # ポイントを計算
             result[i].append(int(Decimal(str(result[i][2])) * point_return))
 
+            sale_id = config.DBManager.get_id_from_item(result[i][0])
+            item_sale = config.DBManager.get_item_sale(sale_id)
+            if item_sale and item_sale[2]:
+                if calc_status_per(item_sale[4], item_sale[5]) != 0.0 or calc_status_per(item_sale[4],
+                                                                                         item_sale[5]) != 100.0:
+                    past_price = f"{result[i][2]:,.2f}"
+                    sale = {"status": True, "discount_rate": item_sale[3], "past_price": past_price}
+                    result[i][2] = Decimal(str(result[i][2])) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
+                    result[i][2] = result[i][2].quantize(Decimal(".01"), rounding=ROUND_UP)
+                else:
+                    sale = {"status": False}
+            else:
+                sale = {"status": False}
+
+            result[i].append(sale)
             result[i][3] = json.loads(result[i][3])
             result[i][2] = f"{result[i][2]:,.2f}"
 
@@ -729,6 +813,7 @@ def view_history(request):
             "info": info,
             "session": is_session,
             "categories": config.functions.get_categories(),
+            "point_return": int(point_return * 100),
             "money_unit": settings.MONEY_UNIT,
         }
         return render(request, "view-history.html", context=context)

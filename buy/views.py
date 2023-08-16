@@ -5,6 +5,7 @@ from decimal import Decimal, getcontext, ROUND_UP, ROUND_DOWN
 from django.shortcuts import redirect, render
 from django.http import Http404
 
+from item import views
 import config.functions
 import config.DBManager
 import config.VaultManager
@@ -30,6 +31,8 @@ def buy(request):
 
         # アイテム情報を取得
         total_point = 0
+        item_total = 0
+        user_cart_number = 0
         user_cart = []
         for i in user_cart_id:
             result = config.DBManager.get_item(i[0])
@@ -46,18 +49,28 @@ def buy(request):
 
             total_point += int(Decimal(str(point)) * Decimal(str(i[1])))
 
+            sale_id = config.DBManager.get_id_from_item(i[0])
+            item_sale = config.DBManager.get_item_sale(sale_id)
+            if item_sale and item_sale[2]:
+                if views.calc_status_per(item_sale[4], item_sale[5]) != 0.0 or views.calc_status_per(item_sale[4],
+                                                                                         item_sale[5]) != 100.0:
+                    sale = {"status": True, "discount_rate": item_sale[3]}
+                    item_price = Decimal(str(item_price)) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
+                    item_price = item_price.quantize(Decimal(".01"), rounding=ROUND_UP)
+                else:
+                    sale = {"status": False}
+            else:
+                sale = {"status": False}
+
             item_info.append(f"{item_price:,.2f}")
             item_info.append(i[1])
+            item_info.append(sale)
+
+            item_price = Decimal(f"{item_price}") * Decimal(f"{i[1]}")
+            item_total += item_price
+            user_cart_number += i[1]
 
             user_cart.append(item_info)
-
-        # 請求額算出
-        item_total = 0
-        user_cart_number = 0
-        for i in range(len(user_cart)):
-            item_price = Decimal(f"{user_cart[i][2]}") * Decimal(f"{user_cart[i][11]}")
-            item_total += item_price
-            user_cart_number += user_cart[i][11]
 
         player_balance = config.VaultManager.get_balance(info["mc_uuid"])
 
@@ -187,6 +200,14 @@ def buy_confirm(request):
             item_info.append(point)
 
             total_point += int(Decimal(str(point)) * Decimal(str(i[1])))
+
+            sale_id = config.DBManager.get_id_from_item(i[0])
+            item_sale = config.DBManager.get_item_sale(sale_id)
+            if item_sale and item_sale[2]:
+                if views.calc_status_per(item_sale[4], item_sale[5]) != 0.0 or views.calc_status_per(item_sale[4],
+                                                                                         item_sale[5]) != 100.0:
+                    item_price = Decimal(str(item_price)) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
+                    item_price = item_price.quantize(Decimal(".01"), rounding=ROUND_UP)
 
             item_info.append(f"{item_price:,.2f}")
             item_info.append(i[1])

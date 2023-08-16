@@ -458,3 +458,23 @@ def get_latest_item():
                 result[i].pop(0)
                 result[i][3] = json.loads(result[i][3])
     return result
+
+
+def get_item_sale(item_id):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_sale WHERE item_id=%s"
+            cursor.execute(sql, (item_id,))
+            result = cursor.fetchone()
+    return result
+
+
+def get_id_from_item(item_id):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_item WHERE item_id=%s"
+            cursor.execute(sql, (item_id,))
+            result = cursor.fetchone()
+    return result[0]

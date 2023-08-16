@@ -285,8 +285,18 @@
 					{% endif %}
 				</div>
 				<div class="item-about__description-below">
-					<h1><span>{{ money_unit }}</span>{{ item_price }}</h1>
-					<p>ポイント:<span>{{ item_point }}pt</span><span>({{ point_return }}%)</span><a>詳細はこちら</a></p>
+                    {% if sale.status %}
+                    <p class="item-about__description-below__sale">タイムセール</p>
+                    <div>
+                        <h1 style="font-size: 26px;color: #CC0C39">-{{ sale.discount_rate }}%</h1><h1><span>{{ money_unit }}</span>{{ item_price }}</h1>
+                    </div>
+                    <small style="color: #565959">過去価格: <del>{{ money_unit }}{{ past_price }}</del></small>
+                    {% else %}
+                    <div>
+                        <h1><span>{{ money_unit }}</span>{{ item_price }}</h1>
+                    </div>
+                    {% endif %}
+                    <p>ポイント:<span>{{ item_point }}pt</span><span>({{ point_return }}%)</span><a>詳細はこちら</a></p>
 				</div>
 				<div class="item-about__description-buy">
 					<div class="item-about__buy-delivery">

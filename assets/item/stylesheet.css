@@ -88,7 +88,7 @@
 }
 .item-about__description-below span{
     font-size: 13px;
-    margin: 6px 5px 0;
+    margin: 6px 0 0 5px;
 }
 .item-about__description-below h1{
     font-weight: 400;
@@ -96,6 +96,10 @@
     display: flex;
     align-items: start;
     margin: 0;
+}
+.item-about__description-below div{
+    display: flex;
+    align-items: center;
 }
 .item-about__description-below p{
     font-size: 14px;
@@ -301,6 +305,7 @@
     margin-top: 40px;
     padding: 0 20px;
     width: 100%;
+    margin-bottom: 200px;
 }
 .review-left{
     width: 300px;
@@ -561,7 +566,15 @@
   object-fit: contain;
   height: 100%;
 }
-
+.item-about__description-below__sale{
+    margin: 0;
+    padding: 5px 10px;
+    background-color: #CC0C39;
+    color: #ffffff;
+    width: fit-content;
+    border-radius: 5px;
+    font-weight: 700;
+}
 .prev-001,
 .next-001 {
   cursor: pointer;

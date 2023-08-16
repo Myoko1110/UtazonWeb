@@ -239,6 +239,9 @@
 							<div class="cart-box">
 								<div class="cart-product">
 									<a class="cart-title" href="../item?id={{ child.0 }}">{{ child.1 }}</a>
+                                    {% if child.12.status %}
+                                    <div class="cart-sale"><p>13%OFF</p><span>タイムセール</span></div>
+                                    {% endif %}
 									{% if child.5 != 0 %}
 									<p class="cart-product__y">在庫あり</p>
 									{% if child.5 <= 15 %}
@@ -283,6 +286,9 @@
 							<div class="later-box">
 								<div class="later-product">
 									<a class="later-title" href="../item?id={{ child.0 }}">{{ child.1 }}</a>
+                                    {% if child.12.status %}
+                                    <div class="cart-sale"><p>13%OFF</p><span>タイムセール</span></div>
+                                    {% endif %}
 									{% if child.5 != 0 %}
 									<p class="later-product__y">在庫あり</p>
 									{% if child.5 <= 15 %}
