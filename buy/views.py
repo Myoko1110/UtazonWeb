@@ -55,9 +55,9 @@ def buy(request):
         item_total = 0
         user_cart_number = 0
         for i in range(len(user_cart)):
-            item_price = Decimal(f"{user_cart[i][2]}") * Decimal(f"{user_cart[i][10]}")
+            item_price = Decimal(f"{user_cart[i][2]}") * Decimal(f"{user_cart[i][11]}")
             item_total += item_price
-            user_cart_number += user_cart[i][10]
+            user_cart_number += user_cart[i][11]
 
         player_balance = config.VaultManager.get_balance(info["mc_uuid"])
 

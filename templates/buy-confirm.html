@@ -35,7 +35,7 @@
 	        	<div class="nav-mobile__top-cart">
 		        	<div class="nav-mobile__top-cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session is True %}
+						{% if session.valid %}
 			        	<p>{{ info.user_cart }}</p>
 						{% else %}
 						<p>0</p>
@@ -58,7 +58,7 @@
 			            <p class="nav-belt__address-to">お届け先</p>
 		            </div>
 		            <div class="nav-belt__address-number">
-						{% if session is True %}
+						{% if session.valid %}
 						<h1>1-0001仮</h1>
 						{% else %}
 						<h1>ログイン</h1>
@@ -81,10 +81,10 @@
 		            </label>
 	            </form>
             </div>
-			{% if session is True %}
+			{% if session.valid %}
 			<a onclick="logout_confirm()" class="nav-link">
                 <div class="nav-belt__account">
-				{% if session is True %}
+				{% if session.valid %}
 		        	<p>{{ info.mc_id }}さん</p>
 		        	<h1>ログアウト</h1>
 				{% else %}
@@ -96,7 +96,7 @@
 			{% else %}
 			<a href="/login" class="nav-link">
                 <div class="nav-belt__account">
-				{% if session is True %}
+				{% if session.valid %}
 		        	<p>{{ info.mc_id }}さん</p>
 		        	<h1>ログアウト</h1>
 				{% else %}
@@ -116,7 +116,7 @@
 	        	<div class="nav-belt__cart">
 		        	<div class="nav-belt__cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session is True %}
+						{% if session.valid %}
 			        	<p>{{ info.user_cart }}</p>
 						{% else %}
 						<p>0</p>
@@ -131,7 +131,7 @@
 	    <div class="nav-main">
 			<div class="nav-main__category">
 				<a class="nav-main__point">Utazonポイント:
-                    {% if session is True %}
+                    {% if session.valid %}
                     <span>{{ info.point }}</span>
                     {% else %}
                     <span>0</span>
@@ -147,7 +147,7 @@
 	    </div>
 		<nav class="nav-mobile">
 			<div class="nav-mobile__account">
-				{% if session is True %}
+				{% if session.valid %}
 				<p>{{ info.mc_id }}さん</p>
 				<a onclick="logout_confirm()">ログアウト</a>
 				{% else %}
@@ -167,7 +167,7 @@
 						<p class="nav-mobile__address-to">お届け先</p>
 					</div>
 					<div class="nav-mobile__address-number">
-						{% if session is True %}
+						{% if session.valid %}
 						<h1>1-0001仮</h1>
 						{% else %}
 						<h1>ログイン</h1>
@@ -185,7 +185,7 @@
 	        	<div class="nav-mobile__cart">
 		        	<div class="nav-mobile__cart-ui">
 			        	<img src="{% static 'cart-black.png' %}">
-						{% if session is True %}
+						{% if session.valid %}
 			        	<p>{{ info.user_cart }}</p>
 						{% else %}
 						<p>0</p>
@@ -198,7 +198,7 @@
 			</a>
 			<div>
                 <a class="nav-mobile__point">Utazonポイント:
-                {% if session is True %}
+                {% if session.valid %}
 				<span>{{ info.point }}</span>
                 {% else %}
                 <span>0</span>
@@ -255,7 +255,7 @@
 								<img src="{{ child.3.0 }}">
 								<div class="buy-items__box">
 									<h3>{{ child.1 }}</h3>
-									<p>{{ money_unit }}{{ child.9 }}</p>
+									<p>{{ money_unit }}{{ child.10 }}</p>
 								</div>
 							</li>
 							{% endfor %}
@@ -266,7 +266,7 @@
 			<p style="font-size: 13px">注文番号：{{ order_id }}</p>
 			<div class="buy-confirm">
 				<div class="buy-confirm__btn">
-					<a href="/history">配送状況を確認</a>
+					<a href="/history/status/?id={{ order_id }}">配送状況を確認</a>
 				</div>
 			</div>
 		</div>

@@ -46,7 +46,8 @@ def get_item(item_id):
             cursor.execute(sql, (item_id,))
 
             # item_idのレコードを取得
-            result = cursor.fetchone()
+            result = list(cursor.fetchone())
+            result.pop(0)
 
             if not result:
                 return False
@@ -124,6 +125,9 @@ def get_item_from_category(cat_id):
 
             # cat_idのレコードを取得
             result = cursor.fetchall()
+            for i in range(len(result)):
+                result[i] = list(result[i])
+                result[i].pop(0)
 
             if not result:
                 return False
@@ -142,8 +146,10 @@ def search_item(item_query, category=None):
 
                     fetch = list(cursor.fetchall())
 
-                    for j in fetch:
-                        result.append(list(j))
+                    for j in range(len(fetch)):
+                        fetch[j] = list(fetch[j])
+                        fetch[j].pop(0)
+                        result.append(list(fetch[i]))
 
             else:
                 sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s"
@@ -151,6 +157,9 @@ def search_item(item_query, category=None):
 
                 # mc_uuidのレコードを取得
                 result = list(cursor.fetchall())
+                for i in range(len(result)):
+                    result[i] = list(result[i])
+                    result[i].pop(0)
     return result
 
 
@@ -431,5 +440,21 @@ def get_popular_item():
 
             for i in range(len(result)):
                 result[i] = list(result[i])
+                result[i].pop(0)
+                result[i][3] = json.loads(result[i][3])
+    return result
+
+
+def get_latest_item():
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT * FROM utazon_item ORDER BY `id` DESC LIMIT 4"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+
+            for i in range(len(result)):
+                result[i] = list(result[i])
+                result[i].pop(0)
                 result[i][3] = json.loads(result[i][3])
     return result

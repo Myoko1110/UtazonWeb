@@ -45,6 +45,7 @@ def table_create(sender, **kwargs):
             cursor.execute(sql)
 
             sql = """CREATE TABLE IF NOT EXISTS `utazon_item` (
+                                                    id INT AUTO_INCREMENT UNIQUE,
                                                     item_id BIGINT UNIQUE,
                                                     item_name VARCHAR(256),
                                                     price DOUBLE,

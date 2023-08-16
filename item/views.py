@@ -31,10 +31,12 @@ def index_view(request):
     banner_obj = get_banners()
 
     popular_item = config.DBManager.get_popular_item()
+    latest_item = config.DBManager.get_latest_item()
 
     is_session = config.functions.is_session(request)
     context = {
         "popular_item": popular_item,
+        "latest_item": latest_item,
         "categories": config.functions.get_categories(),
         "banner_obj": banner_obj,
         "session": is_session,
@@ -190,7 +192,7 @@ def cart(request):
 
         item_total = 0
         for i in range(len(user_cart)):
-            item_price = float(Decimal(str(user_cart[i][2])) * Decimal(str(user_cart[i][10])))
+            item_price = float(Decimal(str(user_cart[i][2])) * Decimal(str(user_cart[i][11])))
             item_total += item_price
 
         if 0 not in [i[5] for i in user_cart]:
@@ -200,7 +202,8 @@ def cart(request):
 
         user_cart_number = 0
         for i in range(len(user_cart)):
-            user_cart_number += user_cart[i][10]
+
+            user_cart_number += int(user_cart[i][11])
 
         context = {
             "session": is_session,
@@ -381,7 +384,6 @@ def cart_to_later(request):
 
         if item_id:
             for i in range(len(user_cart_id)):
-
                 child = user_cart_id[i]
 
                 if item_id in child and child[0] == item_id:

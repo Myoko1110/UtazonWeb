@@ -40,8 +40,15 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    },
+    'item': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'sessions',
+        'USER': 'root',
+        'PASSWORD': 'myon1110',
+    },
 }
+DATABASE_ROUTERS = ['config.db_router.DbRouter']
 
 DATABASE_CONFIG = {
     'utazon': {
@@ -81,6 +88,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'login.apps.LoginConfig',
     'item.apps.ItemConfig',
+    'config.apps.Config',
 ]
 
 MIDDLEWARE = [
