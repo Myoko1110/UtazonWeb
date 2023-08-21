@@ -247,6 +247,14 @@ def buy_cancel(request):
         mc_uuid = info["mc_uuid"]
         order_id = request.GET.get("id")
 
+        order_item = json.loads(config.DBManager.get_order(order_id)[1])
+
+        item_list = []
+        for i in order_item:
+            item_id = i[0]
+            item_obj = config.DBManager.get_item(item_id)
+            item_list.append(item_obj)
+
         config.DBManager.delete_order(order_id)
         user_history = config.DBManager.get_user_history(mc_uuid)
 
@@ -261,7 +269,7 @@ def buy_cancel(request):
                 config.VaultManager.deposit_player(mc_uuid, amount_twenty_per, reason)
 
         config.DBManager.update_user_history(mc_uuid, json.dumps(user_history))
-        asyncio.run_coroutine_threadsafe(bot.send_order_cancel(info["discord_id"], order_id),
+        asyncio.run_coroutine_threadsafe(bot.send_order_cancel(info["discord_id"], order_id, item_list),
                                          bot.client.loop)
 
     return redirect("/history")
