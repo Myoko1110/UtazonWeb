@@ -1,5 +1,6 @@
 import os
 import yaml
+import bot
 
 from dotenv import load_dotenv
 from pathlib import Path
@@ -18,6 +19,8 @@ DISCORD_CLIENT = {
     'REDIRECT': os.environ["DISCORD_REDIRECT"],
     'URL': os.environ["DISCORD_LOGIN_URL"],
 }
+DISCORD_BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
+
 
 SERVER_ID = os.environ["SERVER_ID"]
 

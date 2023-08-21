@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import json
 from decimal import Decimal, getcontext, ROUND_UP, ROUND_DOWN
@@ -5,6 +6,7 @@ from decimal import Decimal, getcontext, ROUND_UP, ROUND_DOWN
 from django.shortcuts import redirect, render
 from django.http import Http404
 
+import bot
 from item import views
 import config.functions
 import config.DBManager
@@ -217,6 +219,10 @@ def buy_confirm(request):
         # ポイント付与
         config.DBManager.deposit_user_point(mc_uuid, total_point)
 
+        # DM送信
+        asyncio.run_coroutine_threadsafe(bot.send_order_confirm(info["discord_id"], order[0], order_item_obj, order[1]),
+                                         bot.client.loop)
+
         context = {
             "session": is_session,
             "info": info,
@@ -237,7 +243,8 @@ def buy_confirm(request):
 def buy_cancel(request):
     is_session = config.functions.is_session(request)
     if is_session.valid:
-        mc_uuid = config.functions.get_user_info.from_session(request).mc_uuid()
+        info = config.functions.get_user_info.from_session(request).all()
+        mc_uuid = info["mc_uuid"]
         order_id = request.GET.get("id")
 
         config.DBManager.delete_order(order_id)
@@ -254,5 +261,7 @@ def buy_cancel(request):
                 config.VaultManager.deposit_player(mc_uuid, amount_twenty_per, reason)
 
         config.DBManager.update_user_history(mc_uuid, json.dumps(user_history))
+        asyncio.run_coroutine_threadsafe(bot.send_order_cancel(info["discord_id"], order_id),
+                                         bot.client.loop)
 
     return redirect("/history")

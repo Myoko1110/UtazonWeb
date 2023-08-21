@@ -150,6 +150,7 @@
     border-radius: 8px;
     text-align: center;
     margin: 2px;
+    cursor: pointer;
 }
 .history-list__value-product-review:hover{
     background: #fafafa;

@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 import mysql.connector
 
+import bot.apps
 import config.settings as settings
 
 
@@ -28,6 +29,7 @@ class RunOnce:
 
 @RunOnce
 def table_create(sender, **kwargs):
+    bot.apps.ready()
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
