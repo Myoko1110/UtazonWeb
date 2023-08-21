@@ -214,6 +214,21 @@ def get_session(session_id, session_val):
     return result
 
 
+def get_session_from_mc_uuid(mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT logged_IP FROM utazon_session WHERE mc_uuid=%s"
+            cursor.execute(sql, (mc_uuid,))
+
+            # session_idのレコードを取得
+            result = cursor.fetchone()
+
+            if not result:
+                return False
+    return result
+
+
 def get_discord_id(uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["linked"])
     with cnx:
@@ -399,7 +414,7 @@ def get_user_view_history(mc_uuid):
 
             if not result:
                 return False
-    return json.loads(result[5])
+    return list(reversed(json.loads(result[5])))
 
 
 def add_user_view_history(mc_uuid, item_id):
@@ -443,6 +458,7 @@ def get_popular_item():
                 result[i] = list(result[i])
                 result[i].pop(0)
                 result[i][3] = json.loads(result[i][3])
+
     return result
 
 

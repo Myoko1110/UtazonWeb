@@ -46,6 +46,16 @@ def index_view(request):
         info = config.functions.get_user_info.from_session(request).all()
         context["info"] = info
 
+        view_history = config.DBManager.get_user_view_history(info["mc_uuid"])
+        view_history_obj = []
+        for i in range(4):
+            item_id = view_history[i]
+            item_obj = config.DBManager.get_item(item_id)
+            item_obj[3] = json.loads(item_obj[3])
+            view_history_obj.append(item_obj)
+
+        context["view_history_obj"] = view_history_obj
+
         # 既ログイン処理
         return render(request, "index.html", context=context)
     elif is_session.expire:
@@ -803,7 +813,7 @@ def view_history(request):
             result[i][2] = f"{result[i][2]:,.2f}"
 
         context = {
-            "result": reversed(result),
+            "result": result,
             "info": info,
             "session": is_session,
             "categories": config.functions.get_categories(),

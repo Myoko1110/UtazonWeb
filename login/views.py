@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import logging
 import secrets
@@ -5,6 +6,7 @@ import secrets
 from django.shortcuts import redirect, render
 import requests
 
+import bot
 import config.settings as settings
 import config.DBManager
 import config.functions
@@ -110,7 +112,20 @@ def login(request):
                 else:
                     # "HTTP_X_FORWARDED_FOR"ヘッダがない場合: 直接接続なので"REMOTE_ADDR"ヘッダを参照する。
                     client_addr = request.META.get("REMOTE_ADDR")
-
+                """
+                sessions = config.DBManager.get_session_from_mc_uuid(mc_uuid)
+                print(sessions)
+                print(mc_uuid)
+                if sessions:
+                    for i in sessions:
+                        print(i)
+                        if i == client_addr:
+                            break
+                    else:
+                        asyncio.run_coroutine_threadsafe(bot.send_security(discord_id), bot.client.loop)
+                else:
+                    asyncio.run_coroutine_threadsafe(bot.send_security(discord_id), bot.client.loop)
+                """
                 while True:
                     save_session = config.DBManager.save_session(session_id, session_value, mc_uuid, access_token, now, expires, client_addr)
 

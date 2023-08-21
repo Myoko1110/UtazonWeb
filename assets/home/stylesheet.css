@@ -89,7 +89,6 @@
 }
 .gw-card__item{
     display: flex;
-    justify-content: center;
 }
 .gw-card__item-img{
     width: 100%;
