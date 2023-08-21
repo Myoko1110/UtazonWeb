@@ -4,14 +4,12 @@ import random
 from statistics import mean
 from decimal import Decimal, getcontext, ROUND_UP
 
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import redirect, render
 from django.http import Http404
-from django.db.models import Max
 
 import config.DBManager
 import config.functions
 import config.settings as settings
-from item.models import Banner
 
 getcontext().prec = 10
 point_return = Decimal(settings.POINT_RETURN)
@@ -33,10 +31,6 @@ def index_view(request):
             item_obj[3] = json.loads(item_obj[3])
             obj_list.append(item_obj)
         special_feature_list[i.title] = obj_list
-
-    print(special_feature_list)
-
-
 
     is_session = config.functions.is_session(request)
     context = {
@@ -113,7 +107,6 @@ def item(request):
             sale = {"status": False}
     else:
         sale = {"status": False}
-
     now = datetime.datetime.now()
     if now > datetime.datetime.strptime("13:00:00", "%H:%M:%S"):
         rand_time = now + datetime.timedelta(days=2)
@@ -191,8 +184,7 @@ def cart(request):
             sale_id = config.DBManager.get_id_from_item(i[0])
             item_sale = config.DBManager.get_item_sale(sale_id)
             if item_sale and item_sale[2]:
-                if calc_status_per(item_sale[4], item_sale[5]) != 0.0 or calc_status_per(item_sale[4],
-                                                                                         item_sale[5]) != 100.0:
+                if calc_status_per(item_sale[4], item_sale[5]) != 0.0 and calc_status_per(item_sale[4], item_sale[5]) != 100.0:
                     item_price = Decimal(str(item_price)) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
                     item_price = item_price.quantize(Decimal(".01"), rounding=ROUND_UP)
 
@@ -220,8 +212,7 @@ def cart(request):
             sale_id = config.DBManager.get_id_from_item(i)
             item_sale = config.DBManager.get_item_sale(sale_id)
             if item_sale and item_sale[2]:
-                if calc_status_per(item_sale[4], item_sale[5]) != 0.0 or calc_status_per(item_sale[4],
-                                                                                         item_sale[5]) != 100.0:
+                if calc_status_per(item_sale[4], item_sale[5]) != 0.0 and calc_status_per(item_sale[4], item_sale[5]) != 100.0:
                     sale = {"status": True, "discount_rate": item_sale[3]}
                     item_price = Decimal(str(item_price)) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
                     item_price = item_price.quantize(Decimal(".01"), rounding=ROUND_UP)
@@ -471,8 +462,7 @@ def search(request):
         sale_id = config.DBManager.get_id_from_item(result[i][0])
         item_sale = config.DBManager.get_item_sale(sale_id)
         if item_sale and item_sale[2]:
-            if calc_status_per(item_sale[4], item_sale[5]) != 0.0 or calc_status_per(item_sale[4],
-                                                                                     item_sale[5]) != 100.0:
+            if calc_status_per(item_sale[4], item_sale[5]) != 0.0 and calc_status_per(item_sale[4], item_sale[5]) != 100.0:
                 past_price = f"{result[i][2]:,.2f}"
                 sale = {"status": True, "discount_rate": item_sale[3], "past_price": past_price}
                 result[i][2] = Decimal(str(result[i][2])) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
@@ -660,8 +650,7 @@ def category(request):
             sale_id = config.DBManager.get_id_from_item(result[i][0])
             item_sale = config.DBManager.get_item_sale(sale_id)
             if item_sale and item_sale[2]:
-                if calc_status_per(item_sale[4], item_sale[5]) != 0.0 or calc_status_per(item_sale[4],
-                                                                                         item_sale[5]) != 100.0:
+                if calc_status_per(item_sale[4], item_sale[5]) != 0.0 and calc_status_per(item_sale[4], item_sale[5]) != 100.0:
                     past_price = f"{result[i][2]:,.2f}"
                     sale = {"status": True, "discount_rate": item_sale[3], "past_price": past_price}
                     result[i][2] = Decimal(str(result[i][2])) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
@@ -799,8 +788,7 @@ def view_history(request):
             sale_id = config.DBManager.get_id_from_item(result[i][0])
             item_sale = config.DBManager.get_item_sale(sale_id)
             if item_sale and item_sale[2]:
-                if calc_status_per(item_sale[4], item_sale[5]) != 0.0 or calc_status_per(item_sale[4],
-                                                                                         item_sale[5]) != 100.0:
+                if calc_status_per(item_sale[4], item_sale[5]) != 0.0 and calc_status_per(item_sale[4], item_sale[5]) != 100.0:
                     past_price = f"{result[i][2]:,.2f}"
                     sale = {"status": True, "discount_rate": item_sale[3], "past_price": past_price}
                     result[i][2] = Decimal(str(result[i][2])) * (Decimal(str(100 - item_sale[3])) / Decimal("100"))
