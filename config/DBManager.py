@@ -6,6 +6,7 @@ import mysql.connector
 
 import config.settings as settings
 import config.functions
+from item.models import SpecialFeature
 
 
 def get_user_cart(mc_uuid):
@@ -478,3 +479,7 @@ def get_id_from_item(item_id):
             cursor.execute(sql, (item_id,))
             result = cursor.fetchone()
     return result[0]
+
+
+def get_special_feature():
+    return SpecialFeature.objects.all()

@@ -17,26 +17,32 @@ getcontext().prec = 10
 point_return = Decimal(settings.POINT_RETURN)
 
 
-def get_banners():
-    pc_record = Banner.objects.filter(view_type='pc').aggregate(Max('id'))["id__max"]
-    pc_img = get_object_or_404(Banner, id=pc_record)
-
-    mobile_record = Banner.objects.filter(view_type='mobile').aggregate(Max('id'))["id__max"]
-    mobile_img = get_object_or_404(Banner, id=mobile_record)
-
-    return pc_img, mobile_img
-
-
 def index_view(request):
-    banner_obj = get_banners()
+    banner_obj = config.functions.get_banners()
 
     popular_item = config.DBManager.get_popular_item()
     latest_item = config.DBManager.get_latest_item()
+    special_feature = config.DBManager.get_special_feature()
+
+    special_feature_list = {}
+    for i in special_feature:
+        item_list = i.value
+        obj_list = []
+        for j in item_list:
+            item_obj = config.DBManager.get_item(j)
+            item_obj[3] = json.loads(item_obj[3])
+            obj_list.append(item_obj)
+        special_feature_list[i.title] = obj_list
+
+    print(special_feature_list)
+
+
 
     is_session = config.functions.is_session(request)
     context = {
         "popular_item": popular_item,
         "latest_item": latest_item,
+        "special_feature": special_feature_list,
         "categories": config.functions.get_categories(),
         "banner_obj": banner_obj,
         "session": is_session,

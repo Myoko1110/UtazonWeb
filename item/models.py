@@ -12,3 +12,12 @@ class Banner(models.Model):
 
     def __str__(self):
         return f"{self.view_type} {self.id} {self.banner_img}"
+
+
+class SpecialFeature(models.Model):
+    id = models.AutoField(unique=True, primary_key=True)
+    title = models.CharField(max_length=32)
+    value = models.JSONField(default=list)
+
+    def __str__(self):
+        return self.title

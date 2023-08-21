@@ -1,8 +1,12 @@
 import datetime
 import requests
 
+from django.db.models import Max
+from django.shortcuts import get_object_or_404
+
 import config.DBManager
 import config.settings as settings
+from item.models import Banner
 
 
 class is_session:
@@ -297,3 +301,13 @@ def get_child_categories(parent_category):
             child_categories = categories[i].copy()
             child_categories.pop("JAPANESE")
     return child_categories
+
+
+def get_banners():
+    pc_record = Banner.objects.filter(view_type='pc').aggregate(Max('id'))["id__max"]
+    pc_img = get_object_or_404(Banner, id=pc_record)
+
+    mobile_record = Banner.objects.filter(view_type='mobile').aggregate(Max('id'))["id__max"]
+    mobile_img = get_object_or_404(Banner, id=mobile_record)
+
+    return pc_img, mobile_img

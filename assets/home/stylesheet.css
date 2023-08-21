@@ -55,6 +55,7 @@
     display: flex;
     flex-wrap: wrap;
     max-width: 1480px;
+    width: calc(100vw - 20px);
 }
 .gw-card__child{
     width: calc(100% / 4 - 20px);
