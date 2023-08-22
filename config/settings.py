@@ -1,5 +1,7 @@
 import os
 import yaml
+from decimal import Decimal
+
 import bot
 
 from dotenv import load_dotenv
@@ -24,16 +26,19 @@ DISCORD_BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
 SERVER_ID = os.environ["SERVER_ID"]
 
-SESSION_EXPIRES = os.environ["SESSION_EXPIRES"]
-
 ORDER_LIST_PASS = os.environ["ORDER_LIST_PASS"]
 
 SOCKET_PORT = os.environ["SOCKET_PORT"]
 SOCKET_HOST = os.environ["SOCKET_HOST"]
 
-PER_POINT = os.environ["PER_POINT"]
-POINT_RETURN = os.environ["POINT_RETURN"]
-MONEY_UNIT = os.environ["MONEY_UNIT"]
+with open("settings.yml", encoding="utf-8") as sf:
+    sf = yaml.load(sf, Loader=yaml.SafeLoader)
+
+SESSION_EXPIRES = sf["session"]["expires"]
+PER_POINT = Decimal(str(sf["point"]["point_rate"])) / Decimal("100")
+POINT_RETURN = Decimal(str(sf["point"]["return_rate"])) / Decimal("100")
+MONEY_UNIT = sf["money"]["unit"]
+CANCELLATION_FEE = sf["return"]["cancellation_fee"]
 
 if float(POINT_RETURN) > 1.0:
     raise ValueError("POINT_RETURNは1以下にして下さい。")

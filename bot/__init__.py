@@ -1,5 +1,7 @@
 import discord
 
+from config import settings
+
 client = discord.Client(intents=discord.Intents.default())
 
 
@@ -14,7 +16,7 @@ async def send_order_confirm(discord_id, order_id, order_item_obj, delivery_time
 	embed = discord.Embed(
 		title="ご注文が確定されました",
 		color=discord.Colour.green(),
-		description=f"ご購入ありがとうございます。お客様のご注文が確定されたことをお知らせいたします。\n配送状況は[こちら](http://localhost:8000/history/status/?id={order_id})から"
+		description=f"ご購入ありがとうございます。\nお客様のご注文が確定されたことをお知らせいたします。\n配送状況は[こちら](http://localhost:8000/history/status/?id={order_id})から"
 	)
 	embed.set_footer(text="またのご利用をお待ちしております。")
 
@@ -36,7 +38,7 @@ async def send_order_cancel(discord_id, order_id, order_item_obj):
 	embed = discord.Embed(
 		title="ご注文がキャンセルされました",
 		color=discord.Colour.red(),
-		description=f"お客様のご注文がキャンセルされたことをお知らせいたします。"
+		description=f"お客様のご注文がキャンセルされたことをお知らせいたします。\nまた、キャンセルにつき購入額の{settings.CANCELLATION_FEE}%分のキャンセル料がかかります。"
 	)
 	embed.set_footer(text="またのご利用をお待ちしております。")
 	order_item = ""

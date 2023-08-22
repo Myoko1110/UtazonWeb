@@ -1,0 +1,12 @@
+session:
+  expires: 30 #day
+
+point:
+  return_rate: 50 #%
+  point_rate: 10 #%
+
+money:
+  unit: ￥
+
+return:
+   cancellation_fee: 10 #%

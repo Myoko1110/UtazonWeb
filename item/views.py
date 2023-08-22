@@ -747,6 +747,8 @@ def history(request):
             "info": info,
             "categories": config.functions.get_categories(),
             "money_unit": settings.MONEY_UNIT,
+            "cancellation_fee": settings.CANCELLATION_FEE,
+            "error": request.GET.get("error"),
         }
         return render(request, "history.html", context=context)
 

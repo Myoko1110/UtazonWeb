@@ -247,6 +247,22 @@ def buy_cancel(request):
         mc_uuid = info["mc_uuid"]
         order_id = request.GET.get("id")
 
+        user_history = config.DBManager.get_user_history(mc_uuid)
+
+        for i in user_history:
+            if i["order_id"] == order_id:
+                deposit_price = Decimal("100") - Decimal(str(settings.CANCELLATION_FEE))
+
+                i["cancel"] = True
+                amount = i["amount"]
+                amount_twenty_per = Decimal(deposit_price / Decimal("100")) * Decimal(str(amount))
+                amount_twenty_per = float(amount_twenty_per.quantize(Decimal(".01"), rounding=ROUND_DOWN))
+
+                reason = f"注文のキャンセル(OrderID: {order_id})(入金額: {amount}の{deposit_price}%(キャンセル料{settings.CANCELLATION_FEE}%))"
+                deposit_player = config.VaultManager.deposit_player(mc_uuid, amount_twenty_per, reason)
+                if not deposit_player:
+                    return redirect("/history/?error=true")
+
         order_item = json.loads(config.DBManager.get_order(order_id)[1])
 
         item_list = []
@@ -256,20 +272,10 @@ def buy_cancel(request):
             item_list.append(item_obj)
 
         config.DBManager.delete_order(order_id)
-        user_history = config.DBManager.get_user_history(mc_uuid)
-
-        for i in user_history:
-            if i["order_id"] == order_id:
-                i["cancel"] = True
-                amount = i["amount"]
-                amount_twenty_per = Decimal("0.8") * Decimal(str(amount))
-                amount_twenty_per = float(amount_twenty_per.quantize(Decimal(".01"), rounding=ROUND_DOWN))
-
-                reason = f"注文のキャンセル(OrderID: {order_id})(入金額: {amount}の80%(キャンセル料20%))"
-                config.VaultManager.deposit_player(mc_uuid, amount_twenty_per, reason)
 
         config.DBManager.update_user_history(mc_uuid, json.dumps(user_history))
         asyncio.run_coroutine_threadsafe(bot.send_order_cancel(info["discord_id"], order_id, item_list),
                                          bot.client.loop)
 
-    return redirect("/history")
+        return redirect(f"/history/#{order_id}")
+    return redirect(f"/history/")
