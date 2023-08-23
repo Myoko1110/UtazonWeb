@@ -23,6 +23,7 @@ DISCORD_CLIENT = {
 }
 DISCORD_BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
+HOST = os.environ["HOST"]
 
 SERVER_ID = os.environ["SERVER_ID"]
 

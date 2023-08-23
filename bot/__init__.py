@@ -1,22 +1,35 @@
+from urllib.parse import urljoin
+
 import discord
 
 from config import settings
 
 client = discord.Client(intents=discord.Intents.default())
+delivery_status_url = ""
+order_history_url = ""
+
+
+async def setup():
+	global delivery_status_url
+	global order_history_url
+	delivery_status_url = urljoin(settings.HOST, "history/status/?id=")
+	order_history_url = urljoin(settings.HOST, "history/")
 
 
 @client.event
 async def on_ready():
 	print(f"Logged in as {client.user}")
+	await setup()
 
 
 async def send_order_confirm(discord_id, order_id, order_item_obj, delivery_time):
-	author = await client.fetch_user(discord_id)
+	global delivery_status_url
 
+	author = await client.fetch_user(discord_id)
 	embed = discord.Embed(
 		title="ご注文が確定されました",
 		color=discord.Colour.green(),
-		description=f"ご購入ありがとうございます。\nお客様のご注文が確定されたことをお知らせいたします。\n配送状況は[こちら](http://localhost:8000/history/status/?id={order_id})から"
+		description=f"ご購入ありがとうございます。\nお客様のご注文が確定されたことをお知らせいたします。\n配送状況は[こちら]({delivery_status_url}{order_id})から"
 	)
 	embed.set_footer(text="またのご利用をお待ちしております。")
 
@@ -34,11 +47,13 @@ async def send_order_confirm(discord_id, order_id, order_item_obj, delivery_time
 
 
 async def send_order_cancel(discord_id, order_id, order_item_obj):
+	global order_history_url
+
 	author = await client.fetch_user(discord_id)
 	embed = discord.Embed(
 		title="ご注文がキャンセルされました",
 		color=discord.Colour.red(),
-		description=f"お客様のご注文がキャンセルされたことをお知らせいたします。\nまた、キャンセルにつき購入額の{settings.CANCELLATION_FEE}%分のキャンセル料がかかります。"
+		description=f"お客様のご注文がキャンセルされたことをお知らせいたします。\nまた、キャンセルにつき購入額の{settings.CANCELLATION_FEE}%分のキャンセル料がかかります。\n注文履歴は[こちら]({order_history_url})"
 	)
 	embed.set_footer(text="またのご利用をお待ちしております。")
 	order_item = ""
