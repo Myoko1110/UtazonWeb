@@ -1,5 +1,5 @@
-import socket
 import json
+import socket
 
 import config.settings as settings
 
@@ -8,6 +8,13 @@ socket_host = settings.SOCKET_HOST
 
 
 def get_balance(uuid: str):
+    """
+    ユーザーの残高を取得します
+
+    :param uuid: プレイヤーのUUID
+    :return: プレイヤーの残高
+    """
+
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((socket_host, int(socket_port)))
@@ -20,12 +27,21 @@ def get_balance(uuid: str):
                 return False
 
             return float(received_data)
-    except Exception:
-        print("\033[31m" + f"Socketサーバーに接続できませんでした。Socketサーバーの設定はしましたか？")
+
+    except ConnectionRefusedError:
         return False
 
 
 def withdraw_player(uuid: str, amount: float, reason: str):
+    """
+    ユーザーの口座からお金を出金します
+
+    :param uuid: 出金元のプレイヤーのUUID
+    :param amount: 出金する金額
+    :param reason: 出金する理由
+    :return: お金が出金されたか(キャンセルされた場合や接続失敗した場合はFalseを返却)
+    """
+
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((socket_host, int(socket_port)))
@@ -40,12 +56,20 @@ def withdraw_player(uuid: str, amount: float, reason: str):
             else:
                 return False
 
-    except Exception:
-        print("\033[31m" + f"Socketサーバーに接続できませんでした。Socketサーバーの設定はしましたか？")
+    except ConnectionRefusedError:
         return False
 
 
 def deposit_player(uuid: str, amount: float, reason: str):
+    """
+    ユーザーの口座にお金を入金します
+
+    :param uuid: 入金先のプレイヤーのUUID
+    :param amount: 入金する金額
+    :param reason: 入金する理由
+    :return: お金が入金されたか(キャンセルされた場合または接続失敗した場合はFalseを返却)
+    """
+
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((socket_host, int(socket_port)))
@@ -60,6 +84,5 @@ def deposit_player(uuid: str, amount: float, reason: str):
             else:
                 return False
 
-    except Exception:
-        print("\033[31m" + f"Socketサーバーに接続できませんでした。Socketサーバーの設定はしましたか？")
+    except ConnectionRefusedError:
         return False

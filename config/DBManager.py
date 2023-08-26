@@ -7,6 +7,7 @@ import mysql.connector
 import config.settings as settings
 import config.functions
 from item.models import SpecialFeature
+import util
 
 
 def get_user_cart(mc_uuid):
@@ -141,7 +142,7 @@ def search_item(item_query, category=None):
         with cnx.cursor() as cursor:
             if category:
                 result = []
-                for i in config.functions.get_child_categories(category):
+                for i in util.ItemHelper.get_category.child(category):
                     sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s AND category=%s"
                     cursor.execute(sql, (f"%{item_query}%", i))
 
@@ -150,7 +151,7 @@ def search_item(item_query, category=None):
                     for j in range(len(fetch)):
                         fetch[j] = list(fetch[j])
                         fetch[j].pop(0)
-                        result.append(list(fetch[i]))
+                        result.append(list(fetch[j]))
 
             else:
                 sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s"

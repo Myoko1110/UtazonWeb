@@ -6,7 +6,7 @@ import secrets
 from django.shortcuts import redirect, render
 import requests
 
-import bot
+import util
 import config.settings as settings
 import config.DBManager
 import config.functions
@@ -153,7 +153,7 @@ def login(request):
             return render(request, "login.html", context=context)
 
     else:
-        is_session = config.functions.is_session(request)
+        is_session = util.SessionHelper.is_session(request)
         if is_session.valid:
             # 既ログイン処理
             return redirect("/")
