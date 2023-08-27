@@ -434,7 +434,7 @@ def get_latest_item():
 def get_item_sale(item_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
-        with cnx.cursor() as cursor:
+        with cnx.cursor(dictionary=True) as cursor:
             sql = "SELECT * FROM utazon_sale WHERE item_id=%s"
             cursor.execute(sql, (item_id,))
             result = cursor.fetchone()

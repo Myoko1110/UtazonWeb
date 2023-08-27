@@ -315,7 +315,7 @@
 					<p>※1ptあたり{{ money_unit }}{{ per_point }}</p>
 				</div>
 				<div class="buy-right">
-					<p>Utazonポイント：<span class="point" data-perpoint="{{ per_point }}">{{ info.point }}</span></p>
+					<p>Utazonポイント：<span class="point" data-perpoint="{{ per_point }}" data-return="{{ point_return }}">{{ info.point }}</span></p>
 					<span>ポイントを使用：</span><input class="buy-point__input" type="number" value="0" id="card_add" min="0" max="{{ info.point }}">
 					<p style="font-size: 12px;color: #ad0000;display: none" id="error1">請求額を超えています</p>
 					<p style="font-size: 12px;color: #ad0000;display: none" id="error2">使用できるポイントを超えています</p>
@@ -333,7 +333,7 @@
                 </div>
 				<div class="buy-confirm__description">
 					<h3>ご請求額： {{ money_unit }}<span>{{ item_total }}</span></h3>
-					<a>獲得ポイント：{{ total_point }}pt</a>
+					<a>獲得ポイント：<span id="get_point" data-point="{{ total_point }}">{{ total_point_format }}</span>pt</a>
 					<p>「注文を確定する」ボタンを押してご注文いただくことで、請求がされます。<br>
 					また、本サイトで現金を請求するようなことは一切ありません！！</p>
 				</div>

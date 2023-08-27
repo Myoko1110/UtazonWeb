@@ -35,7 +35,7 @@ with open("settings.yml", encoding="utf-8") as sf:
     sf = yaml.load(sf, Loader=yaml.SafeLoader)
 
 SESSION_EXPIRES = sf["session"]["expires"]
-PER_POINT = Decimal(str(sf["point"]["point_rate"])) / Decimal("100")
+PER_POINT = Decimal(str(sf["point"]["point_per"]))
 POINT_RETURN = Decimal(str(sf["point"]["return_rate"])) / Decimal("100")
 MONEY_UNIT = sf["money"]["unit"]
 CANCELLATION_FEE = sf["return"]["cancellation_fee"]

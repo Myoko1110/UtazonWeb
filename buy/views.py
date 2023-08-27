@@ -29,7 +29,7 @@ def buy(request):
             user_cart_id = util.DatabaseHelper.get_user_cart(info.mc_uuid)
             buy_now = False
 
-        # アイテム情報を取得
+        # アイテム情報とトータルを取得
         items_info = util.ItemHelper.get_item.cart_list(user_cart_id)
         user_cart = items_info.item_list
         total_point = items_info.total_point
@@ -47,11 +47,8 @@ def buy(request):
         else:
             after_balance = None
 
-        now = datetime.datetime.now()
-        if now > datetime.datetime.strptime("13:00:00", "%H:%M:%S"):
-            rand_time = now + datetime.timedelta(days=2)
-        else:
-            rand_time = now + datetime.timedelta(days=1)
+        # お届け日
+        delivery_time = util.ItemHelper.calc_delivery_time()
 
         context = {
             "session": is_session,
@@ -66,9 +63,11 @@ def buy(request):
             "after_balance": after_balance,
             "buy_able": player_balance >= float(item_total),
             "buy_now": buy_now,
-            "rand_time": rand_time,
+            "rand_time": delivery_time,
             "per_point": per_point,
-            "total_point": f"{total_point:,}",
+            "point_return": point_return,
+            "total_point_format": f"{total_point:,}",
+            "total_point": total_point,
             "categories": util.ItemHelper.get_category.all(),
             "money_unit": settings.MONEY_UNIT,
         }

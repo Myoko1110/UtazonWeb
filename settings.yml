@@ -2,8 +2,11 @@ session:
   expires: 30 #day
 
 point:
+  # アイテム購入時のポイント還元率
   return_rate: 10000 #%
-  point_rate: 10 #%
+
+  # 1ポイントあたりの金額
+  point_per: 0.1
 
 money:
   unit: ￥

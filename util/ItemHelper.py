@@ -174,22 +174,22 @@ class get_sale:
 		self.discount_rate = None
 		self.item_price = item_price
 		self.past_price = 0
-		self.item_price_format = None
+		self.item_price_format = f"{item_price:,.2f}"
 
-		past_price = f"{item_price:,.2f}"
+		past_price = self.item_price_format
 
 		# セール取得
 		item_sale = util.DatabaseHelper.get_item_sale(sale_id)
 
 		# セールが有効だったら
-		if item_sale and item_sale[2]:
+		if item_sale and item_sale["sale_status"]:
 
 			# セール開催時間を確認
-			status_per = util.calc_time_percentage(item_sale[4], item_sale[5])
+			status_per = util.calc_time_percentage(item_sale["sale_start"], item_sale["sale_end"])
 			if status_per != 0.0 and status_per != 100.0:
-				discount_rate = item_sale[3]
+				discount_rate = item_sale["discount_rate"]
 
-				sale_per = Decimal(str(100 - item_sale[3])) / Decimal("100")
+				sale_per = Decimal(str(100 - discount_rate)) / Decimal("100")
 				item_price = Decimal(str(item_price)) * sale_per
 				item_price = item_price.quantize(Decimal(".01"), rounding=ROUND_UP)
 

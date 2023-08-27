@@ -1,17 +1,29 @@
 $(function(){
-    const total = new Decimal($(".buy-confirm__description h3 span").text());
-    const user_point = Number($(".point").text());
-    const per_point = new Decimal(Number($(".point").data("perpoint")));
+    const point_span = $(".point");
+    const submit_button = $("#order_confirm");
+    const point_input = $(".buy-point__input");
+    const amount_view = $(".buy-confirm__description h3 span");
+
+    const total = new Decimal(amount_view.text());
+    const user_point = Number(point_span.text());
+    const per_point = new Decimal(point_span.data("perpoint"));
+    const point_return = new Decimal(point_span.data("return"));
     const items = $(".buy-items").data("items");
-    const buynow = $("#order_confirm").data("buynow");
+    const buynow = submit_button.data("buynow");
+
+    // ユーザーの残高を取得
     let player_balance = null;
     if ($("#player_balance").data("float")) {
         player_balance = new Decimal($("#player_balance").data("float"));
     }
-    if ($(".buy-point__input").attr("max") > total.div(per_point).toNumber()){
-        $(".buy-point__input").attr("max", total.div(per_point).toNumber());
+
+    // max設定
+    if (point_input.attr("max") > total.div(per_point).toNumber()){
+        point_input.attr("max", total.div(per_point).toNumber());
     }
-    $("#order_confirm").on("click", function (e){
+
+    // 購入確定ボタンを押したときの処理
+    submit_button.on("click", function (e){
         e.preventDefault();
         console.log(buynow)
         if(buynow === "couldn't access"){
@@ -41,13 +53,26 @@ $(function(){
         location.href = "confirm/?items=" + JSON.stringify(items) + "&buynow=" + buynow + "&point=" + point;
     });
 
-    $(".buy-point__input").on("input", function (e){
+    // ポイント設定したときの処理
+    point_input.on("input", function (e){
 
+        // 入力されたポイント
         let InputPoint = new Decimal(String($(".buy-point__input").val()));
+
+        // ポイントを金額に変換
         let PointToPrice = InputPoint.mul(per_point);
+
+        // 請求額からポイントを減算
         let ViewPrice = total.sub(PointToPrice);
 
-        $(".buy-confirm__description h3 span").text(ViewPrice.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-        $("#after_balance").text(player_balance.sub(ViewPrice).toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        amount_view.text(ViewPrice.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+
+        try{
+            let player_balance_after = player_balance.sub(ViewPrice);
+            $("#after_balance").text(player_balance_after.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        }catch (TypeError){}
+        let point = new Decimal(amount_view.text()).mul(point_return)
+
+        $("#get_point").text(point.toNumber().toLocaleString(undefined, { maximumFractionDigits: 2 }));
     });
 });

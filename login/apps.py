@@ -11,10 +11,10 @@ class LoginConfig(AppConfig):
     path = settings.BASE_DIR / "login"
 
     def ready(self):
+        table_create()
+
         from django.core.signals import request_started
         request_started.connect(start_bot, weak=False)
-
-        table_create()
 
 
 class RunOnce:
