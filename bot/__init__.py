@@ -35,10 +35,10 @@ async def send_order_confirm(discord_id, order_id, order_item_obj, delivery_time
 
 	order_item = ""
 	for i in order_item_obj:
-		if len(i[1]) > 33:
-			order_item += f"・{i[1][:33]}...\n"
+		if len(i['item_name']) > 33:
+			order_item += f"・{i['item_name'][:33]}...\n"
 		else:
-			order_item += f"・{i[1]}\n"
+			order_item += f"・{i['item_name']}\n"
 
 	embed.add_field(name="注文品", value=order_item, inline=False)
 	embed.add_field(name="お届け予定", value=f"{delivery_time.year}年{delivery_time.month}月{delivery_time.day}日 {delivery_time.hour}時頃", inline=False)
@@ -58,10 +58,10 @@ async def send_order_cancel(discord_id, order_id, order_item_obj):
 	embed.set_footer(text="またのご利用をお待ちしております。")
 	order_item = ""
 	for i in order_item_obj:
-		if len(i[1]) > 33:
-			order_item += f"・{i[1][:33]}...\n"
+		if len(i['item_name']) > 33:
+			order_item += f"・{i['item_name'][:33]}...\n"
 		else:
-			order_item += f"・{i[1]}\n"
+			order_item += f"・{i['item_name']}\n"
 
 	embed.add_field(name="注文品", value=order_item, inline=False)
 	embed.add_field(name="注文番号", value=order_id, inline=False)

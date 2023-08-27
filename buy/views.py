@@ -1,8 +1,6 @@
 import asyncio
-import datetime
 import json
-import random
-from decimal import Decimal, ROUND_DOWN, ROUND_UP, getcontext
+from decimal import Decimal, ROUND_DOWN, getcontext
 
 from django.http import Http404
 from django.shortcuts import redirect, render
@@ -14,6 +12,8 @@ from config import settings
 getcontext().prec = 10
 per_point = Decimal(settings.PER_POINT)
 point_return = Decimal(settings.POINT_RETURN)
+
+deposit_rate = Decimal("100") - Decimal(str(settings.CANCELLATION_FEE)) / Decimal("100")
 
 
 def buy(request):
@@ -36,13 +36,14 @@ def buy(request):
         item_total = items_info.total_amount
         user_cart_number = items_info.total_qty
 
+        # ユーザー残高取得
         player_balance = util.VaultHelper.get_balance(info.mc_uuid)
 
         # 小数第2位まで切り上げ
         if player_balance:
-            player_balance = Decimal(str(player_balance)).quantize(Decimal(".01"),
-                                                                   rounding=ROUND_UP)
-            after_balance_float = Decimal(f"{player_balance}") - Decimal(f"{item_total}")
+
+            # 購入後の残高計算
+            after_balance_float = player_balance - Decimal(str(item_total))
             after_balance = f"{after_balance_float:,.2f}"
         else:
             after_balance = None
@@ -59,7 +60,6 @@ def buy(request):
             "item_total": f"{item_total:,.2f}",
             "player_balance": f"{player_balance:,.2f}",
             "player_balance_float": player_balance,
-            "item_total_float": f"{float(item_total):,.2f}",
             "after_balance": after_balance,
             "buy_able": player_balance >= float(item_total),
             "buy_now": buy_now,
@@ -92,16 +92,21 @@ def buy_confirm(request):
         order_item = request.GET.get("items")
 
         # 合計金額を算出
-        array = []
-        amount = Decimal("0")
         order_item_list = json.loads(order_item)
-        for i in order_item_list:
-            price = util.DatabaseHelper.get_item(i[0])["price"]
+        order_item_list = util.ItemHelper.get_item.cart_list(order_item_list)
+        amount = order_item_list.total_amount
 
-            item_dict = f"{i[0]}({i[1]}個:{price})"
-            array.append(item_dict)
+        # お届け時間を計算
+        delivery_time = util.ItemHelper.calc_delivery_time_perfect()
 
-            amount = amount + Decimal(str(price)) * Decimal(str(i[1]))
+        # オーダーIDを作成
+        order_id = util.ItemHelper.create_order_id()
+
+        # 出金するときの理由用にアイテム情報をまとめる
+        reason_list = []
+        for i in order_item_list.item_list:
+            item_dict = f"{i['item_id']}({i['qty']}個:{i['price']})"
+            reason_list.append(item_dict)
 
         # ポイント関係
         point = request.GET.get("point")
@@ -110,37 +115,26 @@ def buy_confirm(request):
                 raise Exception("ポイントが整数値ではありません")
 
             point = int(point)
-            if not amount >= Decimal(str(point)) * per_point:
+            if not Decimal(str(amount)) >= Decimal(str(point)) * per_point:
                 raise Exception("ポイントが請求額を超えています")
 
+            # ポイントを引く
             util.DatabaseHelper.withdraw_user_point(mc_uuid, point)
 
             # 合計金額からポイント引く
             amount_float = float(amount - Decimal(str(point)) * per_point)
 
+            # 理由を作成
+            reason = (", ".join(reason_list) +
+                      f", ポイント使用({point}pt:{Decimal(str(point)) * per_point})(OrderID: {order_id})")
+
         else:
             amount_float = float(amount)
 
-        # お届け時間を計算
-        now = datetime.datetime.now().replace(microsecond=0)
-        if now > datetime.datetime.strptime("13:00:00", "%H:%M:%S"):
-            delivery_time = (now.replace(hour=random.randint(8, 18), minute=random.randint(1, 59),
-                                         second=0, microsecond=0)
-                             + datetime.timedelta(days=2))
-        else:
-            delivery_time = (now.replace(hour=random.randint(8, 18), minute=random.randint(1, 59),
-                                         second=0, microsecond=0)
-                             + datetime.timedelta(days=1))
-        order_id = f"""U{str(random.randint(0, 999)).zfill(3)}-
-                        {str(random.randint(0, 999999)).zfill(6)}-
-                        {str(random.randint(0, 999999)).zfill(6)}"""
+            # 理由を作成
+            reason = ", ".join(reason_list) + f"(OrderID: {order_id})"
 
         # 出金
-        if point:
-            reason = (", ".join(array) +
-                      f", ポイント使用({point}pt:{Decimal(str(point)) * per_point})(OrderID: {order_id})")
-        else:
-            reason = ", ".join(array) + f"(OrderID: {order_id})"
         withdraw_player = util.VaultHelper.withdraw_player(mc_uuid, amount_float, reason)
 
         # サーバーオフライン処理
@@ -154,17 +148,12 @@ def buy_confirm(request):
         if request.GET.get("buynow") == "False":
             util.DatabaseHelper.update_user_cart([], mc_uuid)
 
-        # アイテム情報取得
-        order_item_list = util.ItemHelper.get_item.cart_list(order_item_list)
-        order_item_obj = order_item_list.item_list
-        total_point = order_item_list.total_point
-
         # ポイント付与
-        util.DatabaseHelper.deposit_user_point(mc_uuid, total_point)
+        util.DatabaseHelper.deposit_user_point(mc_uuid, order_item_list.total_point)
 
         # DM送信
         asyncio.run_coroutine_threadsafe(
-            bot.send_order_confirm(info.discord_id, order_id, order_item_obj, delivery_time),
+            bot.send_order_confirm(info.discord_id, order_id, order_item_list.item_list, delivery_time),
             bot.client.loop
         )
 
@@ -173,7 +162,7 @@ def buy_confirm(request):
             "info": info,
             "order_id": order_id,
             "order_time": delivery_time,
-            "order_item_obj": order_item_obj,
+            "order_item_obj": order_item_list.item_list,
             "categories": util.ItemHelper.get_category.all(),
             "money_unit": settings.MONEY_UNIT,
         }
@@ -192,38 +181,36 @@ def buy_cancel(request):
         mc_uuid = info.mc_uuid
         order_id = request.GET.get("id")
 
-        user_history = util.DatabaseHelper.get_user_history(mc_uuid)
+        # オーダーを取得
+        order_obj = util.DatabaseHelper.get_order(order_id)
+        amount = order_obj["amount"]
 
-        for i in user_history:
-            if i["order_id"] == order_id:
-                deposit_price = Decimal("100") - Decimal(str(settings.CANCELLATION_FEE))
+        # 入金する価格を計算
+        deposit_price = deposit_rate * Decimal(str(amount))
+        deposit_price = float(deposit_price.quantize(Decimal(".01"), rounding=ROUND_DOWN))
 
-                i["cancel"] = True
-                amount = i["amount"]
-                amount_twenty_per = Decimal(deposit_price / Decimal("100")) * Decimal(str(amount))
-                amount_twenty_per = float(
-                    amount_twenty_per.quantize(Decimal(".01"), rounding=ROUND_DOWN))
+        # 理由作成し、入金
+        reason = (f"注文のキャンセル(OrderID: {order_id})" +
+                  f"(入金額: {amount}の{deposit_price}%(キャンセル料{settings.CANCELLATION_FEE}%))")
+        deposit_player = util.VaultHelper.deposit_player(mc_uuid, deposit_price, reason)
 
-                reason = (f"注文のキャンセル(OrderID: {order_id})" +
-                          "(入金額: {amount}の{deposit_price}%(キャンセル料{settings.CANCELLATION_FEE}%))")
-                deposit_player = util.VaultHelper.deposit_player(mc_uuid, amount_twenty_per, reason)
-                if not deposit_player:
-                    return redirect("/history/?error=true")
+        # エラーが出たらリダイレクト
+        if not deposit_player:
+            return redirect("/history/?error=true")
 
-        order_item = json.loads(util.DatabaseHelper.get_order(order_id)[1])
+        # キャンセルしたオーダーのアイテムを取得
+        order_item = util.DatabaseHelper.get_order(order_id)["order_item"]
+        item_list = util.ItemHelper.get_item.cart_list(order_item).item_list
 
-        item_list = []
-        for i in order_item:
-            item_id = i[0]
-            item_obj = util.DatabaseHelper.get_item(item_id)
-            item_list.append(item_obj)
-
-        util.DatabaseHelper.delete_order(order_id)
-
-        util.DatabaseHelper.update_user_history(mc_uuid, json.dumps(user_history))
+        # DM送信
         asyncio.run_coroutine_threadsafe(
             bot.send_order_cancel(info.discord_id, order_id, item_list),
             bot.client.loop)
 
+        # オーダー削除
+        util.DatabaseHelper.delete_order(order_id)
+
         return redirect(f"/history/#{order_id}")
-    return redirect(f"/history/")
+
+    else:
+        return redirect(f"/history/")

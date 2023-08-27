@@ -1,5 +1,6 @@
 import json
 import socket
+from decimal import Decimal, ROUND_UP
 
 from config import settings
 
@@ -26,7 +27,9 @@ def get_balance(uuid: str):
             if received_data == "Invalid UUID":
                 return False
 
-            return float(received_data)
+            player_balance = Decimal(received_data).quantize(Decimal(".01"), rounding=ROUND_UP)
+
+            return player_balance
 
     except ConnectionRefusedError:
         return False
