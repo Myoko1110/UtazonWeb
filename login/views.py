@@ -31,13 +31,15 @@ def login(request):
 
         # StatusCodeが200でなかったらエラーを表示
         if token_request.status_code != 200:
-            logging.error(f"access_tokenを取得できませんでした(StatusCode: {token_request.status_code}, Code: {code})")
+            logging.error(
+                f"access_tokenを取得できませんでした(Error: {token_request.json()}, Code: {code})"
+            )
 
             # エラーを表示
             context = {
                 "err": True,
                 "content": "内部エラーが発生しました。もう一度お試しください。",
-                "url": config.settings.DISCORD_CLIENT["URL"],
+                "url": settings.DISCORD_CLIENT["URL"],
             }
             return render(request, "login.html", context=context)
 
@@ -50,13 +52,15 @@ def login(request):
 
         # StatusCodeが200でなかったらエラーを表示
         if identify.status_code != 200:
-            logging.error(f"access_tokenからidentifyを取得できませんでした(StatusCode: {identify.status_code}, Code: {code}, AccessToken: {access_token})")
+            logging.error(
+                f"access_tokenからidentifyを取得できませんでした(StatusCode: {identify.json()}, Code: {code})"
+            )
 
             # エラーを表示
             context = {
                 "err": True,
                 "content": "内部エラーが発生しました。お手数ですがもう一度お試しください。",
-                "url": config.settings.DISCORD_CLIENT["URL"],
+                "url": settings.DISCORD_CLIENT["URL"],
             }
             return render(request, "login.html", context=context)
 
@@ -65,13 +69,15 @@ def login(request):
 
         # StatusCodeが200でなかったらエラーを表示
         if guilds.status_code != 200:
-            logging.error(f"access_tokenからguildsを取得できませんでした(StatusCode: {guilds.status_code}, Code: {code}, AccessToken: {access_token})")
+            logging.error(
+                f"access_tokenからguildsを取得できませんでした(StatusCode: {guilds.json()}, Code: {code})"
+            )
 
             # エラーを表示
             context = {
                 "err": True,
                 "content": "内部エラーが発生しました。お手数ですがもう一度お試しください。",
-                "url": config.settings.DISCORD_CLIENT["URL"],
+                "url": settings.DISCORD_CLIENT["URL"],
             }
             return render(request, "login.html", context=context)
 
@@ -89,7 +95,7 @@ def login(request):
                     context = {
                         "err": True,
                         "content": "DiscordとMinecraftを接続した上でログインしてください。",
-                        "url": config.settings.DISCORD_CLIENT["URL"],
+                        "url": settings.DISCORD_CLIENT["URL"],
                     }
                     return render(request, "login.html", context=context)
 
@@ -119,12 +125,16 @@ def login(request):
                         if i == client_addr:
                             break
                     else:
-                        asyncio.run_coroutine_threadsafe(bot.send_security(discord_id), bot.client.loop)
+                        asyncio.run_coroutine_threadsafe(
+                            bot.send_security(discord_id), bot.client.loop
+                        )
                 else:
                     asyncio.run_coroutine_threadsafe(bot.send_security(discord_id), bot.client.loop)
                 """
                 while True:
-                    save_session = util.DatabaseHelper.save_session(session_id, session_value, mc_uuid, access_token, now, expires, client_addr)
+                    save_session = util.DatabaseHelper.save_session(
+                        session_id, session_value, mc_uuid, access_token, now, expires, client_addr
+                    )
 
                     if save_session is True:
                         break
@@ -145,7 +155,7 @@ def login(request):
             context = {
                 "err": True,
                 "content": "Discordサーバーに参加されていません。参加の上、もう一度お試しください。",
-                "url": config.settings.DISCORD_CLIENT["URL"],
+                "url": settings.DISCORD_CLIENT["URL"],
             }
             return render(request, "login.html", context=context)
 
@@ -159,7 +169,7 @@ def login(request):
             context = {
                 "err": False,
                 "content": "error",
-                "url": config.settings.DISCORD_CLIENT["URL"],
+                "url": settings.DISCORD_CLIENT["URL"],
             }
             return render(request, "login.html", context=context)
 

@@ -92,9 +92,10 @@ def buy_confirm(request):
         order_item = request.GET.get("items")
 
         # 合計金額を算出
-        order_item_list = json.loads(order_item)
-        order_item_list = util.ItemHelper.get_item.cart_list(order_item_list)
-        amount = order_item_list.total_amount
+        order_item = json.loads(order_item)
+        order_item = util.ItemHelper.get_item.cart_list(order_item)
+        amount = order_item.total_amount
+        order_item_list = order_item.item_list
 
         # お届け時間を計算
         delivery_time = util.ItemHelper.calc_delivery_time_perfect()
@@ -104,7 +105,7 @@ def buy_confirm(request):
 
         # 出金するときの理由用にアイテム情報をまとめる
         reason_list = []
-        for i in order_item_list.item_list:
+        for i in order_item_list:
             item_dict = f"{i['item_id']}({i['qty']}個:{i['price']})"
             reason_list.append(item_dict)
 
@@ -149,11 +150,11 @@ def buy_confirm(request):
             util.DatabaseHelper.update_user_cart([], mc_uuid)
 
         # ポイント付与
-        util.DatabaseHelper.deposit_user_point(mc_uuid, order_item_list.total_point)
+        util.DatabaseHelper.deposit_user_point(mc_uuid, order_item.total_point)
 
         # DM送信
         asyncio.run_coroutine_threadsafe(
-            bot.send_order_confirm(info.discord_id, order_id, order_item_list.item_list, delivery_time),
+            bot.send_order_confirm(info.discord_id, order_id, order_item_list, delivery_time),
             bot.client.loop
         )
 
@@ -162,7 +163,7 @@ def buy_confirm(request):
             "info": info,
             "order_id": order_id,
             "order_time": delivery_time,
-            "order_item_obj": order_item_list.item_list,
+            "order_item_obj": order_item_list,
             "categories": util.ItemHelper.get_category.all(),
             "money_unit": settings.MONEY_UNIT,
         }
