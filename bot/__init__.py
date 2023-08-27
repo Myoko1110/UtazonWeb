@@ -23,6 +23,15 @@ async def on_ready():
 
 
 async def send_order_confirm(discord_id, order_id, order_item_obj, delivery_time):
+	"""
+	注文が確定されたことをDMで送信します
+
+	:param discord_id: DiscordID
+	:param order_id: オーダーID
+	:param order_item_obj: アイテムリスト
+	:param delivery_time: 配達時間
+	"""
+
 	global delivery_status_url
 
 	author = await client.fetch_user(discord_id)
@@ -47,6 +56,14 @@ async def send_order_confirm(discord_id, order_id, order_item_obj, delivery_time
 
 
 async def send_order_cancel(discord_id, order_id, order_item_obj):
+	"""
+	オーダーがキャンセルされたことをDMに送信します
+
+	:param discord_id: DiscordID
+	:param order_id: オーダーID
+	:param order_item_obj: アイテムリスト
+	"""
+
 	global order_history_url
 
 	author = await client.fetch_user(discord_id)
@@ -69,6 +86,12 @@ async def send_order_cancel(discord_id, order_id, order_item_obj):
 
 
 async def send_security(discord_id):
+	"""
+	新しいログインをDMで送信します
+
+	:param discord_id: DiscordID
+	"""
+
 	author = await client.fetch_user(discord_id)
 	embed = discord.Embed(
 		title="新しいログイン",
