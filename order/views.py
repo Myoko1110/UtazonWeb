@@ -4,8 +4,8 @@ import logging
 from django.http import Http404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-import config.settings
-import config.DBManager
+import util
+from config import settings
 
 
 @csrf_exempt
@@ -28,11 +28,11 @@ def order(request):
         logging.warning(f"order_listにPOSTメゾットでアクセスされましたがパスワードが入力されていませんでした(IP:{client_addr})")
         raise Http404
 
-    if password != config.settings.ORDER_LIST_PASS:
+    if password != settings.ORDER_LIST_PASS:
         logging.warning(f"order_listにPOSTメゾットでアクセスされましたがパスワードが違いました(IP:{client_addr})")
         raise Http404
 
-    order_list = json.dumps(config.DBManager.get_order(), indent=4)
+    order_list = json.dumps(util.DatabaseHelper.get_order(), indent=4)
 
     response = HttpResponse(order_list)
     response["Content-Disposition"] = "application/json"

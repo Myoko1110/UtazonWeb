@@ -228,7 +228,7 @@
 				<h2>注文履歴</h2>
 				<ul>
 					<li><a style="color: #afafaf">注文履歴</a></li>
-					<li><a href="/view-history">閲覧履歴</a></li>
+					<li><a href="/browsing-history">閲覧履歴</a></li>
 				</ul>
 			</div>
 			{% if order_history %}
@@ -238,7 +238,7 @@
 					<div class="history-list__info">
 						<div class="history-list__info-child">
 							<span>注文日</span>
-							<p>{{ child.date.year }}年{{ child.date.month }}月{{ child.date.day }}日</p>
+							<p>{{ child.order_time.year }}年{{ child.order_time.month }}月{{ child.order_time.day }}日</p>
 						</div>
 						<div class="history-list__info-child">
 							<span>合計</span>
@@ -266,19 +266,19 @@
 						{% for item in child.order_item %}
 						<div class="history-list__value-product">
 							<div class="history-list__value-product-box">
-								<img src="{{ item.3.0 }}">
+								<img src="{{ item.image.0 }}">
 								<div class="history-list__value-product-middle">
-									<a class="history-list__value-product-name" href="../item/?id={{ item.0 }}">{{ item.1 }}</a>
+									<a class="history-list__value-product-name" href="../item/?id={{ item.item_id }}">{{ item.item_name }}</a>
                                 <!--
 									{% if child.status %}
 									<span>返品期間：2023/04/06まで</span>
 									{% endif %}
 								-->
 									<div style="display: flex; margin-top: 5px;align-items: center">
-										<p style="margin: 0 10px 0 0;font-size: 14px">個数：{{ item.9 }}</p>
+										<p style="margin: 0 10px 0 0;font-size: 14px">個数：{{ item.qty }}</p>
 										<div>
-											<a class="history-list__value-product-rebuy" href="../buy/?item=[[{{ item.0 }}, 1]]">再度購入</a>
-											<a class="history-list__value-product-view" href="../item/?id={{ item.0 }}">商品を表示</a>
+											<a class="history-list__value-product-rebuy" href="../buy/?item=[[{{ item.item_id }}, 1]]">再度購入</a>
+											<a class="history-list__value-product-view" href="../item/?id={{ item.item_id }}">商品を表示</a>
 										</div>
 									</div>
 								</div>
@@ -286,8 +286,10 @@
 							<div class="history-list__value-product-end">
 								{% if not child.cancel %}
 								{% if child.status %}
-								<!--<a class="history-list__value-product-review">商品を返品する</a>-->
-								<a class="history-list__value-product-return" href="../review/?id={{ item.0 }}">商品をレビューする</a>
+                                {% if forloop.counter == 1 %}
+                                <a class="history-list__value-product-review" href="status/?id={{ child.order_id }}">配送状況</a>
+                                {% endif %}
+								<a class="history-list__value-product-return" href="../review/?id={{ item.item_id }}">商品をレビューする</a>
 								{% else %}
                                 {% if forloop.counter == 1 %}
 								<a class="history-list__value-product-review" data-id="{{ child.order_id }}" onclick="order_cancel(this)">注文をキャンセルする</a>

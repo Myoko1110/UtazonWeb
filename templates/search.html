@@ -225,48 +225,48 @@
 		<ul class="main-list">
 			{% for child in result %}
 			<li>
-				<img class="main-img" src="{{ child.3.0 }}" onclick="location.href='../item/?id={{ child.0 }}'">
+				<img class="main-img" src="{{ child.image.0 }}" onclick="location.href='../item/?id={{ child.item_id }}'">
 				<div class="main-info">
-					<a href="../item/?id={{ child.0 }}" class="main-name">{{ child.1 }}</a>
-					{% if child.9 %}
+					<a href="../item/?id={{ child.item_id }}" class="main-name">{{ child.item_name }}</a>
+					{% if child.item_av %}
 					<div class="main-star__box">
-						{% if child.9 >= 4.8 %}
+						{% if child.item_av >= 4.8 %}
 						<div class="main-star" style="background-position: -2px -2px;">
-						{% elif child.9 >= 4.3  and child.9 < 4.8 %}
+						{% elif child.item_av >= 4.3  and child.item_av < 4.8 %}
 						<div class="main-star" style="background-position: -2px -42px;">
-						{% elif child.9 >= 3.8  and child.9 < 4.3 %}
+						{% elif child.item_av >= 3.8  and child.item_av < 4.3 %}
 						<div class="main-star" style="background-position: -2px -22px;">
-						{% elif child.9 >= 3.3  and child.9 < 3.8 %}
+						{% elif child.item_av >= 3.3  and child.item_av < 3.8 %}
 						<div class="main-star" style="background-position: -2px -82px;">
-						{% elif child.9 >= 2.8  and child.9 < 3.3 %}
+						{% elif child.item_av >= 2.8  and child.item_av < 3.3 %}
 						<div class="main-star" style="background-position: -2px -62px;">
-						{% elif child.9 >= 2.3  and child.9 < 2.8 %}
+						{% elif child.item_av >= 2.3  and child.item_av < 2.8 %}
 						<div class="main-star" style="background-position: -2px -122px;">
-						{% elif child.9 >= 1.8  and child.9 < 2.3 %}
+						{% elif child.item_av >= 1.8  and child.item_av < 2.3 %}
 						<div class="main-star" style="background-position: -2px -102px;">
-						{% elif child.9 >= 1.3  and child.9 < 1.8 %}
+						{% elif child.item_av >= 1.3  and child.item_av < 1.8 %}
 						<div class="main-star" style="background-position: -2px -162px;">
-						{% elif child.9 >= 0.8  and child.9 < 1.3 %}
+						{% elif child.item_av >= 0.8  and child.item_av < 1.3 %}
 						<div class="main-star" style="background-position: -2px -142px;">
-						{% elif child.9 >= 0.3  and child.9 < 0.8 %}
+						{% elif child.item_av >= 0.3  and child.item_av < 0.8 %}
 						<div class="main-star" style="background-position: -2px -202px;">
-						{% elif  child.9 < 0.3 %}
+						{% elif  child.item_av < 0.3 %}
 						<div class="main-star" style="background-position: -2px -182px;">
 						{% endif %}
-							<span style="opacity: 0;">5つ星のうち{{ child.9 }}</span>
+							<span style="opacity: 0;">5つ星のうち{{ child.item_av }}</span>
 						</div>
-						<p>{{ child.9 }}</p>
+						<p>{{ child.item_av }}</p>
 					</div>
 					{% endif %}
                     <div class="main-price">
-                    {% if child.11.status %}
+                    {% if child.sale.status %}
                         <p>タイムセール</p>
-						<a href="../item/?id={{ child.0 }}"><span>{{ money_unit }}</span>{{ child.2 }}</a><small style="color: #565959;margin-left: 5px">過去価格: <del>{{ money_unit }}{{ child.11.past_price }}</del></small>
+						<a href="../item/?id={{ child.item_id }}"><span>{{ money_unit }}</span>{{ child.item_price_format }}</a><small style="color: #565959;margin-left: 5px">過去価格: <del>{{ money_unit }}{{ child.sale.past_price }}</del></small>
                     {% else %}
-						<a href="../item/?id={{ child.0 }}"><span>{{ money_unit }}</span>{{ child.2 }}</a>
+						<a href="../item/?id={{ child.item_id }}"><span>{{ money_unit }}</span>{{ child.item_price_format }}</a>
                     {% endif %}
                     </div>
-					<p class="main-point">{{ child.10 }}ポイント({{ point_return }}%)</p>
+					<p class="main-point">{{ child.point }}ポイント({{ point_return }}%)</p>
 				</div>
 			</li>
 			{% endfor %}

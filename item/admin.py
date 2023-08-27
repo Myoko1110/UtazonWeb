@@ -1,5 +1,6 @@
-from item.models import Banner, SpecialFeature
 from django.contrib import admin
+
+from item.models import Banner, SpecialFeature
 
 
 class BannerAdmin(admin.ModelAdmin):

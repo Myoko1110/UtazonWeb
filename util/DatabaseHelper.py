@@ -1,20 +1,18 @@
 import datetime
 import json
-import random
 
 import mysql.connector
 
-import config.settings as settings
-import config.functions
-from item.models import SpecialFeature
 import util
+from config import settings
+from item.models import SpecialFeature
 
 
 def get_user_cart(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
+            sql = "SELECT cart FROM utazon_user WHERE mc_uuid=%s"
             cursor.execute(sql, (mc_uuid,))
 
             # mc_uuidのレコードを取得
@@ -22,14 +20,15 @@ def get_user_cart(mc_uuid):
 
             if not result:
                 return False
-    return json.loads(result[1])
+
+            return json.loads(result[0])
 
 
 def get_user_later(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
+            sql = "SELECT later FROM utazon_user WHERE mc_uuid=%s"
             cursor.execute(sql, (mc_uuid,))
 
             # mc_uuidのレコードを取得
@@ -37,19 +36,18 @@ def get_user_later(mc_uuid):
 
             if not result:
                 return False
-    return json.loads(result[2])
+            return json.loads(result[0])
 
 
 def get_item(item_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
-        with cnx.cursor() as cursor:
+        with cnx.cursor(dictionary=True) as cursor:
             sql = "SELECT * FROM utazon_item WHERE item_id=%s"
             cursor.execute(sql, (item_id,))
 
             # item_idのレコードを取得
-            result = list(cursor.fetchone())
-            result.pop(0)
+            result = cursor.fetchone()
 
             if not result:
                 return False
@@ -60,7 +58,7 @@ def get_user_point(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
+            sql = "SELECT point FROM utazon_user WHERE mc_uuid=%s"
             cursor.execute(sql, (mc_uuid,))
 
             # mc_uuidのレコードを取得
@@ -68,14 +66,14 @@ def get_user_point(mc_uuid):
 
             if not result:
                 return False
-    return result[3]
+    return result[0]
 
 
-def withdraw_user_point(mc_uuid, amount):
+def withdraw_user_point(mc_uuid, amount: int):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
+            sql = "SELECT point FROM utazon_user WHERE mc_uuid=%s"
             cursor.execute(sql, (mc_uuid,))
 
             # mc_uuidのレコードを取得
@@ -84,10 +82,10 @@ def withdraw_user_point(mc_uuid, amount):
             if not result:
                 return False
 
-            if result[3] < amount:
+            if result[0] < amount:
                 raise Exception("使用できるポイントを超えています")
 
-            point = result[3] - amount
+            point = result[0] - amount
 
             sql = "UPDATE IGNORE utazon_user SET point=%s WHERE mc_uuid=%s"
 
@@ -121,15 +119,12 @@ def deposit_user_point(mc_uuid, amount):
 def get_item_from_category(cat_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
-        with cnx.cursor() as cursor:
+        with cnx.cursor(dictionary=True) as cursor:
             sql = "SELECT * FROM utazon_item WHERE category=%s"
             cursor.execute(sql, (cat_id,))
 
             # cat_idのレコードを取得
             result = cursor.fetchall()
-            for i in range(len(result)):
-                result[i] = list(result[i])
-                result[i].pop(0)
 
             if not result:
                 return False
@@ -139,29 +134,21 @@ def get_item_from_category(cat_id):
 def search_item(item_query, category=None):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
-        with cnx.cursor() as cursor:
+        with cnx.cursor(dictionary=True) as cursor:
             if category:
-                result = []
                 for i in util.ItemHelper.get_category.child(category):
                     sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s AND category=%s"
                     cursor.execute(sql, (f"%{item_query}%", i))
 
-                    fetch = list(cursor.fetchall())
-
-                    for j in range(len(fetch)):
-                        fetch[j] = list(fetch[j])
-                        fetch[j].pop(0)
-                        result.append(list(fetch[j]))
+                    result = cursor.fetchall()
 
             else:
                 sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s"
                 cursor.execute(sql, (f"%{item_query}%",))
 
                 # mc_uuidのレコードを取得
-                result = list(cursor.fetchall())
-                for i in range(len(result)):
-                    result[i] = list(result[i])
-                    result[i].pop(0)
+                result = cursor.fetchall()
+
     return result
 
 
@@ -203,24 +190,9 @@ def update_item_review(item_id, value):
 def get_session(session_id, session_val):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
-        with cnx.cursor() as cursor:
+        with cnx.cursor(dictionary=True) as cursor:
             sql = "SELECT * FROM utazon_session WHERE session_id=%s AND session_val=%s"
             cursor.execute(sql, (session_id, session_val,))
-
-            # session_idのレコードを取得
-            result = cursor.fetchone()
-
-            if not result:
-                return False
-    return result
-
-
-def get_session_from_mc_uuid(mc_uuid):
-    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
-    with cnx:
-        with cnx.cursor() as cursor:
-            sql = "SELECT logged_IP FROM utazon_session WHERE mc_uuid=%s"
-            cursor.execute(sql, (mc_uuid,))
 
             # session_idのレコードを取得
             result = cursor.fetchone()
@@ -250,7 +222,7 @@ def get_mc_uuid(discord_id):
     with cnx:
         with cnx.cursor() as cursor:
 
-            sql = "SELECT * FROM linked WHERE discord_id=%s"
+            sql = "SELECT mc_uuid FROM linked WHERE discord_id=%s"
             cursor.execute(sql, (discord_id,))
             result = cursor.fetchone()
 
@@ -305,27 +277,17 @@ def save_session(session_id, session_value, mc_uuid, access_token, now, expires,
                 return True
 
 
-def add_order(items, mc_uuid):
+def add_order(mc_uuid, items, delivery_time, order_id, amount):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-
+            now = datetime.datetime.now()
             while True:
                 try:
-                    # お届け時間を計算
-                    now = datetime.datetime.now().replace(microsecond=0)
-                    if now > datetime.datetime.strptime("13:00:00", "%H:%M:%S"):
-                        rand_time = now.replace(hour=random.randint(8, 18), minute=random.randint(1, 59), second=0,
-                                                microsecond=0) + datetime.timedelta(days=2)
-                    else:
-                        rand_time = now.replace(hour=random.randint(8, 18), minute=random.randint(1, 59), second=0,
-                                                microsecond=0) + datetime.timedelta(days=1)
-                    order_id = f"U{str(random.randint(0, 999)).zfill(3)}-{str(random.randint(0, 999999)).zfill(6)}-{str(random.randint(0, 999999)).zfill(6)}"
-
                     sql = """INSERT IGNORE INTO `utazon_order` (  
-                                         `mc_uuid`, `order_item`, `delivery_time` ,`order_time`, `order_id`
-                                         ) VALUES (%s, %s, %s, %s, %s)"""
-                    cursor.execute(sql, (mc_uuid, items, rand_time, now, order_id))
+                                         `mc_uuid`, `order_item`, `delivery_time` ,`order_time`, `order_id`, `amount`, `status`
+                                         ) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+                    cursor.execute(sql, (mc_uuid, items, delivery_time, now, order_id, amount, False))
                 except mysql.connector.Error as err:
                     if err.errno == 1062:
                         continue
@@ -333,7 +295,7 @@ def add_order(items, mc_uuid):
                         raise err
                 else:
                     cnx.commit()
-                    return order_id, rand_time
+                    return True
 
 
 def get_order(order_id=None):
@@ -359,7 +321,7 @@ def get_order(order_id=None):
 
                 return result
         else:
-            with cnx.cursor() as cursor:
+            with cnx.cursor(dictionary=True) as cursor:
                 sql = "SELECT * FROM `utazon_order` WHERE order_id=%s"
                 cursor.execute(sql, (order_id,))
 
@@ -380,16 +342,16 @@ def delete_order(order_id):
 def get_user_history(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
-        with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = "SELECT * FROM utazon_order WHERE mc_uuid=%s"
             cursor.execute(sql, (mc_uuid,))
 
             # mc_uuidのレコードを取得
-            result = cursor.fetchone()
+            result = cursor.fetchall()
 
             if not result:
                 return False
-    return json.loads(result[4])
+    return result
 
 
 def update_user_history(mc_uuid, value):
@@ -450,15 +412,10 @@ def add_user_view_history(mc_uuid, item_id):
 def get_popular_item():
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
-        with cnx.cursor() as cursor:
+        with cnx.cursor(dictionary=True) as cursor:
             sql = "SELECT * FROM utazon_item ORDER BY `purchases_number` DESC LIMIT 4"
             cursor.execute(sql)
             result = cursor.fetchall()
-
-            for i in range(len(result)):
-                result[i] = list(result[i])
-                result[i].pop(0)
-                result[i][3] = json.loads(result[i][3])
 
     return result
 
@@ -466,15 +423,11 @@ def get_popular_item():
 def get_latest_item():
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
-        with cnx.cursor() as cursor:
+        with cnx.cursor(dictionary=True) as cursor:
             sql = "SELECT * FROM utazon_item ORDER BY `id` DESC LIMIT 4"
             cursor.execute(sql)
             result = cursor.fetchall()
 
-            for i in range(len(result)):
-                result[i] = list(result[i])
-                result[i].pop(0)
-                result[i][3] = json.loads(result[i][3])
     return result
 
 
@@ -486,16 +439,6 @@ def get_item_sale(item_id):
             cursor.execute(sql, (item_id,))
             result = cursor.fetchone()
     return result
-
-
-def get_id_from_item(item_id):
-    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
-    with cnx:
-        with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_item WHERE item_id=%s"
-            cursor.execute(sql, (item_id,))
-            result = cursor.fetchone()
-    return result[0]
 
 
 def get_special_feature():

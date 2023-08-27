@@ -1,15 +1,12 @@
-import asyncio
 import datetime
 import logging
 import secrets
 
-from django.shortcuts import redirect, render
 import requests
+from django.shortcuts import redirect, render
 
 import util
-import config.settings as settings
-import config.DBManager
-import config.functions
+from config import settings
 
 
 def login(request):
@@ -85,7 +82,7 @@ def login(request):
                 discord_id = identify.json()["id"]
 
                 # DiscordConnectでリンクしてるか確認
-                mc_uuid = config.DBManager.get_mc_uuid(discord_id)
+                mc_uuid = util.DatabaseHelper.get_mc_uuid(discord_id)
 
                 if not mc_uuid:
                     # エラーを表示
@@ -113,7 +110,7 @@ def login(request):
                     # "HTTP_X_FORWARDED_FOR"ヘッダがない場合: 直接接続なので"REMOTE_ADDR"ヘッダを参照する。
                     client_addr = request.META.get("REMOTE_ADDR")
                 """
-                sessions = config.DBManager.get_session_from_mc_uuid(mc_uuid)
+                sessions = util.DatabaseHelper.get_session_from_mc_uuid(mc_uuid)
                 print(sessions)
                 print(mc_uuid)
                 if sessions:
@@ -127,7 +124,7 @@ def login(request):
                     asyncio.run_coroutine_threadsafe(bot.send_security(discord_id), bot.client.loop)
                 """
                 while True:
-                    save_session = config.DBManager.save_session(session_id, session_value, mc_uuid, access_token, now, expires, client_addr)
+                    save_session = util.DatabaseHelper.save_session(session_id, session_value, mc_uuid, access_token, now, expires, client_addr)
 
                     if save_session is True:
                         break
@@ -135,7 +132,7 @@ def login(request):
                         continue
 
                 # userテーブルになかったら作成
-                config.DBManager.create_user_info(mc_uuid)
+                util.DatabaseHelper.create_user_info(mc_uuid)
 
                 # 問題がなかったらcookie付与しリダイレクト
                 response = redirect("/")
@@ -174,7 +171,7 @@ def logout(request):
         if key.startswith("_Secure-"):
             response.delete_cookie(key)
 
-            config.DBManager.delete_session(key)
+            util.DatabaseHelper.delete_session(key)
 
     response.delete_cookie("LOGIN_STATUS")
 

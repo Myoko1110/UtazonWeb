@@ -1,5 +1,5 @@
-from django.apps import AppConfig
 import mysql.connector
+from django.apps import AppConfig
 
 import bot.apps
 import config.settings as settings
@@ -8,10 +8,13 @@ import config.settings as settings
 class LoginConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'login'
+    path = settings.BASE_DIR / "login"
 
     def ready(self):
         from django.core.signals import request_started
-        request_started.connect(table_create, weak=False)
+        request_started.connect(start_bot, weak=False)
+
+        table_create()
 
 
 class RunOnce:
@@ -28,8 +31,11 @@ class RunOnce:
 
 
 @RunOnce
-def table_create(sender, **kwargs):
+def start_bot(sender, **kwargs):
     bot.apps.ready()
+
+
+def table_create():
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
@@ -75,7 +81,9 @@ def table_create(sender, **kwargs):
                                                     order_item JSON,
                                                     delivery_time DATETIME,
                                                     order_time DATETIME,
-                                                    order_id VARCHAR(18) UNIQUE
+                                                    order_id VARCHAR(18) UNIQUE,
+                                                    amount DOUBLE,
+                                                    status BOOLEAN
                                                     )"""
             cursor.execute(sql)
 

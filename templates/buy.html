@@ -294,11 +294,11 @@
 						<ul>
 							{% for child in user_cart %}
 							<li class="buy-items__list">
-								<img src="{{ child.3.0 }}">
+								<img src="{{ child.image.0 }}">
 								<div class="buy-items__box">
-									<h3>{{ child.1 }}</h3>
-									<p>{{ money_unit }}{{ child.10 }}</p>
-									<p style="font-weight: 400;font-size: 14px;margin: 0;">個数: {{ child.11 }}</p>
+									<h3>{{ child.item_name }}</h3>
+									<p>{{ money_unit }}{{ child.item_price }}</p>
+									<p style="font-weight: 400;font-size: 14px;margin: 0;">個数: {{ child.qty }}</p>
 								</div>
 							</li>
 							{% endfor %}

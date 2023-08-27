@@ -1,12 +1,11 @@
 import os
-import yaml
 from decimal import Decimal
-
-import bot
-
-from dotenv import load_dotenv
 from pathlib import Path
 
+import yaml
+from dotenv import load_dotenv
+
+import bot
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,9 +39,6 @@ PER_POINT = Decimal(str(sf["point"]["point_rate"])) / Decimal("100")
 POINT_RETURN = Decimal(str(sf["point"]["return_rate"])) / Decimal("100")
 MONEY_UNIT = sf["money"]["unit"]
 CANCELLATION_FEE = sf["return"]["cancellation_fee"]
-
-if float(POINT_RETURN) > 1.0:
-    raise ValueError("POINT_RETURNは1以下にして下さい。")
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {

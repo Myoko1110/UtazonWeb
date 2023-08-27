@@ -1,7 +1,7 @@
 import json
 import socket
 
-import config.settings as settings
+from config import settings
 
 socket_port = settings.SOCKET_PORT
 socket_host = settings.SOCKET_HOST

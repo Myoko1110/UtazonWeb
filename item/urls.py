@@ -1,6 +1,6 @@
 from django.urls import path
-from . import views
 
+from . import views
 
 app_name = 'item'
 urlpatterns = [
@@ -19,6 +19,6 @@ urlpatterns = [
     path('review/userful/', views.review_userful, name='review_userful'),
     path('category/', views.category, name='category'),
     path('history/', views.history, name='history'),
-    path('view-history/', views.view_history, name='view_history'),
+    path('browsing-history/', views.browsing_history, name='browsing_history'),
     path('history/status/', views.status, name='status'),
 ]

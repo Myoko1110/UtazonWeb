@@ -235,32 +235,31 @@
 					<ul class="cart-list">
 						{% for child in user_cart %}
 						<li class="cart-child">
-							<img src="{{ child.3.0 }}">
+							<img src="{{ child.image.0 }}">
 							<div class="cart-box">
 								<div class="cart-product">
-									<a class="cart-title" href="../item?id={{ child.0 }}">{{ child.1 }}</a>
-                                    {% if child.12.status %}
-                                    <div class="cart-sale"><p>13%OFF</p><span>タイムセール</span></div>
+									<a class="cart-title" href="../item?id={{ child.item_id }}">{{ child.item_name }}</a>
+                                    {% if child.sale.status %}
+                                    <div class="cart-sale"><p>{{ child.sale.discount_rate }}%OFF</p><span>タイムセール</span></div>
                                     {% endif %}
-									{% if child.5 != 0 %}
+									{% if child.stock != 0 %}
 									<p class="cart-product__y">在庫あり</p>
-									{% if child.5 <= 15 %}
-									<p class="cart-product__n">残り{{ child.5 }}点 ご注文はお早めに</p>
-									{% endif %}
+									{% elif child.stock <= 15 %}
+									<p class="cart-product__n">残り{{ child.stock }}点 ご注文はお早めに</p>
 									{% else %}
 									<p class="cart-product__n">在庫なし</p>
 									{% endif %}
 								<div class="cart-product__number">
 									<p>数量:</p>
-									<input class="cart-product__number-input" type="number" value="{{ child.11 }}" data-id="{{ child.0 }}">
-									<a href="delete/?id={{ child.0 }}" style="border-left: #d7d7d7 1px solid;margin-left: 20px" class="product__remove">削除</a>
-									<a href="../cart-to-later/?id={{ child.0 }}">あとで買う</a>
+									<input class="cart-product__number-input" type="number" value="{{ child.qty }}" data-id="{{ child.item_id }}">
+									<a href="delete/?id={{ child.item_id }}" style="border-left: #d7d7d7 1px solid;margin-left: 20px" class="product__remove">削除</a>
+									<a href="../cart-to-later/?id={{ child.item_id }}">あとで買う</a>
 								</div>
 							</div>
 							<div class="cart-price">
-								{% if child.5 != 0 %}
-								<h3>{{ money_unit }}{{ child.10 }}</h3>
-								<p>ポイント：<span>{{ child.9 }}pt ({{ point_return }}%)</span></p>
+								{% if child.stock != 0 %}
+								<h3>{{ money_unit }}{{ child.item_price_format }}</h3>
+								<p>ポイント：<span>{{ child.point }}pt ({{ point_return }}%)</span></p>
 								{% else %}
 								<h3 style="color: #b12704">在庫なし</h3>
 								{% endif %}
@@ -282,24 +281,24 @@
 					<ul class="later-list">
 						{% for child in user_later %}
 						<li class="later-child">
-							<img src="{{ child.3.0 }}">
+							<img src="{{ child.image.0 }}">
 							<div class="later-box">
 								<div class="later-product">
-									<a class="later-title" href="../item?id={{ child.0 }}">{{ child.1 }}</a>
-                                    {% if child.12.status %}
+									<a class="later-title" href="../item?id={{ child.item_id }}">{{ child.item_name }}</a>
+                                    {% if child.sale.status %}
                                     <div class="cart-sale"><p>13%OFF</p><span>タイムセール</span></div>
                                     {% endif %}
-									{% if child.5 != 0 %}
+									{% if child.stock != 0 %}
 									<p class="later-product__y">在庫あり</p>
-									{% if child.5 <= 15 %}
-									<p class="later-product__n">残り{{ child.5 }}点 ご注文はお早めに</p>
+									{% if child.stock <= 15 %}
+									<p class="later-product__n">残り{{ child.stock }}点 ご注文はお早めに</p>
 									{% endif %}
 									{% else %}
 									<p class="later-product__n">在庫なし</p>
 									{% endif %}
 								<div class="later-product__number">
-									<a href="../later/delete/?id={{ child.0 }}" class="product__remove">削除</a>
-									<a href="../later-to-cart/?id={{ child.0 }}">カートに戻す</a>
+									<a href="../later/delete/?id={{ child.item_id }}" class="product__remove">削除</a>
+									<a href="../later-to-cart/?id={{ child.item_id }}">カートに戻す</a>
 								</div>
 							</div>
 							<div class="later-price">

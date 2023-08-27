@@ -3,7 +3,7 @@ import datetime
 import django
 from django.shortcuts import render
 
-import config.DBManager
+import util
 
 
 class is_session:
@@ -25,7 +25,7 @@ class is_session:
         for child in session:
             if child.startswith("_Secure-"):
 
-                result = config.DBManager.get_session(child, session[child])
+                result = util.DatabaseHelper.get_session(child, session[child])
 
                 # EmptySetを判定
                 if not result:
@@ -34,8 +34,8 @@ class is_session:
                 else:
                     # 有効期限の確認
                     now = datetime.datetime.now()
-                    if now > result[5]:
-                        config.DBManager.delete_session(child)
+                    if now > result["expires"]:
+                        util.DatabaseHelper.delete_session(child)
                         # 期限切れの処理
                         self.expire = True
                         return

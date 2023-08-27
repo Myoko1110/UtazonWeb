@@ -231,12 +231,12 @@
 				{% elif arrive_today %}
 				<h1>本日到着予定</h1>
 				{% else %}
-				<h1>{{ order_obj.2.year }}年{{ order_obj.2.month }}日{{ order_obj.2.day }}日 {{ order_obj.2.hour }}時に配達予定</h1>
+				<h1>{{ order_obj.delivery_time.year }}年{{ order_obj.delivery_time.month }}日{{ order_obj.delivery_time.day }}日 {{ order_obj.delivery_time.hour }}時に配達予定</h1>
 				{% endif %}
 			</div>
 			<div>
-				<p>注文番号：{{ order_obj.4 }}</p>
-				<p>発注日：{{ order_obj.3.year }}年{{ order_obj.3.month }}日{{ order_obj.3.day }}日</p>
+				<p>注文番号：{{ order_obj.order_id }}</p>
+				<p>発注日：{{ order_obj.order_time.year }}年{{ order_obj.order_time.month }}日{{ order_obj.order_time.day }}日</p>
 			</div>
 		</div>
 		<div class="status-container">

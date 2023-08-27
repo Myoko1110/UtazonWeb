@@ -3,11 +3,136 @@ import json
 from decimal import Decimal, ROUND_UP
 from statistics import mean
 
-import config.DBManager
 import util
 from config import settings
 
 point_return = Decimal(settings.POINT_RETURN)
+point_return_percent = int(point_return * Decimal("100"))
+
+
+class get_item:
+	@staticmethod
+	def id_list(items):
+		"""
+		アイテムIDのリストからアイテム情報を取得します
+
+		:param items: アイテムIDのリスト
+		:return: 情報を追加したアイテムリスト
+		"""
+
+		item_list = []
+		for i in items:
+			item_id = i
+
+			# アイテム情報取得
+			item_info = util.DatabaseHelper.get_item(item_id)
+
+			# アイテムのセール情報を取得
+			sale = util.ItemHelper.get_sale(item_info["id"], item_info["price"])
+			item_price = sale.item_price
+
+			# 商品画像をlistにデコード
+			item_info["image"] = json.loads(item_info["image"])
+
+			# ポイント計算
+			point = util.ItemHelper.calc_point(item_price)
+			item_info["point"] = f"{point:,}"
+
+			# アイテム価格など
+			item_info["item_price"] = item_price
+			item_info["item_price_format"] = f"{item_price:,.2f}"
+			item_info["sale"] = sale
+
+			# レビュー平均
+			item_info["review"] = json.loads(item_info["review"])
+			item_info["review_av"] = calc_review_average(item_info["review"])
+
+			item_list.append(item_info)
+
+		return item_list
+
+	@staticmethod
+	def obj_list(item_obj):
+		"""
+		アイテムオブジェクトからアイテム情報を追加します
+
+		:param item_obj: アイテム情報のあるアイテムリスト
+		:return: 情報を追加したアイテムリスト
+		"""
+
+		item_list = []
+		for i in item_obj:
+			# アイテム情報取得
+			item_info = i
+
+			# アイテムのセール情報を取得
+			sale = util.ItemHelper.get_sale(item_info["id"], item_info["price"])
+			item_price = sale.item_price
+
+			# 商品画像をlistにデコード
+			item_info["image"] = json.loads(item_info["image"])
+
+			# ポイント計算
+			point = util.ItemHelper.calc_point(item_price)
+			item_info["point"] = f"{point:,}"
+
+			# アイテム価格など
+			item_info["item_price"] = item_price
+			item_info["item_price_format"] = f"{item_price:,.2f}"
+			item_info["sale"] = sale
+
+			# レビュー平均
+			item_info["review"] = json.loads(item_info["review"])
+			item_info["review_av"] = calc_review_average(item_info["review"])
+
+			item_list.append(item_info)
+
+		return item_list
+
+	class cart_list:
+		"""
+		アイテムIDと数量のリストからアイテム情報を取得します
+
+		:param items: 数量情報のあるアイテムIDリスト
+		:returns: 情報を追加したアイテムリスト
+		"""
+
+		def __init__(self, items):
+			self.item_list = []
+			self.total_point = 0
+			self.total_amount = 0
+			self.total_qty = 0
+
+			for i in items:
+				item_id = i[0]
+				item_qty = i[1]
+
+				# アイテム情報取得
+				result = util.DatabaseHelper.get_item(item_id)
+
+				# アイテムのセール情報を取得
+				sale = util.ItemHelper.get_sale(result["id"], result["price"])
+				item_price = sale.item_price
+
+				# 商品画像をlistにデコード
+				result["image"] = json.loads(result["image"])
+
+				# ポイント計算
+				point = util.ItemHelper.calc_point(item_price)
+				result["point"] = f"{point:,}"
+
+				# トータルに追加
+				total_item_price = Decimal(str(item_price)) * Decimal(str(i[1]))
+				self.total_amount += total_item_price
+				self.total_qty += item_qty
+				self.total_point += point
+
+				result["item_price"] = item_price
+				result["item_price_format"] = f"{item_price:,.2f}"
+				result["qty"] = item_qty
+				result["sale"] = sale
+
+				self.item_list.append(result)
 
 
 class get_index_item:
@@ -16,46 +141,51 @@ class get_index_item:
 	"""
 
 	def __init__(self):
-		self.popular_item = config.DBManager.get_popular_item()
-		self.latest_item = config.DBManager.get_latest_item()
-		special_feature = config.DBManager.get_special_feature()
+		self.popular_item = util.DatabaseHelper.get_popular_item()
+		self.latest_item = util.DatabaseHelper.get_latest_item()
+		special_feature = util.DatabaseHelper.get_special_feature()
 
 		self.special_feature_list = {}
 		for i in special_feature:
 			item_list = i.value
 			obj_list = []
 			for j in item_list:
-				item_obj = config.DBManager.get_item(j)
-				item_obj[3] = json.loads(item_obj[3])
+				item_obj = util.DatabaseHelper.get_item(j)
+				item_obj["image"] = json.loads(item_obj["image"])
 				obj_list.append(item_obj)
 			self.special_feature_list[i.title] = obj_list
+
+		for i in range(len(self.popular_item)):
+			self.popular_item[i]["image"] = json.loads(self.popular_item[i]["image"])
+		for i in range(len(self.latest_item)):
+			self.latest_item[i]["image"] = json.loads(self.latest_item[i]["image"])
 
 
 class get_sale:
 	"""
 	アイテムIDからアイテムのセール情報を取得します
 
-	:param item_id: アイテムID
+	:param sale_id: セールID(idカラム)
 	:param item_price: アイテム価格
 	"""
 
-	def __init__(self, item_id, item_price):
+	def __init__(self, sale_id, item_price):
 		self.status = False
 		self.discount_rate = None
 		self.item_price = item_price
 		self.past_price = 0
+		self.item_price_format = None
 
-		past_price = item_price
+		past_price = f"{item_price:,.2f}"
 
 		# セール取得
-		sale_id = config.DBManager.get_id_from_item(item_id)
-		item_sale = config.DBManager.get_item_sale(sale_id)
+		item_sale = util.DatabaseHelper.get_item_sale(sale_id)
 
 		# セールが有効だったら
 		if item_sale and item_sale[2]:
 
 			# セール開催時間を確認
-			status_per = calc_time_percentage(item_sale[4], item_sale[5])
+			status_per = util.calc_time_percentage(item_sale[4], item_sale[5])
 			if status_per != 0.0 and status_per != 100.0:
 				discount_rate = item_sale[3]
 
@@ -67,6 +197,7 @@ class get_sale:
 				self.discount_rate = discount_rate
 				self.item_price = item_price
 				self.past_price = past_price
+				self.item_price_format = f"{item_price:,.2f}"
 
 
 class get_category:
@@ -183,33 +314,6 @@ def add_review_data(review_obj):
 	return item_review
 
 
-def calc_time_percentage(past_time: datetime.datetime, future_time: datetime.datetime):
-	"""
-	past_timeとfuture_timeの間で現在の時間の進行した割合を計算します
-
-	:param past_time: 過去の時間
-	:param future_time: 未来の時間
-	:return: 進行した割合
-	"""
-
-	current_time = datetime.datetime.now()
-
-	if past_time > future_time:
-		past_time, future_time = future_time, past_time
-
-	total_duration = future_time - past_time
-	elapsed_duration = current_time - past_time
-
-	if elapsed_duration.total_seconds() < 0:
-		percentage = 0.0
-	elif elapsed_duration.total_seconds() > total_duration.total_seconds():
-		percentage = 100.0
-	else:
-		percentage = (elapsed_duration.total_seconds() / total_duration.total_seconds()) * 100
-
-	return percentage
-
-
 def calc_delivery_time():
 	"""
 	現在時刻からお届け時間を計算します
@@ -238,11 +342,14 @@ def calc_point(item_price):
 
 
 def calc_review_average(review_obj):
-	if review_obj:
-		review_star_list = [i["star"] for i in review_obj]
-		review_average = round(mean(review_star_list), 1)
+	"""
+	レビューのリストからレビューの平均を計算します
 
-	else:
-		review_average = None
+	:param review_obj: レビューのリスト
+	:return: 平均値
+	"""
+
+	review_star_list = [i["star"] for i in review_obj]
+	review_average = round(mean(review_star_list), 1)
 
 	return review_average
