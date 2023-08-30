@@ -256,10 +256,10 @@
 						</div>
 					</div>
 					<div class="history-list__value">
-						{% if child.status %}
+						{% if child.canceled %}
+                        <h2>注文がキャンセルされました</h2>
+						{% elif not child.status %}
 						<h2>{{ child.delivery_time.year }}年{{ child.delivery_time.month }}月{{ child.delivery_time.day }}日に配達しました</h2>
-						{% elif child.cancel %}
-						<h2>注文がキャンセルされました</h2>
 						{% else %}
 						<h2>{{ child.delivery_time.year }}年{{ child.delivery_time.month }}月{{ child.delivery_time.day }}日 {{ child.delivery_time.hour }}時に配達予定です</h2>
 						{% endif %}
@@ -284,18 +284,16 @@
 								</div>
 							</div>
 							<div class="history-list__value-product-end">
-								{% if not child.cancel %}
-								{% if child.status %}
-                                {% if forloop.counter == 1 %}
-                                <a class="history-list__value-product-review" href="status/?id={{ child.order_id }}">配送状況</a>
-                                {% endif %}
+								{% if not child.canceled and not child.status %}
+                                    {% if forloop.counter == 1 %}
+                                    <a class="history-list__value-product-review" href="status/?id={{ child.order_id }}">配送状況</a>
+                                    {% endif %}
 								<a class="history-list__value-product-return" href="../review/?id={{ item.item_id }}">商品をレビューする</a>
-								{% else %}
-                                {% if forloop.counter == 1 %}
-								<a class="history-list__value-product-review" data-id="{{ child.order_id }}" onclick="order_cancel(this)">注文をキャンセルする</a>
-								<a class="history-list__value-product-return" href="status/?id={{ child.order_id }}">配送状況</a>
-                                {% endif %}
-								{% endif %}
+								{% elif not child.canceled %}
+                                    {% if forloop.counter == 1 %}
+								    <a class="history-list__value-product-review" data-id="{{ child.order_id }}" onclick="order_cancel(this)">注文をキャンセルする</a>
+								    <a class="history-list__value-product-return" href="status/?id={{ child.order_id }}">配送状況</a>
+                                    {% endif %}
 								{% endif %}
 							</div>
 						</div>

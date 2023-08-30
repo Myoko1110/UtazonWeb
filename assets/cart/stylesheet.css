@@ -335,6 +335,14 @@
         margin: 0 auto;
     }
 }
+@media(min-width: 800px){
+    .buy.mobile{
+        display: none;
+    }
+    .buy.pc{
+        display: block;
+    }
+}
 @media(max-width: 799px){
     .cart-child img{
         width: 160px;
@@ -345,6 +353,15 @@
     }
     .cart-product__number a{
         padding: 0 10px;
+    }
+    .subwrapper{
+        margin: 0;
+    }
+    .buy.mobile{
+        display: flex;
+    }
+    .buy.pc{
+        display: none;
     }
 }
 @media(max-width: 499px){
@@ -372,9 +389,6 @@
     }
     .cart{
         padding: 10px;
-    }
-    .subwrapper{
-        margin: 10px;
     }
 }
 body{

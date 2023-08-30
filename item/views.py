@@ -68,7 +68,7 @@ def item(request):
     item_category = util.ItemHelper.get_category.info.from_id(result["category"])
 
     # セールを取得
-    sale = util.ItemHelper.get_sale(result["id"], result["price"])
+    sale = util.ItemHelper.get_sale(result["sale_id"], result["price"])
     item_price = sale.item_price
 
     # お届け日取得

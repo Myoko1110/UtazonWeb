@@ -271,6 +271,20 @@
 				</div>
 				{% endif %}
 			</div>
+            <div class="buy mobile">
+                <div class="buy-delivery">
+                    <i></i>
+                    <p>通常配送無料</p>
+                </div>
+                <h2>小計 ({{ user_cart_number }} 個の商品) : <span>{{ money_unit }}{{ item_total }}</span></h2>
+                {% if user_cart_number != 0 %}
+                {% if buy_able %}
+                <input class="buy-continue" type="submit" value="レジに進む" onclick="location.href='/buy'">
+                {% else %}
+                <input class="buy-continue" type="submit" value="在庫なしを削除してください" style="background-color: #cccccc;cursor: not-allowed">
+                {% endif %}
+                {% endif %}
+            </div>
 			{% if user_later_number != 0 %}
 			<div class="later">
 				<div class="later-exist">
@@ -317,7 +331,7 @@
 			</div>
 			{% endif %}
 		</div>
-		<div class="buy">
+		<div class="buy pc">
 			<div class="buy-delivery">
 				<i></i>
 				<p>通常配送無料</p>

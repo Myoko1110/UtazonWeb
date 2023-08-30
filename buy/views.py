@@ -93,9 +93,9 @@ def buy_confirm(request):
 
         # 合計金額を算出
         order_item = json.loads(order_item)
-        order_item = util.ItemHelper.get_item.cart_list(order_item)
-        amount = order_item.total_amount
-        order_item_list = order_item.item_list
+        order_item_obj = util.ItemHelper.get_item.cart_list(order_item)
+        amount = order_item_obj.total_amount
+        order_item_list = order_item_obj.item_list
 
         # お届け時間を計算
         delivery_time = util.ItemHelper.calc_delivery_time_perfect()
@@ -143,18 +143,20 @@ def buy_confirm(request):
             raise Exception("Socketサーバーに接続できない状態で注文が確定されようとしました")
 
         # オーダーをdbに保存
-        util.DatabaseHelper.add_order(mc_uuid, order_item, delivery_time, order_id, amount_float)
+        util.DatabaseHelper.add_order(
+            mc_uuid, order_item, delivery_time, order_id, amount_float, point
+        )
 
         # カートから削除
         if request.GET.get("buynow") == "False":
             util.DatabaseHelper.update_user_cart([], mc_uuid)
 
         # ポイント付与
-        util.DatabaseHelper.deposit_user_point(mc_uuid, order_item.total_point)
+        util.DatabaseHelper.deposit_user_point(mc_uuid, order_item_obj.total_point)
 
         # DM送信
         asyncio.run_coroutine_threadsafe(
-            bot.send_order_confirm(info.discord_id, order_id, order_item_list, delivery_time),
+            bot.send_order_confirm(info.discord_id, order_id, order_item, delivery_time),
             bot.client.loop
         )
 
@@ -201,6 +203,7 @@ def buy_cancel(request):
 
         # キャンセルしたオーダーのアイテムを取得
         order_item = util.DatabaseHelper.get_order(order_id)["order_item"]
+        order_item = json.loads(order_item)
         item_list = util.ItemHelper.get_item.cart_list(order_item).item_list
 
         # DM送信
@@ -209,7 +212,7 @@ def buy_cancel(request):
             bot.client.loop)
 
         # オーダー削除
-        util.DatabaseHelper.delete_order(order_id)
+        util.DatabaseHelper.cancel_order(order_id)
 
         return redirect(f"/history/#{order_id}")
 

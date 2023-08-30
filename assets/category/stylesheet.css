@@ -129,6 +129,9 @@
     .main-info{
         width: calc(100% - 210px);
     }
+    .subwrapper{
+        margin: 0;
+    }
 }
 @media(max-width: 499px) {
     .main-name {

@@ -29,7 +29,7 @@ class get_item:
             item_info = util.DatabaseHelper.get_item(item_id)
 
             # アイテムのセール情報を取得
-            sale = util.ItemHelper.get_sale(item_info["id"], item_info["price"])
+            sale = util.ItemHelper.get_sale(item_info["sale_id"], item_info["price"])
             item_price = sale.item_price
 
             # 商品画像をlistにデコード
@@ -67,7 +67,7 @@ class get_item:
             item_info = i
 
             # アイテムのセール情報を取得
-            sale = util.ItemHelper.get_sale(item_info["id"], item_info["price"])
+            sale = util.ItemHelper.get_sale(item_info["sale_id"], item_info["price"])
             item_price = sale.item_price
 
             # 商品画像をlistにデコード
@@ -112,7 +112,7 @@ class get_item:
                 result = util.DatabaseHelper.get_item(item_id)
 
                 # アイテムのセール情報を取得
-                sale = util.ItemHelper.get_sale(result["id"], result["price"])
+                sale = util.ItemHelper.get_sale(result["sale_id"], result["price"])
                 item_price = sale.item_price
 
                 # 商品画像をlistにデコード

@@ -277,17 +277,19 @@ def save_session(session_id, session_value, mc_uuid, access_token, now, expires,
                 return True
 
 
-def add_order(mc_uuid, items, delivery_time, order_id, amount):
+def add_order(mc_uuid, items, delivery_time, order_id, amount, used_point):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
             now = datetime.datetime.now()
+            items = json.dumps(items)
             while True:
                 try:
                     sql = """INSERT IGNORE INTO `utazon_order` (  
-                                         `mc_uuid`, `order_item`, `delivery_time` ,`order_time`, `order_id`, `amount`, `status`
-                                         ) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-                    cursor.execute(sql, (mc_uuid, items, delivery_time, now, order_id, amount, False))
+                                         `mc_uuid`, `order_item`, `delivery_time` ,`order_time`,
+                                         `order_id`, `amount`, `used_point`, `status`, `canceled`
+                                         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                    cursor.execute(sql, (mc_uuid, items, delivery_time, now, order_id, amount, used_point, True, False,))
                 except mysql.connector.Error as err:
                     if err.errno == 1062:
                         continue
@@ -329,11 +331,11 @@ def get_order(order_id=None):
                 return result
 
 
-def delete_order(order_id):
+def cancel_order(order_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "UPDATE utazon_order SET status=false WHERE order_id=%s"
+            sql = "UPDATE utazon_order SET status=false, canceled=true WHERE order_id=%s"
             cursor.execute(sql, (order_id,))
             cnx.commit()
     return True
@@ -424,7 +426,7 @@ def get_latest_item():
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
-            sql = "SELECT * FROM utazon_item ORDER BY `id` DESC LIMIT 4"
+            sql = "SELECT * FROM utazon_item ORDER BY `sale_id` DESC LIMIT 4"
             cursor.execute(sql)
             result = cursor.fetchall()
 

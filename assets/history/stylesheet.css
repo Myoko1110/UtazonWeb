@@ -187,7 +187,8 @@
         margin-top: 10px;
     }
     .history-list__value-product-return, .history-list__value-product-review{
-        width: 260px;
+        max-width: 260px;
+        width: 100%;
     }
     .history-list__value-product-middle{
         width: calc(100% - 90px);
@@ -213,7 +214,7 @@
         font-size: 18px;
     }
     .subwrapper{
-        margin: 10px;
+        margin: 0;
     }
 }
 #order_cancel{

@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Item(models.Model):
-    id = models.AutoField(primary_key=True)
+    sale_id = models.AutoField(primary_key=True)
     item_id = models.BigIntegerField()
     item_name = models.CharField(max_length=256)
     price = models.FloatField()
@@ -12,6 +12,7 @@ class Item(models.Model):
     kind = models.JSONField(null=True, blank=True),
     category = models.CharField(64),
     purchases_number = models.BigIntegerField(default=0, null=True, blank=True)
+
 
     class Meta:
         db_table = 'utazon_item'
