@@ -562,7 +562,8 @@ def browsing_history(request):
 
         # 閲覧履歴を取得し、アイテム情報を取得
         browsing_history_obj = util.DatabaseHelper.get_user_view_history(info.mc_uuid)
-        result = util.ItemHelper.get_item.id_list(browsing_history_obj)
+        history_item = [i["item_id"] for i in browsing_history_obj]
+        result = util.ItemHelper.get_item.id_list(history_item)
 
         context = {
             "result": result,

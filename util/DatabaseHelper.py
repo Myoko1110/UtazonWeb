@@ -356,57 +356,30 @@ def get_user_history(mc_uuid):
     return result
 
 
-def update_user_history(mc_uuid, value):
-    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
-    with cnx:
-        with cnx.cursor() as cursor:
-            sql = "UPDATE IGNORE utazon_user SET history=%s WHERE mc_uuid=%s"
-            cursor.execute(sql, (value, mc_uuid,))
-            cnx.commit()
-
-    return True
-
-
 def get_user_view_history(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
-        with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = "SELECT item_id FROM utazon_browsinghistory WHERE mc_uuid=%s LIMIT 4"
             cursor.execute(sql, (mc_uuid,))
 
             # mc_uuidのレコードを取得
-            result = cursor.fetchone()
+            result = cursor.fetchall()
 
             if not result:
                 return False
-    return list(reversed(json.loads(result[5])))
+    return result
 
 
 def add_user_view_history(mc_uuid, item_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
-            cursor.execute(sql, (mc_uuid,))
+            now = datetime.datetime.now()
 
-            # mc_uuidのレコードを取得
-            result = cursor.fetchone()
-
-            if not result:
-                return False
-
-            result = json.loads(result[5])
-
-            item_id = int(item_id)
-            try:
-                if result[-1] == item_id:
-                    return
-            except IndexError:
-                pass
-
-            result.append(item_id)
-            sql = "UPDATE IGNORE utazon_user SET view_history=%s WHERE mc_uuid=%s"
-            cursor.execute(sql, (json.dumps(result), mc_uuid,))
+            sql = """INSERT INTO utazon_browsinghistory (mc_uuid, item_id, browsed_time
+                     ) VALUES (%s, %s, %s)"""
+            cursor.execute(sql, (mc_uuid, item_id, now))
             cnx.commit()
     return True
 

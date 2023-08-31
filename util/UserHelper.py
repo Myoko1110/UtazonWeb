@@ -92,7 +92,8 @@ def get_view_history(mc_uuid):
     if view_history:
         try:
             for i in range(4):
-                item_id = view_history[i]
+                print(view_history)
+                item_id = view_history[i]["item_id"]
                 item_obj = util.DatabaseHelper.get_item(item_id)
                 item_obj["image"] = json.loads(item_obj["image"])
                 view_history_obj.append(item_obj)
