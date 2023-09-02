@@ -122,6 +122,9 @@ class get_item:
                 point = util.ItemHelper.calc_point(item_price)
                 result["point"] = f"{point:,}"
 
+                # 在庫取得
+                result["stock"] = util.DatabaseHelper.get_item_stock(item_id)
+
                 # トータルに追加
                 total_item_price = Decimal(str(item_price)) * Decimal(str(i[1]))
                 self.total_amount += total_item_price

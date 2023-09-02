@@ -59,7 +59,6 @@ def table_create():
                                                     price DOUBLE,
                                                     image JSON,
                                                     review JSON,
-                                                    stock BIGINT,
                                                     kind JSON,
                                                     category VARCHAR(64),
                                                     purchases_number BIGINT
@@ -107,7 +106,9 @@ def table_create():
                                                     item_id BIGINT UNIQUE,
                                                     item_name VARCHAR(64),
                                                     item_material VARCHAR(64),
-                                                    item_enchantments JSON
+                                                    item_enchantments JSON,
+                                                    stack_size INT,
+                                                    stock BIGINT
                                                     )"""
             cursor.execute(sql)
 

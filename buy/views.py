@@ -135,6 +135,10 @@ def buy_confirm(request):
             # 理由を作成
             reason = ", ".join(reason_list) + f"(OrderID: {order_id})"
 
+        # 在庫を減らす
+        for i in order_item_list:
+            util.DatabaseHelper.reduce_stock(i["item_id"], i["qty"])
+
         # 出金
         withdraw_player = util.VaultHelper.withdraw_player(mc_uuid, amount_float, reason)
 
@@ -205,6 +209,10 @@ def buy_cancel(request):
         order_item = util.DatabaseHelper.get_order(order_id)["order_item"]
         order_item = json.loads(order_item)
         item_list = util.ItemHelper.get_item.cart_list(order_item).item_list
+
+        # 在庫を戻す
+        for i in item_list:
+            util.DatabaseHelper.increase_stock(i["item_id"], i["qty"])
 
         # DM送信
         asyncio.run_coroutine_threadsafe(

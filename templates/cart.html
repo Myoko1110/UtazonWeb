@@ -242,7 +242,7 @@
                                     {% if child.sale.status %}
                                     <div class="cart-sale"><p>{{ child.sale.discount_rate }}%OFF</p><span>タイムセール</span></div>
                                     {% endif %}
-									{% if child.stock != 0 %}
+									{% if child.stock > 15 %}
 									<p class="cart-product__y">在庫あり</p>
 									{% elif child.stock <= 15 %}
 									<p class="cart-product__n">残り{{ child.stock }}点 ご注文はお早めに</p>
@@ -302,7 +302,7 @@
                                     {% if child.sale.status %}
                                     <div class="cart-sale"><p>13%OFF</p><span>タイムセール</span></div>
                                     {% endif %}
-									{% if child.stock != 0 %}
+									{% if child.stock > 15 %}
 									<p class="later-product__y">在庫あり</p>
 									{% if child.stock <= 15 %}
 									<p class="later-product__n">残り{{ child.stock }}点 ご注文はお早めに</p>

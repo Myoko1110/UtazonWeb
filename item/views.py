@@ -77,6 +77,9 @@ def item(request):
     # ポイント計算
     point = util.ItemHelper.calc_point(item_price)
 
+    # 在庫取得
+    stock = util.DatabaseHelper.get_item_stock(item_id)
+
     is_session = util.SessionHelper.is_session(request)
     context = {
         "item_id": result["item_id"],
@@ -85,7 +88,7 @@ def item(request):
         "past_price": sale.past_price,
         "item_point": point,
         "item_images": json.loads(result["image"]),
-        "item_stock": result["stock"],
+        "item_stock": stock,
         "item_kind": json.loads(result["kind"]),
         "item_review": reversed(item_review),
         "item_review_number": len(item_review),
@@ -137,6 +140,7 @@ def cart(request):
         # 後で買うを取得し、アイテム情報を取得
         user_later_id = util.DatabaseHelper.get_user_later(info.mc_uuid)
         user_later = util.ItemHelper.get_item.id_list(user_later_id)
+
 
         # 在庫確認し、買えるか確認
         if 0 not in [i["stock"] for i in user_cart]:

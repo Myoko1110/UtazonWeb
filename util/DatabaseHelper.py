@@ -98,20 +98,9 @@ def deposit_user_point(mc_uuid, amount):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "SELECT * FROM utazon_user WHERE mc_uuid=%s"
-            cursor.execute(sql, (mc_uuid,))
+            sql = "UPDATE IGNORE utazon_user SET point = point - %s WHERE mc_uuid=%s"
 
-            # mc_uuidのレコードを取得
-            result = cursor.fetchone()
-
-            if not result:
-                return False
-
-            point = result[3] + amount
-
-            sql = "UPDATE IGNORE utazon_user SET point=%s WHERE mc_uuid=%s"
-
-            cursor.execute(sql, (point, mc_uuid))
+            cursor.execute(sql, (amount, mc_uuid))
             cnx.commit()
     return True
 
@@ -414,6 +403,36 @@ def get_item_sale(item_id):
             cursor.execute(sql, (item_id,))
             result = cursor.fetchone()
     return result
+
+
+def get_item_stock(item_id):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT stock FROM utazon_itemmaterial WHERE item_id=%s"
+            cursor.execute(sql, (item_id,))
+            result = cursor.fetchone()[0]
+    return result
+
+
+def reduce_stock(item_id, amount):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "UPDATE utazon_itemmaterial SET stock = stock - %s WHERE item_id=%s"
+            cursor.execute(sql, (amount, item_id,))
+            cnx.commit()
+    return True
+
+
+def increase_stock(item_id, amount):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "UPDATE utazon_itemmaterial SET stock = stock + %s WHERE item_id=%s"
+            cursor.execute(sql, (amount, item_id,))
+            cnx.commit()
+    return True
 
 
 def get_special_feature():
