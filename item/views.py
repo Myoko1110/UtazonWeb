@@ -603,10 +603,13 @@ def status(request):
         # 今日届くか
         arrive_today = order_delivery.date() == datetime.datetime.now().date()
 
+        order_status = util.DatabaseHelper.get_order(order_id)["status"]
+
         context = {
             "order_obj": order_obj,
             "status_per": status_per,
             "arrive_today": arrive_today,
+            "order_status": order_status,
             "info": info,
             "session": is_session,
             "categories": util.ItemHelper.get_category.all(),

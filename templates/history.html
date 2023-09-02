@@ -258,11 +258,11 @@
 					<div class="history-list__value">
 						{% if child.canceled %}
                         <h2>注文がキャンセルされました</h2>
-						{% elif not child.status %}
-						<h2>{{ child.delivery_time.year }}年{{ child.delivery_time.month }}月{{ child.delivery_time.day }}日に配達しました</h2>
-						{% else %}
+						{% elif child.status %}
 						<h2>{{ child.delivery_time.year }}年{{ child.delivery_time.month }}月{{ child.delivery_time.day }}日 {{ child.delivery_time.hour }}時に配達予定です</h2>
-						{% endif %}
+						{% else %}
+						<h2>{{ child.delivery_time.year }}年{{ child.delivery_time.month }}月{{ child.delivery_time.day }}日に配達しました</h2>
+                        {% endif %}
 						{% for item in child.order_item %}
 						<div class="history-list__value-product">
 							<div class="history-list__value-product-box">

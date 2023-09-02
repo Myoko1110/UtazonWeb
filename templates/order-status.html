@@ -225,8 +225,8 @@
 		</a>
 		<div class="status-title">
 			<div>
-				<p>配送状況：</p>
-				{% if status_per == 100 %}
+				<p data-status="{{ order_status }}">配送状況：</p>
+				{% if status_per == 100 and order_status %}
 				<h1>配達済み</h1>
 				{% elif arrive_today %}
 				<h1>本日到着予定</h1>

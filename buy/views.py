@@ -160,7 +160,7 @@ def buy_confirm(request):
 
         # DM送信
         asyncio.run_coroutine_threadsafe(
-            bot.send_order_confirm(info.discord_id, order_id, order_item, delivery_time),
+            bot.send_order_confirm(info.discord_id, order_id, order_item_list, delivery_time),
             bot.client.loop
         )
 
