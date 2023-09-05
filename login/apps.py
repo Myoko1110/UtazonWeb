@@ -102,7 +102,7 @@ def table_create():
                                                     )"""
             cursor.execute(sql)
 
-            sql = """CREATE TABLE IF NOT EXISTS `utazon_itemmaterial` (
+            sql = """CREATE TABLE IF NOT EXISTS `utazon_itemstack` (
                                                     item_id BIGINT UNIQUE,
                                                     item_name VARCHAR(64),
                                                     item_material VARCHAR(64),

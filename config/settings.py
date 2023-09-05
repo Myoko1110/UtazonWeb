@@ -26,7 +26,7 @@ HOST = os.environ["HOST"]
 
 SERVER_ID = os.environ["SERVER_ID"]
 
-ORDER_LIST_PASS = os.environ["ORDER_LIST_PASS"]
+POST_PASS = os.environ["POST_PASS"]
 
 SOCKET_PORT = os.environ["SOCKET_PORT"]
 SOCKET_HOST = os.environ["SOCKET_HOST"]

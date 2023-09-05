@@ -87,6 +87,50 @@ async def send_order_cancel(discord_id, order_id, order_item_obj):
     await author.send(embed=embed)
 
 
+async def send_mailbox_full(discord_id, order_id):
+    """
+    ポストにアイテムが入れられないことをDMに送信します
+
+    :param discord_id: DiscordID
+    :param order_id: オーダーID
+    """
+
+    global order_history_url
+
+    author = await client.fetch_user(discord_id)
+    embed = discord.Embed(
+        title="商品の配達ができませんでした",
+        color=discord.Colour.yellow(),
+        description=f"お客様のポストに商品を入れるスペースがなかったため、配達ができませんでした。つきましては、ポストの整理をしていただくようお願いいたします。"
+    )
+    embed.set_footer(text="またのご利用をお待ちしております。")
+
+    embed.add_field(name="注文番号", value=order_id, inline=False)
+    await author.send(embed=embed)
+
+
+async def send_mailbox_notfound(discord_id, order_id):
+    """
+    ポストにアイテムが入れられないことをDMに送信します
+
+    :param discord_id: DiscordID
+    :param order_id: オーダーID
+    """
+
+    global order_history_url
+
+    author = await client.fetch_user(discord_id)
+    embed = discord.Embed(
+        title="商品の配達ができませんでした",
+        color=discord.Colour.yellow(),
+        description=f"お客様のポストが見つかりませんでした。家にポストが設置されているか、または登録した座標にポストがあるかをご確認下さい。"
+    )
+    embed.set_footer(text="またのご利用をお待ちしております。")
+
+    embed.add_field(name="注文番号", value=order_id, inline=False)
+    await author.send(embed=embed)
+
+
 async def send_security(discord_id):
     """
     新しいログインをDMで送信します
@@ -101,4 +145,3 @@ async def send_security(discord_id):
         description=f"あなたのアカウントへの新しいログインが検出されました。ご自身によるものであれば、何もする必要はありません。ログインに心当たりがない場合は、運営にお問い合わせください。"
     )
     await author.send(embed=embed)
-
