@@ -95,13 +95,11 @@ async def send_mailbox_full(discord_id, order_id):
     :param order_id: オーダーID
     """
 
-    global order_history_url
-
     author = await client.fetch_user(discord_id)
     embed = discord.Embed(
         title="商品の配達ができませんでした",
         color=discord.Colour.yellow(),
-        description=f"お客様のポストに商品を入れるスペースがなかったため、配達ができませんでした。つきましては、ポストの整理をしていただくようお願いいたします。"
+        description=f"お客様のポストに商品を入れるスペースがなかったため、配達ができませんでした。ポストの整理をしていただいた上、[こちら]({order_history_url}#{order_id})から再配達をお願いします。"
     )
     embed.set_footer(text="またのご利用をお待ちしております。")
 
@@ -117,13 +115,56 @@ async def send_mailbox_notfound(discord_id, order_id):
     :param order_id: オーダーID
     """
 
-    global order_history_url
-
     author = await client.fetch_user(discord_id)
     embed = discord.Embed(
         title="商品の配達ができませんでした",
         color=discord.Colour.yellow(),
-        description=f"お客様のポストが見つかりませんでした。家にポストが設置されているか、または登録した座標にポストがあるかをご確認下さい。"
+        description=f"お客様のポストが見つかりませんでした。家にポストが設置されているか、または登録した座標にポストがあるかをご確認の上、[こちら]({order_history_url}#{order_id})から再配達をお願いします。"
+    )
+    embed.set_footer(text="またのご利用をお待ちしております。")
+
+    embed.add_field(name="注文番号", value=order_id, inline=False)
+    await author.send(embed=embed)
+
+
+async def send_complete_order(discord_id, order_id):
+    """
+    ポストにアイテムが入れられないことをDMに送信します
+
+    :param discord_id: DiscordID
+    :param order_id: オーダーID
+    """
+
+    global order_history_url
+    print(order_history_url)
+
+    author = await client.fetch_user(discord_id)
+    embed = discord.Embed(
+        title="商品が配達が完了しました",
+        color=0x5fbcd3,
+        description=f"お客様の注文の商品が配達されましたことをお知らせいたします。返品はできませんので予めご了承ください。詳細は[こちら]({order_history_url}#{order_id})"
+    )
+    embed.set_footer(text="またのご利用をお待ちしております。")
+
+    embed.add_field(name="注文番号", value=order_id, inline=False)
+    await author.send(embed=embed)
+
+
+async def send_redelivery(discord_id, order_id):
+    """
+    再発送を承ったことをDMに送信します。
+
+    :param discord_id: DiscordID
+    :param order_id: オーダーID
+    """
+
+    global order_history_url
+
+    author = await client.fetch_user(discord_id)
+    embed = discord.Embed(
+        title="注文の再配達を承りました",
+        color=discord.Colour.green(),
+        description=f"お客様の注文の再配達を承りましたことをお知らせいたします。\n詳細は[こちら]({order_history_url}#{order_id})"
     )
     embed.set_footer(text="またのご利用をお待ちしております。")
 
@@ -142,6 +183,6 @@ async def send_security(discord_id):
     embed = discord.Embed(
         title="新しいログイン",
         color=discord.Colour.blue(),
-        description=f"あなたのアカウントへの新しいログインが検出されました。ご自身によるものであれば、何もする必要はありません。ログインに心当たりがない場合は、運営にお問い合わせください。"
+        description="あなたのアカウントへの新しいログインが検出されました。ご自身によるものであれば、何もする必要はありません。ログインに心当たりがない場合は、運営にお問い合わせください。"
     )
     await author.send(embed=embed)

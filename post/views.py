@@ -60,6 +60,24 @@ def mailbox_notfound(request):
     return HttpResponse("success")
 
 
+@csrf_exempt
+def order_complete(request):
+    if not auth_password(request):
+        raise Http404
+
+    uuid = request.META.get("HTTP_MCUUID")
+    order_id = request.META.get("HTTP_ORDERID")
+
+    discord_id = util.UserHelper.get_info.from_uuid(uuid).discord_id
+
+    asyncio.run_coroutine_threadsafe(
+        bot.send_complete_order(discord_id, order_id),
+        bot.client.loop
+    )
+
+    return HttpResponse("success")
+
+
 def auth_password(request):
 
     # クライアントのIPを取得

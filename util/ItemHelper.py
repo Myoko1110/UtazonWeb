@@ -343,11 +343,11 @@ def calc_delivery_time_perfect():
 
     now = datetime.datetime.now().replace(microsecond=0)
     if now > datetime.datetime.strptime("13:00:00", "%H:%M:%S"):
-        delivery_time = (now.replace(hour=random.randint(8, 18), minute=random.randint(1, 59),
+        delivery_time = (now.replace(hour=random.randint(8, 18), minute=random.randint(0, 59),
                                      second=0, microsecond=0)
                          + datetime.timedelta(days=2))
     else:
-        delivery_time = (now.replace(hour=random.randint(8, 18), minute=random.randint(1, 59),
+        delivery_time = (now.replace(hour=random.randint(8, 18), minute=random.randint(0, 59),
                                      second=0, microsecond=0)
                          + datetime.timedelta(days=1))
 

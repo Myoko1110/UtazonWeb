@@ -217,7 +217,7 @@
         margin: 0;
     }
 }
-#order_cancel{
+#order_cancel, #order_redelivery{
     display: none;
 }
 body{

@@ -324,8 +324,18 @@ def cancel_order(order_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "UPDATE utazon_order SET status=false, canceled=true WHERE order_id=%s"
+            sql = "UPDATE utazon_order SET status = false, canceled = true WHERE order_id=%s"
             cursor.execute(sql, (order_id,))
+            cnx.commit()
+    return True
+
+
+def redelivery_order(order_id, delivery_time):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "UPDATE utazon_order SET status = true, error = null, delivery_time = %s WHERE order_id=%s"
+            cursor.execute(sql, (delivery_time, order_id,))
             cnx.commit()
     return True
 
@@ -334,7 +344,7 @@ def get_user_history(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
-            sql = "SELECT * FROM utazon_order WHERE mc_uuid=%s"
+            sql = "SELECT * FROM utazon_order WHERE mc_uuid=%s ORDER BY order_time DESC"
             cursor.execute(sql, (mc_uuid,))
 
             # mc_uuidのレコードを取得
@@ -409,7 +419,7 @@ def get_item_stock(item_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "SELECT stock FROM utazon_itemmaterial WHERE item_id=%s"
+            sql = "SELECT stock FROM utazon_itemstack WHERE item_id=%s"
             cursor.execute(sql, (item_id,))
             result = cursor.fetchone()[0]
     return result
@@ -419,7 +429,7 @@ def reduce_stock(item_id, amount):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "UPDATE utazon_itemmaterial SET stock = stock - %s WHERE item_id=%s"
+            sql = "UPDATE utazon_itemstack SET stock = stock - %s WHERE item_id=%s"
             cursor.execute(sql, (amount, item_id,))
             cnx.commit()
     return True
@@ -429,7 +439,7 @@ def increase_stock(item_id, amount):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "UPDATE utazon_itemmaterial SET stock = stock + %s WHERE item_id=%s"
+            sql = "UPDATE utazon_itemstack SET stock = stock + %s WHERE item_id=%s"
             cursor.execute(sql, (amount, item_id,))
             cnx.commit()
     return True

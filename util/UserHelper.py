@@ -92,7 +92,6 @@ def get_view_history(mc_uuid):
     if view_history:
         try:
             for i in range(4):
-                print(view_history)
                 item_id = view_history[i]["item_id"]
                 item_obj = util.DatabaseHelper.get_item(item_id)
                 item_obj["image"] = json.loads(item_obj["image"])
@@ -111,10 +110,6 @@ def get_history(mc_uuid):
         # amountをフォーマット
         order_history[i]["amount"] = f"{float(order_history[i]['amount']):,.2f}"
 
-        # 配送状況を取得
-        if datetime.datetime.now() >= order_history[i]["delivery_time"]:
-            order_history[i]["status"] = True
-
         # アイテム情報を取得
         order_history[i]["order_item"] = json.loads(order_history[i]["order_item"])
         order_history_child = util.ItemHelper.get_item.cart_list(order_history[i]["order_item"])
@@ -123,4 +118,4 @@ def get_history(mc_uuid):
     if not order_history:
         return False
     else:
-        return reversed(order_history)
+        return order_history

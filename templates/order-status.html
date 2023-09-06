@@ -226,7 +226,13 @@
 		<div class="status-title">
 			<div>
 				<p data-status="{{ order_status }}">配送状況：</p>
-				{% if status_per == 100 and order_status %}
+                {% if order_obj.error %}
+                    {% if order_obj.error == "MailboxFull" %}
+                        <h1>配達できませんでした<span style="font-weight: 400;font-style: italic;font-size: 22px">: 商品を入れるスペースがありません</span></h1>
+                    {% elif order_obj.error == "MailboxNotFound" %}
+                        <h1>配達できませんでした<span style="font-weight: 400;font-style: italic;font-size: 22px">: ポストが見つかりません</span></h1>
+                    {% endif %}
+				{% elif status_per == 100 and not order_status %}
 				<h1>配達済み</h1>
 				{% elif arrive_today %}
 				<h1>本日到着予定</h1>

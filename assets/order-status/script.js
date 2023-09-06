@@ -19,7 +19,7 @@ $(function (){
         $("#order3 .milestone-box").addClass("isActive");
         $("#order2 p").css("color", "#000");
         $("#order3 p").css("color", "#000");
-        if ($(".status-title div p").data("status")){
+        if (!$(".status-title div p").data("status")){
             $("#order4 .milestone-box").addClass("isActive");
             $("#order4 p").css("color", "#000");
         }

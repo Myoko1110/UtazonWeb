@@ -1,5 +1,7 @@
 import asyncio
+import datetime
 import json
+import random
 from decimal import Decimal, ROUND_DOWN, getcontext
 
 from django.http import Http404
@@ -221,6 +223,37 @@ def buy_cancel(request):
 
         # オーダー削除
         util.DatabaseHelper.cancel_order(order_id)
+
+        return redirect(f"/history/#{order_id}")
+
+    else:
+        return redirect(f"/history/")
+
+
+def buy_redelivery(request):
+    is_session = util.SessionHelper.is_session(request)
+    if is_session.valid:
+        info = util.UserHelper.get_info.from_session(request)
+        mc_uuid = info.mc_uuid
+        order_id = request.GET.get("id")
+
+        order_obj = util.DatabaseHelper.get_order(order_id)
+        if mc_uuid != order_obj["mc_uuid"]:
+            raise Http404
+
+        # DM送信
+        asyncio.run_coroutine_threadsafe(
+            bot.send_redelivery(info.discord_id, order_id),
+            bot.client.loop)
+
+        now = datetime.datetime.now()
+        delivery_time = now + datetime.timedelta(hours=random.randint(1, 4),
+                                                 minutes=random.randint(0, 59),
+                                                 seconds=0,
+                                                 microseconds=0)
+
+        # 再配達を追加
+        util.DatabaseHelper.redelivery_order(order_id, delivery_time)
 
         return redirect(f"/history/#{order_id}")
 
