@@ -63,7 +63,10 @@ def item(request):
 
     # レビューの平均を計算
     item_review_av = util.ItemHelper.calc_review_average(item_review)
-    item_review_av_format = f"{item_review_av:.1f}"
+    if item_review:
+        item_review_av_format = f"{item_review_av:.1f}"
+    else:
+        item_review_av_format = None
 
     # カテゴリーを取得
     item_category = util.ItemHelper.get_category.info.from_id(result["category"])

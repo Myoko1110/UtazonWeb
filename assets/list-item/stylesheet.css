@@ -141,6 +141,27 @@
     cursor: pointer;
 
 }
+.category-list{
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.category-list:hover{
+    background-color: #eaeaea;
+}
+.category-child_li{
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+.category-child_li:hover{
+    background-color: #cccccc;
+}
+.category-child_li.isSelect{
+    background-color: #cccccc;
+}
+.category-child{
+    display: none;
+}
 .required{
     color: #ad0000;
     font-size: 13px;

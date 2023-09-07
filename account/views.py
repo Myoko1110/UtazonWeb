@@ -34,6 +34,7 @@ def list_item(request):
         info = util.UserHelper.get_info.from_session(request)
 
         context = {
+            "categories": settings.CATEGORIES,
             "money_unit": settings.MONEY_UNIT,
             "session": is_session,
             "info": info,
@@ -58,10 +59,7 @@ def list_item_post(request):
         item_price = request.POST.get("text")
         about = request.POST.get("about")
         new_image = request.POST.getlist('new_image')
-
-        print(item_name)
-        print(item_price)
-        print(about)
+        category = request.POST.get('category')
 
         while True:
             item_id = secrets.randbelow(100000)
@@ -97,12 +95,10 @@ def list_item_post(request):
                     break
 
         image_path = json.dumps(image_path)
-        print(item_name)
-        print(item_price)
-        print(item_id)
-        print(about)
 
-        return HttpResponse("success")
+        util.DatabaseHelper.add_item(item_id, item_name, item_price, image_path, about, category, info.mc_uuid)
+
+        return redirect(f"/item/?id={item_id}")
 
 
 def on_sale(request):

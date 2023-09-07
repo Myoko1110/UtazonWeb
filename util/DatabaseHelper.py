@@ -481,12 +481,13 @@ def update_item(item_id, item_name, price, image):
     return True
 
 
-def add_item(item_id, item_name, price, image, kind):
+def add_item(item_id, item_name, price, image, kind, category, mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "INSERT utazon_item SET item_id=%s item_name=%s, price=%s, image=%s, review='[], kind=%s'"
-            cursor.execute(sql, (item_id, item_name, price, image, kind))
+            sql = """INSERT INTO utazon_item (item_id, item_name, price, image, review, kind, category, purchases_number, mc_uuid)
+                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+            cursor.execute(sql, (item_id, item_name, price, image, "[]", kind, category, 0, mc_uuid,))
             cnx.commit()
     return True
 

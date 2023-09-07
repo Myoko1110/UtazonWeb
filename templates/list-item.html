@@ -261,6 +261,30 @@
                         </div>
                     </div>
                 </div>
+                <div class="review-value__category">
+                    <h3>カテゴリーを選択<span class="required" id="category_required">必須項目です</span></h3>
+                    <ul style="list-style: none">
+                        {% for i, j in categories.items %}
+                        <li class="category-list">
+                            {% if j.JAPANESE %}
+                            <div>{{ j.JAPANESE }}</div>
+                            <ul class="category-child">
+                                {% for key, value in j.items %}
+                                {% if key != "JAPANESE" %}
+                                <li class="category-child_li" data-en="{{ key }}">{{ value }}</li>
+                                {% endif %}
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <div>{{ j }}</div>
+                            <ul class="category-child">
+                                <li class="category-child_li" data-en="{{ i }}">{{ j }}</li>
+                            </ul>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
 				<div class="review-value__submit" id="submit">
 					<a>次へ</a>
                     <span class="required" id="cnxError">エラーが発生しました</span>

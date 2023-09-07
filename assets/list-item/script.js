@@ -52,6 +52,19 @@ $(document).ready(function(){
         $(".review__about-value-1").append(`<div class="review-value-1__list"> <input type="text"><img src="${trash_svg}"></div>`)
         addImageHoverHandlers();
     });
+    $(".category-list div").on("click", function (){
+        ul = $(this).parent().find("ul");
+
+        if (ul.css("display") === "none"){
+            ul.css("display", "block");
+        }else{
+            ul.css("display", "none");
+        }
+    });
+    $(".category-child_li").on("click", function (){
+       $(".isSelect").removeClass("isSelect");
+       $(this).addClass("isSelect");
+    });
 
     $("#submit").on('click', function (){
         title = $("#title").val();
@@ -73,6 +86,12 @@ $(document).ready(function(){
             return;
         }
 
+        var selectedElements = $('.isSelect');
+        if (selectedElements !== 1){
+            $("#category_required").css("display", "block");
+        }
+       var category = selectedElements.data("en");
+
         var hostUrl= location.protocol + '//' + location.host + "/mypage/list_item/post/";
         var inputValues = [];
         $(".review__about-value-1 .review-value-1__list input").each(function() {
@@ -85,7 +104,7 @@ $(document).ready(function(){
             return;
         }
 
-        params = {title: title, text: text, about: JSON.stringify(inputValues)}
+        params = {title: title, text: text, about: JSON.stringify(inputValues), category: category}
         for (let i = 0; i < new_image.length; i++) {
                 params.new_image = new_image[i];
         }
