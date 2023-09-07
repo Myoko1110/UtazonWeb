@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <title>マイページ | Utazon.com</title>
-    <link rel="stylesheet" href="{% static 'edit-item/stylesheet.css' %}">
+    <link rel="stylesheet" href="{% static 'list-item/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#232f3e">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
-	<script src="{% static 'edit-item/script.js' %}"></script>
+	<script src="{% static 'list-item/script.js' %}"></script>
 </head>
 <body>
 <div class="global-header">
@@ -243,6 +243,21 @@
                                 <input type='file' id='fileInput' style='display: none' accept='image/png, image/jpeg, image/webp'>
                                 <svg xmlns="http://www.w3.org/2000/svg" height="4em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-value__about">
+                    <h3>概要<span class="required" id="about_required">必須項目です</span></h3>
+                    <div class="review-value__about-list">
+                        <div class="review__about-value-1" data-svg="{% static 'list-item/trash-can-solid.svg' %}">
+                            <div class="review-value-1__list">
+                                <input type="text">
+                            </div>
+                        </div>
+                        <div class="review__about-value-2">
+                            <a>
+                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -481,5 +481,15 @@ def update_item(item_id, item_name, price, image):
     return True
 
 
+def add_item(item_id, item_name, price, image, kind):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "INSERT utazon_item SET item_id=%s item_name=%s, price=%s, image=%s, review='[], kind=%s'"
+            cursor.execute(sql, (item_id, item_name, price, image, kind))
+            cnx.commit()
+    return True
+
+
 def get_special_feature():
     return SpecialFeature.objects.all()

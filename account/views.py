@@ -3,6 +3,7 @@ import json
 import re
 import secrets
 
+import os
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
@@ -42,6 +43,66 @@ def list_item(request):
 
     else:
         return redirect("/login")
+
+
+@csrf_exempt
+def list_item_post(request):
+    if request.method != "POST":
+        raise Http404
+
+    is_session = util.SessionHelper.is_session(request)
+    if is_session.valid:
+        info = util.UserHelper.get_info.from_session(request)
+
+        item_name = request.POST.get("title")
+        item_price = request.POST.get("text")
+        about = request.POST.get("about")
+        new_image = request.POST.getlist('new_image')
+
+        print(item_name)
+        print(item_price)
+        print(about)
+
+        while True:
+            item_id = secrets.randbelow(100000)
+
+            item = util.DatabaseHelper.get_item(item_id)
+            if not item:
+                break
+
+        image_path = []
+        fs = settings.MEDIA_ROOT / 'item' / str(item_id)
+        for i in new_image:
+            while True:
+                try:
+                    file_ext = re.match(r"data:image/(.*);base64,", i).groups()[0]
+                    i = re.sub(r"data:image/.*;base64,", "", i)
+
+                    file_name = f"{secrets.token_urlsafe(4)}.{file_ext}"
+
+                    db = f'{settings.HOST}/media/item/{item_id}/{file_name}'
+                    binary_data = base64.b64decode(i)
+
+                    os.makedirs(fs, exist_ok=False)
+
+                    # ファイルを保存
+                    with open(fs / file_name, 'wb') as f:
+                        f.write(binary_data)
+
+                except FileExistsError as e:
+                    print(e)
+                    continue
+                finally:
+                    image_path.append(db)
+                    break
+
+        image_path = json.dumps(image_path)
+        print(item_name)
+        print(item_price)
+        print(item_id)
+        print(about)
+
+        return HttpResponse("success")
 
 
 def on_sale(request):
@@ -100,7 +161,9 @@ def item_edit_post(request):
 
         item_id = request.POST.get("item_id")
         mc_uuid = request.POST.get("mc_uuid")
-        if util.DatabaseHelper.get_item(item_id)["mc_uuid"] != mc_uuid:
+
+        db_mc_uuid = util.DatabaseHelper.get_item(item_id)["mc_uuid"]
+        if db_mc_uuid != mc_uuid or db_mc_uuid != info.mc_uuid:
             raise Http404
 
         item_name = request.POST.get("title")

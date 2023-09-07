@@ -20,21 +20,14 @@ $(document).ready(function(){
                 $(".review-value-2").css("display", "block")
             }
         });
+        $(".review-value-1__list img").on("click", function (){
+            $(this).parent().remove();
+        });
     }
 
-
-    const image = $(".review-value__image").data("img");
+    const trash_svg = $(".review__about-value-1").data("svg");
     const item_id = $(".review-title__item p").data("id");
     const mc_uuid = $(".review-title__item p").data("uuid");
-    let update_image = image;
-
-    let imageElement = "";
-    for (let i in image){
-        let element = `<div class="image"><img src="${image[i]}"></div>`;
-        imageElement += element;
-    }
-    $(".review-value-1").html(imageElement)
-    addImageHoverHandlers()
 
     document.querySelector(".fileAdd").addEventListener("click", () => {
         document.querySelector(".fileAdd input").click();
@@ -51,17 +44,22 @@ $(document).ready(function(){
                 $(".review-value-2").css("display", "none")
             }
             new_image.push(src);
-            addImageHoverHandlers()
+            addImageHoverHandlers();
         });
         fileReader.readAsDataURL(this.files[0]);
     });
+    $(".review__about-value-2").on("click", function (){
+        $(".review__about-value-1").append(`<div class="review-value-1__list"> <input type="text"><img src="${trash_svg}"></div>`)
+        addImageHoverHandlers();
+    });
+
     $("#submit").on('click', function (){
         title = $("#title").val();
         text = $("#text").val();
 
-        image_lengh = update_image.length + new_image.length;
+        image_lengh = new_image.length;
 
-        if (title === "" || text === "" || image_lengh === 0){
+        if (title === "" || new_image.length === 0){
             if (title === ""){
                 $("#title_required").css("display", "block");
             }
@@ -72,37 +70,50 @@ $(document).ready(function(){
                 $("#image_required").css("display", "block");
             }
 
-            return false;
+            return;
         }
 
-        var hostUrl= location.protocol + '//' + location.host + "/mypage/on_sale/edit/post/";
-
-        // 画像のアップロード処理を行う
-        var formData = new FormData();
-        formData.append('item_id', item_id);
-        formData.append('mc_uuid', mc_uuid);
-        formData.append('title', title);
-        formData.append('text', text);
-        formData.append("update_image", JSON.stringify(update_image))
-
-        // 新しい画像を追加
-        for (let i = 0; i < new_image.length; i++) {
-                const base64Data = new_image[i]
-                formData.append('new_image', base64Data); // ファイル名も指定
-        }
-
-        $.ajax({
-            type: 'POST',
-            url: hostUrl,
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                location.href = `/mypage/on_sale/`;
-            },
-            error: function(error) {
-                $("#cnxError").css("display", "block");
-            }
+        var hostUrl= location.protocol + '//' + location.host + "/mypage/list_item/post/";
+        var inputValues = [];
+        $(".review__about-value-1 .review-value-1__list input").each(function() {
+            var inputValue = $(this).val();
+            inputValues.push(inputValue);
         });
+        console.log(inputValues)
+        if (inputValues[0] === ""){
+            $("#about_required").css("display", "block");
+            return;
+        }
+
+        params = {title: title, text: text, about: JSON.stringify(inputValues)}
+        for (let i = 0; i < new_image.length; i++) {
+                params.new_image = new_image[i];
+        }
+        post(hostUrl, params);
+
     });
 });
+
+
+function post(path, params, method='post') {
+
+  // The rest of this code assumes you are not using a library.
+  // It can be made less wordy if you use one.
+  const form = document.createElement('form');
+  form.method = method;
+  form.action = path;
+
+  for (const key in params) {
+    if (params.hasOwnProperty(key)) {
+      const hiddenField = document.createElement('input');
+      hiddenField.type = 'hidden';
+      hiddenField.name = key;
+      hiddenField.value = params[key];
+
+      form.appendChild(hiddenField);
+    }
+  }
+
+  document.body.appendChild(form);
+  form.submit();
+}
