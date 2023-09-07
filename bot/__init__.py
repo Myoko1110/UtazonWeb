@@ -109,7 +109,7 @@ async def send_mailbox_full(discord_id, order_id):
 
 async def send_mailbox_notfound(discord_id, order_id):
     """
-    ポストにアイテムが入れられないことをDMに送信します
+    ポストにアイテムが見つからないことをDMに送信します
 
     :param discord_id: DiscordID
     :param order_id: オーダーID
@@ -129,19 +129,18 @@ async def send_mailbox_notfound(discord_id, order_id):
 
 async def send_complete_order(discord_id, order_id):
     """
-    ポストにアイテムが入れられないことをDMに送信します
+    配達が完了したことをDMに送信します
 
     :param discord_id: DiscordID
     :param order_id: オーダーID
     """
 
     global order_history_url
-    print(order_history_url)
 
     author = await client.fetch_user(discord_id)
     embed = discord.Embed(
         title="商品が配達が完了しました",
-        color=0x5fbcd3,
+        color=discord.Colour.blue(),
         description=f"お客様の注文の商品が配達されましたことをお知らせいたします。返品はできませんので予めご了承ください。詳細は[こちら]({order_history_url}#{order_id})"
     )
     embed.set_footer(text="またのご利用をお待ちしております。")
@@ -182,7 +181,7 @@ async def send_security(discord_id):
     author = await client.fetch_user(discord_id)
     embed = discord.Embed(
         title="新しいログイン",
-        color=discord.Colour.blue(),
+        color=0x5fbcd3,
         description="あなたのアカウントへの新しいログインが検出されました。ご自身によるものであれば、何もする必要はありません。ログインに心当たりがない場合は、運営にお問い合わせください。"
     )
     await author.send(embed=embed)

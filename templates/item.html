@@ -253,7 +253,7 @@
 					<!--<a>〇〇のストアを表示</a>-->
 					{% if item_review_av %}
 					<div class="item-about__star">
-						<span>{{ item_review_av }}</span>
+						<span>{{ item_review_av_format }}</span>
 						{% if item_review_av >= 4.8 %}
 						<div class="item-about__star-img" style="background-position: -2px -2px;">
 						{% elif item_review_av >= 4.3  and item_review_av < 4.8 %}
@@ -443,7 +443,7 @@
 				{% endif %}
 					<span style="opacity: 0">5つ星のうち{{ item_review_av }}</span>
 				</div>
-				<p>{{ item_review_av }}/5</p>
+				<p>{{ item_review_av_format }}/5</p>
 			</div>
 			{% endif %}
 			{% if session.valid %}

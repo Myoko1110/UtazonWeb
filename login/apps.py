@@ -12,9 +12,7 @@ class LoginConfig(AppConfig):
 
     def ready(self):
         table_create()
-
-        from django.core.signals import request_started
-        request_started.connect(start_bot, weak=False)
+        start_bot()
 
 
 class RunOnce:
@@ -31,7 +29,7 @@ class RunOnce:
 
 
 @RunOnce
-def start_bot(sender, **kwargs):
+def start_bot():
     bot.apps.ready()
 
 
@@ -61,7 +59,8 @@ def table_create():
                                                     review JSON,
                                                     kind JSON,
                                                     category VARCHAR(64),
-                                                    purchases_number BIGINT
+                                                    purchases_number BIGINT,
+                                                    mc_uuid VARCHAR(36)
                                                     )"""
             cursor.execute(sql)
 

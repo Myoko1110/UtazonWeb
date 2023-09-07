@@ -63,6 +63,7 @@ def item(request):
 
     # レビューの平均を計算
     item_review_av = util.ItemHelper.calc_review_average(item_review)
+    item_review_av_format = f"{item_review_av:.1f}"
 
     # カテゴリーを取得
     item_category = util.ItemHelper.get_category.info.from_id(result["category"])
@@ -93,6 +94,7 @@ def item(request):
         "item_review": reversed(item_review),
         "item_review_number": len(item_review),
         "item_review_av": item_review_av,
+        "item_review_av_format": item_review_av_format,
         "item_category": item_category,
         "rand_time": rand_time,
         "point_return": util.ItemHelper.point_return_percent,

@@ -120,6 +120,32 @@ def get_item_from_category(cat_id):
     return result
 
 
+def get_item_from_user(mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = "SELECT * FROM utazon_item WHERE mc_uuid=%s"
+            cursor.execute(sql, (mc_uuid,))
+
+            # cat_idのレコードを取得
+            result = cursor.fetchall()
+
+            if not result:
+                return False
+
+            for i in range(len(result)):
+                sql = "SELECT stock FROM utazon_itemstack WHERE item_id=%s"
+                cursor.execute(sql, (result[i]["item_id"],))
+
+                stock = cursor.fetchone()
+                result[i]["stock"] = stock["stock"]
+                result[i]["image"] = json.loads(result[i]["image"])
+                result[i]["sale"] = util.ItemHelper.get_sale(result[i]["sale_id"], result[i]["price"])
+                result[i]["item_price_format"] = f"{result[i]['price']:,.2f}"
+
+    return result
+
+
 def search_item(item_query, category=None):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
@@ -334,7 +360,7 @@ def redelivery_order(order_id, delivery_time):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "UPDATE utazon_order SET status = true, error = null, delivery_time = %s WHERE order_id=%s"
+            sql = "UPDATE utazon_order SET status=true, error=null, delivery_time=%s WHERE order_id=%s"
             cursor.execute(sql, (delivery_time, order_id,))
             cnx.commit()
     return True
@@ -441,6 +467,16 @@ def increase_stock(item_id, amount):
         with cnx.cursor() as cursor:
             sql = "UPDATE utazon_itemstack SET stock = stock + %s WHERE item_id=%s"
             cursor.execute(sql, (amount, item_id,))
+            cnx.commit()
+    return True
+
+
+def update_item(item_id, item_name, price, image):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "UPDATE utazon_item SET item_name=%s, price=%s, image=%s WHERE item_id=%s"
+            cursor.execute(sql, (item_name, price, image, item_id))
             cnx.commit()
     return True
 
