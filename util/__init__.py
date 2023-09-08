@@ -4,7 +4,7 @@ from django.db.models import Max
 from django.shortcuts import get_object_or_404
 
 from item.models import Banner
-from . import DatabaseHelper, ItemHelper, SessionHelper, UserHelper, VaultHelper
+from . import DatabaseHelper, ItemHelper, SessionHelper, UserHelper, SocketHelper
 
 
 def get_banners():

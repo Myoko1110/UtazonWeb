@@ -111,6 +111,17 @@ def table_create():
                                                     )"""
             cursor.execute(sql)
 
+            sql = """CREATE TABLE IF NOT EXISTS utazon_revenues (
+                                                    id BIGINT AUTO_INCREMENT UNIQUE,
+                                                    mc_uuid VARCHAR(36),
+                                                    item_id BIGINT,
+                                                    item_price DOUBLE,
+                                                    qty INT,
+                                                    amount DOUBLE,
+                                                    bought_datetime DATETIME
+                                                    )"""
+            cursor.execute(sql)
+
             # DiscordConnectに従う
             sql = """CREATE TABLE IF NOT EXISTS `linked` (
                                                     mc_uuid VARCHAR(36) UNIQUE,

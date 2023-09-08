@@ -74,7 +74,8 @@
 }
 .review-value__image-list{
     display: flex;
-    overflow-y: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 .review-value-1 div, .review-value-2 div{
     width: 140px;
@@ -154,13 +155,85 @@
     border-radius: 4px;
 }
 .category-child_li:hover{
-    background-color: #cccccc;
+    background-color: #dadada;
 }
 .category-child_li.isSelect{
     background-color: #cccccc;
 }
 .category-child{
     display: none;
+}
+.chest{
+    overflow: auto;
+    text-align: center;
+}
+.chest-text span{
+    background-color: #eeeeee;
+    padding: 1px 4px;
+    border-radius: 5px;
+    margin: 0 3px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo,Consolas, "Liberation Mono", monospace, sans-serif;
+}
+.muci{
+    display: inline-block;
+    position: relative;
+    background-color: #C6C6C6;
+    border: 3px solid;
+    border-color: #DBDBDB #5B5B5B #5B5B5B #DBDBDB;
+    padding: 10px;
+    text-align: left;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+.muci-row{
+    display: flex;
+}
+.muci-slot{
+    position: relative;
+    display: block;
+    background: #8B8B8B no-repeat center center / 32px 32px;
+    border: 3px solid;
+    border-color: #373737 #FFF #FFF #373737;
+    width: 48px;
+    height: 48px;
+    font-size: 16px;
+    line-height: 1;
+    text-align: left;
+    vertical-align: bottom;
+}
+.muci-slot img{
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    position: relative;
+}
+.muci-slot p{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 0;
+    color: #ffffff;
+    text-shadow: 2px 2px 0 #3F3F3F;
+    font-size: 18px;
+}
+.muci-slot div{
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+.muci-slot div::before{
+    content: "";
+    background-color: rgba(133, 127, 229, .65);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 100;
+}
+.muci-slot div.isSelectIndex::before{
+    opacity: 1;
 }
 .required{
     color: #ad0000;

@@ -231,11 +231,11 @@
 
 				</div>
 				<div class="review-value__text">
-					<h3>価格<span class="required" id="text_required">必須項目です</span></h3>
+					<h3>価格<span class="required" id="text_required">価格は{{ money_unit }}0.01 以上にしてください</span></h3>
 					<span>{{ money_unit }}</span><input name="price" id="text" type="number" step="0.01" value="0">
 				</div>
                 <div class="review-value__image" data-img="{{ item.image }}">
-                    <h3>画像（5つまで）<span class="required" id="image_required">必須項目です</span></h3>
+                    <h3>画像（5つまで）<span class="required" id="image_required">必須項目です</span><span class="required" id="image_over">画像は5つまでです</span><span class="required" id="image_size">ファイルサイズが2MBを超えています</span></h3>
                     <div class="review-value__image-list">
                         <div class="review-value-1"></div>
                         <div class="review-value-2">
@@ -264,7 +264,7 @@
                 <div class="review-value__category">
                     <h3>カテゴリーを選択<span class="required" id="category_required">必須項目です</span></h3>
                     <ul style="list-style: none">
-                        {% for i, j in categories.items %}
+                        {% for i, j in category.items %}
                         <li class="category-list">
                             {% if j.JAPANESE %}
                             <div>{{ j.JAPANESE }}</div>
@@ -284,6 +284,36 @@
                         </li>
                         {% endfor %}
                     </ul>
+                </div>
+                <div class="review-value__item">
+                    <h3>出品するアイテムを選択<span class="required" id="item_required">1つ以上選択して下さい</span></h3>
+                    <div class="chest">
+                        <span class="muci">
+                            <span class="muci-title"></span>
+                            <span class="muci-value">
+                                {% for i in waiting_stock %}
+                                {% if forloop.counter0 == 0 or forloop.counter0 == 9 or forloop.counter0 == 18 or forloop.counter0 == 27 or forloop.counter0 == 36 or forloop.counter0 == 45 %}
+                                <span class="muci-row">
+                                {% endif %}
+                                    <span class="muci-slot">
+                                        {% if i %}
+                                        {% with texture_path="textures/item/" ext=".png" %}
+                                        <div data-index="{{ forloop.counter0 }}">
+                                            <img src="{% static texture_path|add:i.item_material|add:ext %}">
+                                            <p>{{ i.amount }}</p>
+                                        </div>
+                                        {% endwith %}
+                                        {% endif %}
+                                    </span>
+                                {% if forloop.counter0 == 8 or forloop.counter0 == 17 or forloop.counter0 == 26 or forloop.counter0 == 35 or forloop.counter0 == 44 or forloop.counter0 == 53 %}
+                                </span>
+                                {% endif %}
+                                {% endfor %}
+                            </span>
+                        </span>
+                        <p class="chest-text" style="margin: 5px 0 0;">この中にアイテムを入れるにはサーバー内で<span>/utazon stockgui</span>を実行して下さい</p>
+                        <p class="chest-text" style="margin: 0 0 5px;">すべて同じアイテム・エンチャント・アイテム名・スタック数のものを選択して下さい</p>
+                    </div>
                 </div>
 				<div class="review-value__submit" id="submit">
 					<a>次へ</a>

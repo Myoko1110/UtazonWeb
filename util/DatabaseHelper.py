@@ -492,5 +492,49 @@ def add_item(item_id, item_name, price, image, kind, category, mc_uuid):
     return True
 
 
+def get_waiting_stock(mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "SELECT value FROM utazon_waitingstock WHERE mc_uuid=%s"
+            cursor.execute(sql, (mc_uuid,))
+            result = cursor.fetchone()[0]
+    return result
+
+
+def add_revenues(mc_uuid, item_id, item_price, qty, amount):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            now = datetime.datetime.now()
+
+            sql = """INSERT INTO utazon_revenues (mc_uuid, item_id, item_price, qty, amount, bought_datetime)
+                     VALUES (%s, %s, %s, %s, %s, %s)"""
+            cursor.execute(sql, (mc_uuid, item_id, item_price, qty, amount, now,))
+            cnx.commit()
+    return True
+
+
+def add_item_stack(item_id, item_name, item_material, item_enchantment, stack_size, stock):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = """INSERT INTO utazon_itemstack (item_id, item_display_name, item_material, item_enchantments, stack_size, stock)
+                     VALUES (%s, %s, %s, %s, %s, %s)"""
+            cursor.execute(sql, (item_id, item_name, item_material, item_enchantment, stack_size, stock))
+            cnx.commit()
+    return True
+
+
+def update_waiting_stock(mc_uuid, value):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "UPDATE utazon_waitingstock SET value=%s WHERE mc_uuid=%s"
+            cursor.execute(sql, (value, mc_uuid))
+            cnx.commit()
+    return True
+
+
 def get_special_feature():
     return SpecialFeature.objects.all()

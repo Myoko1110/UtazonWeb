@@ -39,7 +39,7 @@ def buy(request):
         user_cart_number = items_info.total_qty
 
         # ユーザー残高取得
-        player_balance = util.VaultHelper.get_balance(info.mc_uuid)
+        player_balance = util.SocketHelper.get_balance(info.mc_uuid)
 
         # 小数第2位まで切り上げ
         if player_balance:
@@ -139,10 +139,12 @@ def buy_confirm(request):
 
         # 在庫を減らす
         for i in order_item_list:
+            amount = Decimal(str(i["price"])) * Decimal(str(i["qty"]))
             util.DatabaseHelper.reduce_stock(i["item_id"], i["qty"])
+            util.DatabaseHelper.add_revenues(mc_uuid, i["item_id"], i["price"], i["qty"], float(amount))
 
         # 出金
-        withdraw_player = util.VaultHelper.withdraw_player(mc_uuid, amount_float, reason)
+        withdraw_player = util.SocketHelper.withdraw_player(mc_uuid, amount_float, reason)
 
         # サーバーオフライン処理
         if not withdraw_player:
@@ -201,7 +203,7 @@ def buy_cancel(request):
         # 理由作成し、入金
         reason = (f"注文のキャンセル(OrderID: {order_id})" +
                   f"(入金額: {amount}の{deposit_price}%(キャンセル料{settings.CANCELLATION_FEE}%))")
-        deposit_player = util.VaultHelper.deposit_player(mc_uuid, deposit_price, reason)
+        deposit_player = util.SocketHelper.deposit_player(mc_uuid, deposit_price, reason)
 
         # エラーが出たらリダイレクト
         if not deposit_player:
