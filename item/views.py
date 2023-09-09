@@ -6,6 +6,7 @@ from decimal import Decimal, getcontext
 from django.http import Http404
 from django.shortcuts import redirect, render
 
+import account.deposit_scheduler
 import util
 from config import settings
 

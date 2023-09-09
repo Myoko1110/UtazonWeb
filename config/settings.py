@@ -39,6 +39,7 @@ PER_POINT = Decimal(str(sf["point"]["point_per"]))
 POINT_RETURN = Decimal(str(sf["point"]["return_rate"])) / Decimal("100")
 MONEY_UNIT = sf["money"]["unit"]
 CANCELLATION_FEE = sf["return"]["cancellation_fee"]
+ALLOCATION_PER = sf["revenues"]["allocation_per"]
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
@@ -94,6 +95,7 @@ INSTALLED_APPS = [
     'login.apps.LoginConfig',
     'item.apps.ItemConfig',
     'config.apps.Config',
+    'account.apps.AccountConfig',
 ]
 
 MIDDLEWARE = [

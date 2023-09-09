@@ -324,15 +324,17 @@
 			</div>
 			<div class="buy-confirm">
                 <div class="buy-confirm__btn">
-				{% if buy_able %}
+                {% if not player_balance_float %}
+                                        <a id="order_confirm" style="cursor: not-allowed;background-color: #f3f3f3;color: #d5d5d5;display: block;" data-buynow="couldn't access">注文を確定</a>
+                    <span style="font-size: 14px;display: block;margin-left: 10px;">サーバーへの接続に失敗しました</span>
+				{% elif buy_able %}
 					<a id="order_confirm" style="cursor: pointer" data-buynow="{{ buy_now }}">注文を確定</a>
                 {% else %}
-                    <a id="order_confirm" style="cursor: not-allowed;background-color: #f3f3f3;color: #d5d5d5;display: block;" data-buynow="couldn't access">注文を確定</a>
-                    <span style="font-size: 14px;display: block;margin-left: 10px;">サーバーへの接続に失敗しました</span>
+                    <a id="order_confirm" style="cursor: not-allowed;background-color: #f3f3f3;color: #d5d5d5;display: block;" data-buynow="{{ buy_now }}">注文を確定</a>
 				{% endif %}
                 </div>
 				<div class="buy-confirm__description">
-					<h3>ご請求額： {{ money_unit }}<span>{{ item_total }}</span></h3>
+					<h3>ご請求額： {{ money_unit }}<span data-total="{{ item_total }}">{{ item_total_format }}</span></h3>
 					<a>獲得ポイント：<span id="get_point" data-point="{{ total_point }}">{{ total_point_format }}</span>pt</a>
 					<p>「注文を確定する」ボタンを押してご注文いただくことで、請求がされます。<br>
 					また、本サイトで現金を請求するようなことは一切ありません！！</p>

@@ -89,3 +89,31 @@ def deposit_player(uuid: str, amount: float, reason: str):
 
     except ConnectionRefusedError:
         return False
+
+
+def deposit_revenues(uuid: str, amount: float, reason: str):
+    """
+    ユーザーの口座に売上を入金します
+
+    :param uuid: 入金先のプレイヤーのUUID
+    :param amount: 入金する金額
+    :param reason: 入金する理由
+    :return: お金が入金されたか(キャンセルされた場合または接続失敗した場合はFalseを返却)
+    """
+
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((socket_host, int(socket_port)))
+            send_value = ["depositRevenues", uuid, str(amount), reason]
+            s.sendall(json.dumps(send_value).encode())
+
+            received_data = s.recv(1024).decode()
+            if received_data == "Invalid UUID":
+                return False
+            elif received_data == "Success":
+                return True
+            else:
+                return False
+
+    except ConnectionRefusedError:
+        return False

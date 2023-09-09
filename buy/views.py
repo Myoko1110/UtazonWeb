@@ -59,7 +59,8 @@ def buy(request):
             "user_cart": user_cart,
             "user_cart_number": user_cart_number,
             "user_cart_id": user_cart_id,
-            "item_total": f"{item_total:,.2f}",
+            "item_total": item_total,
+            "item_total_format": f"{item_total:,.2f}",
             "player_balance": f"{player_balance:,.2f}",
             "player_balance_float": player_balance,
             "after_balance": after_balance,
@@ -113,7 +114,9 @@ def buy_confirm(request):
 
         # ポイント関係
         point = request.GET.get("point")
-        if point:
+        print(point)
+        if float(point) != 0.0:
+            print("aa")
             if not float(point).is_integer():
                 raise Exception("ポイントが整数値ではありません")
 
@@ -139,9 +142,8 @@ def buy_confirm(request):
 
         # 在庫を減らす
         for i in order_item_list:
-            amount = Decimal(str(i["price"])) * Decimal(str(i["qty"]))
             util.DatabaseHelper.reduce_stock(i["item_id"], i["qty"])
-            util.DatabaseHelper.add_revenues(mc_uuid, i["item_id"], i["price"], i["qty"], float(amount))
+            util.DatabaseHelper.add_revenues(mc_uuid, i["item_id"], i["price"], i["qty"], amount_float, i["mc_uuid"])
 
         # 出金
         withdraw_player = util.SocketHelper.withdraw_player(mc_uuid, amount_float, reason)

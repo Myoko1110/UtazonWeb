@@ -285,8 +285,10 @@
                         {% endfor %}
                     </ul>
                 </div>
-                <div class="review-value__item">
-                    <h3>出品するアイテムを選択<span class="required" id="item_required">1つ以上選択して下さい</span></h3>
+                <div class="review-value__item" id="item">
+                    <h3>出品するアイテムを選択<span class="required" id="item_required">1つ以上選択して下さい</span>
+                    {% if error == "1" %}<span class="required" style="display: block">出品時と同じアイテム・アイテム名・エンチャント・スタック数のものを選択して下さい</span>{% endif %}
+                    </h3>
                     <div class="chest">
                         <span class="muci">
                             <span class="muci-title"></span>

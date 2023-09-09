@@ -13,3 +13,6 @@ money:
 
 return:
    cancellation_fee: 10 #%
+
+revenues:
+  allocation_per: 80 #%

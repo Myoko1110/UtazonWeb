@@ -37,8 +37,11 @@ def list_item(request):
         waiting_stock = util.DatabaseHelper.get_waiting_stock(info.mc_uuid)
         waiting_stock = json.loads(waiting_stock)
 
+        error = request.GET.get("error")
+
         context = {
             "waiting_stock": waiting_stock,
+            "error": error,
             "category": settings.CATEGORIES,
             "categories": util.ItemHelper.get_category.all(),
             "money_unit": settings.MONEY_UNIT,
@@ -123,22 +126,26 @@ def list_item_post(request):
 
         waiting_stock = json.loads(util.DatabaseHelper.get_waiting_stock(info.mc_uuid))
 
-        item_amount = waiting_stock[0]["amount"]
-        item_material = waiting_stock[0]["item_material"]
-        item_name = waiting_stock[0]["item_display_name"]
-        item_enchantment = waiting_stock[0]["item_enchantments"]
-
+        item_amount = waiting_stock[items[0]]["amount"]
+        item_material = waiting_stock[items[0]]["item_material"]
+        item_name = waiting_stock[items[0]]["item_display_name"]
+        item_enchantment = waiting_stock[items[0]]["item_enchantments"]
+        
+        error = False
         for i in items:
             item_stack = waiting_stock[i]
             if item_amount != item_stack["amount"]:
-                raise ValueError("item is not all similar")
+                error = True
             elif item_material != item_stack["item_material"]:
-                raise ValueError("item is not all similar")
+                error = True
             elif item_name != item_stack["item_display_name"]:
-                raise ValueError("item is not all similar")
+                error = True
             elif item_enchantment != item_stack["item_enchantments"]:
-                raise ValueError("item is not all similar")
+                error = True
         stock = len(items)
+
+        if error:
+            return redirect(f"/mypage/list_item/?error=1#item")
 
         for i in items:
             waiting_stock[i] = None
@@ -312,3 +319,98 @@ def item_edit_post(request):
         util.DatabaseHelper.update_item(item_id, item_name, item_price, image)
 
         return HttpResponse("success")
+
+
+def item_stock(request):
+    is_session = util.SessionHelper.is_session(request)
+    if is_session.valid:
+        info = util.UserHelper.get_info.from_session(request)
+
+        waiting_stock = util.DatabaseHelper.get_waiting_stock(info.mc_uuid)
+        waiting_stock = json.loads(waiting_stock)
+
+        info = util.UserHelper.get_info.from_session(request)
+
+        item_id = request.GET.get("id")
+        item = util.DatabaseHelper.get_item(item_id)
+
+        if not item or item["mc_uuid"] != info.mc_uuid:
+            raise Http404
+
+        item["images"] = json.loads(item["image"])
+
+        error = request.GET.get("error")
+
+        context = {
+            "item": item,
+            "error": error,
+            "waiting_stock": waiting_stock,
+            "categories": util.ItemHelper.get_category.all(),
+            "money_unit": settings.MONEY_UNIT,
+            "session": is_session,
+            "info": info,
+        }
+
+        return render(request, "add-stock.html", context=context)
+
+    else:
+        return redirect("/login")
+
+
+@csrf_exempt
+def item_stock_post(request):
+    if request.method != "POST":
+        raise Http404
+
+    is_session = util.SessionHelper.is_session(request)
+    if is_session.valid:
+        info = util.UserHelper.get_info.from_session(request)
+
+        item_id = request.POST.get("item_id")
+        if not item_id:
+            raise Http404
+
+        items = request.POST.get("items")
+        if not items:
+            raise ValueError("items is empty")
+        try:
+            items = json.loads(items)
+            if type(items) != list:
+                raise ValueError("item is not list of json")
+        except json.JSONDecodeError:
+            raise ValueError("items is not json")
+
+        waiting_stock = json.loads(util.DatabaseHelper.get_waiting_stock(info.mc_uuid))
+        item_stack = util.DatabaseHelper.get_item_stack(item_id)
+
+        item_amount = item_stack["stack_size"]
+        item_material = item_stack["item_material"]
+        item_name = item_stack["item_display_name"]
+        item_enchantment = item_stack["item_enchantments"]
+        
+        error = False
+        for i in items:
+            item_stack = waiting_stock[i]
+            if item_amount != item_stack["amount"]:
+                error = True
+            elif item_material != item_stack["item_material"]:
+                error = True
+            elif item_name != item_stack["item_display_name"]:
+                error = True
+            elif item_enchantment != item_stack["item_enchantments"]:
+                error = True
+        stock = len(items)
+
+        for i in items:
+            waiting_stock[i] = None
+
+        util.DatabaseHelper.increase_stock(item_id, stock)
+
+        util.DatabaseHelper.update_waiting_stock(
+            info.mc_uuid, json.dumps(waiting_stock)
+        )
+
+        if error:
+            return redirect(f"/mypage/on_sale/stock/?id={item_id}&error=1")
+        else:
+            return redirect(f"/item/?id={item_id}")

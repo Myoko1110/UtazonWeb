@@ -4,7 +4,7 @@ $(function(){
     const point_input = $(".buy-point__input");
     const amount_view = $(".buy-confirm__description h3 span");
 
-    const total = new Decimal(amount_view.text());
+    const total = new Decimal(amount_view.data("total"));
     const user_point = Number(point_span.text());
     const per_point = new Decimal(point_span.data("perpoint"));
     const point_return = new Decimal(point_span.data("return"));

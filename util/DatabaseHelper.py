@@ -98,7 +98,7 @@ def deposit_user_point(mc_uuid, amount):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "UPDATE IGNORE utazon_user SET point = point - %s WHERE mc_uuid=%s"
+            sql = "UPDATE IGNORE utazon_user SET point = point + %s WHERE mc_uuid=%s"
 
             cursor.execute(sql, (amount, mc_uuid))
             cnx.commit()
@@ -502,15 +502,39 @@ def get_waiting_stock(mc_uuid):
     return result
 
 
-def add_revenues(mc_uuid, item_id, item_price, qty, amount):
+def add_revenues(mc_uuid, item_id, item_price, qty, amount, sale_by):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
             now = datetime.datetime.now()
 
-            sql = """INSERT INTO utazon_revenues (mc_uuid, item_id, item_price, qty, amount, bought_datetime)
-                     VALUES (%s, %s, %s, %s, %s, %s)"""
-            cursor.execute(sql, (mc_uuid, item_id, item_price, qty, amount, now,))
+            sql = """INSERT INTO utazon_revenues (mc_uuid, item_id, item_price, qty, amount, bought_datetime, sale_by)
+                     VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+            cursor.execute(sql, (mc_uuid, item_id, item_price, qty, amount, now, sale_by))
+            cnx.commit()
+    return True
+
+
+def get_revenues():
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            threedaysago = datetime.datetime.now().replace(minute=0, second=0, microsecond=0) - datetime.timedelta(days=3)
+
+            sql = "SELECT * FROM utazon_revenues WHERE bought_datetime < %s"
+            cursor.execute(sql, (threedaysago,))
+            result = cursor.fetchall()
+    return result
+
+
+def delete_revenues():
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            threedaysago = datetime.datetime.now().replace(minute=0, second=0, microsecond=0) - datetime.timedelta(days=3)
+
+            sql = """DELETE FROM utazon_revenues WHERE bought_datetime < %s"""
+            cursor.execute(sql, (threedaysago,))
             cnx.commit()
     return True
 
@@ -524,6 +548,16 @@ def add_item_stack(item_id, item_name, item_material, item_enchantment, stack_si
             cursor.execute(sql, (item_id, item_name, item_material, item_enchantment, stack_size, stock))
             cnx.commit()
     return True
+
+
+def get_item_stack(item_id):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = "SELECT * FROM utazon_itemstack WHERE item_id=%s"
+            cursor.execute(sql, (item_id,))
+            result = cursor.fetchone()
+    return result
 
 
 def update_waiting_stock(mc_uuid, value):

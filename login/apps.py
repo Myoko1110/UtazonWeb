@@ -118,7 +118,8 @@ def table_create():
                                                     item_price DOUBLE,
                                                     qty INT,
                                                     amount DOUBLE,
-                                                    bought_datetime DATETIME
+                                                    bought_datetime DATETIME,
+                                                    sale_by VARCHAR(36)
                                                     )"""
             cursor.execute(sql)
 
