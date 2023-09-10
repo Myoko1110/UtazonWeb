@@ -77,28 +77,18 @@
 		            </label>
 	            </form>
             </div>
-			{% if session.valid %}
-			<a onclick="logout_confirm()" class="nav-link">
+						{% if session.valid %}
+			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				{% if session.valid %}
-		        	<p>{{ info.mc_id }}さん</p>
-		        	<h1>ログアウト</h1>
-				{% else %}
-					<p>ゲストさん</p>
-		        	<h1>ログイン</h1>
-				{% endif %}
+				    <p>{{ info.mc_id }}さん</p>
+		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
 			{% else %}
 			<a href="/login" class="nav-link">
                 <div class="nav-belt__account">
-				{% if session.valid %}
-		        	<p>{{ info.mc_id }}さん</p>
-		        	<h1>ログアウト</h1>
-				{% else %}
 					<p>ゲストさん</p>
 		        	<h1>ログイン</h1>
-				{% endif %}
 	        	</div>
 			</a>
 			{% endif %}
@@ -200,8 +190,7 @@
                 <span>0</span>
                 {% endif %}
                 </a>
-				<a class="nav-mobile__category-child">ヘルプ</a>
-				<a class="nav-mobile__category-child">プライム</a>
+
 			</div>
 			<div class="nav-mobile__category">
 				<p>カテゴリー</p>
@@ -317,15 +306,5 @@
 	</div>
 </div>
 {% endif %}
-<div class="box" id="logout">
-	<div class="box__box">
-		<div class="box__close">
-			<svg onclick="close_box()" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
-		</div>
-		<h1>確認</h1>
-		<p>本当にログアウトしますか？</p>
-		<a href="/login/out">ログアウト</a>
-	</div>
-</div>
 </body>
 </html>

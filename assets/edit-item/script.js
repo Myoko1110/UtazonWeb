@@ -1,5 +1,5 @@
 let new_image = [];
-$(document).ready(function(){
+$(document).ready(function () {
     function addImageHoverHandlers() {
         $(".review-value-1 .image").hover(
             function () {
@@ -10,13 +10,13 @@ $(document).ready(function(){
             }
         );
 
-        $(".review-value-1 .image").on("click", function (){
+        $(".review-value-1 .image").on("click", function () {
             imgUrl = $(this).find("img").attr("src");
             $(this).remove();
             update_image = update_image.filter(fruit => fruit !== imgUrl);
             new_image = new_image.filter(fruit => fruit !== imgUrl);
 
-            if ($(".review-value-1").children().length < 5){
+            if ($(".review-value-1").children().length < 5) {
                 $(".review-value-2").css("display", "block")
             }
         });
@@ -29,7 +29,7 @@ $(document).ready(function(){
     let update_image = image;
 
     let imageElement = "";
-    for (let i in image){
+    for (let i in image) {
         let element = `<div class="image"><img src="${image[i]}"></div>`;
         imageElement += element;
     }
@@ -39,15 +39,15 @@ $(document).ready(function(){
     document.querySelector(".fileAdd").addEventListener("click", () => {
         document.querySelector(".fileAdd input").click();
     });
-    $("#fileInput").on("change", function(){
+    $("#fileInput").on("change", function () {
         var fileReader = new FileReader();
-        fileReader.onload = (function() {
+        fileReader.onload = (function () {
             src = fileReader.result;
 
             imageElement = `<div class="image"><img src="${src}"></div>`;
             $(".review-value-1").append(imageElement);
 
-            if ($(".review-value-1").children().length >= 5){
+            if ($(".review-value-1").children().length >= 5) {
                 $(".review-value-2").css("display", "none")
             }
             new_image.push(src);
@@ -55,27 +55,27 @@ $(document).ready(function(){
         });
         fileReader.readAsDataURL(this.files[0]);
     });
-    $("#submit").on('click', function (){
+    $("#submit").on('click', function () {
         title = $("#title").val();
         text = $("#text").val();
 
         image_lengh = update_image.length + new_image.length;
 
-        if (title === "" || text === "" || image_lengh === 0){
-            if (title === ""){
+        if (title === "" || text === "" || image_lengh === 0) {
+            if (title === "") {
                 $("#title_required").css("display", "block");
             }
-            if (text === ""){
+            if (text === "") {
                 $("#text_required").css("display", "block");
             }
-            if(image_lengh === 0){
+            if (image_lengh === 0) {
                 $("#image_required").css("display", "block");
             }
 
             return false;
         }
 
-        var hostUrl= location.protocol + '//' + location.host + "/mypage/on_sale/edit/post/";
+        var hostUrl = location.protocol + '//' + location.host + "/mypage/on_sale/edit/post/";
 
         // 画像のアップロード処理を行う
         var formData = new FormData();
@@ -87,8 +87,8 @@ $(document).ready(function(){
 
         // 新しい画像を追加
         for (let i = 0; i < new_image.length; i++) {
-                const base64Data = new_image[i]
-                formData.append('new_image', base64Data); // ファイル名も指定
+            const base64Data = new_image[i]
+            formData.append('new_image', base64Data); // ファイル名も指定
         }
 
         $.ajax({
@@ -97,10 +97,10 @@ $(document).ready(function(){
             data: formData,
             processData: false,
             contentType: false,
-            success: function(response) {
+            success: function (response) {
                 location.href = `/mypage/on_sale/`;
             },
-            error: function(error) {
+            error: function (error) {
                 $("#cnxError").css("display", "block");
             }
         });

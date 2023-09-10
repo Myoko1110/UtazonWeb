@@ -1,19 +1,21 @@
-.wrapper{
+.wrapper {
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.wrapper h2{
+
+.wrapper h2 {
     font-size: 40px;
     margin: 5px 0;
 }
 
-.wrapper p{
+.wrapper p {
     font-size: 16px;
     margin: 0;
 }
-.wrapper a{
+
+.wrapper a {
     background-color: #006cc4;
     margin: 20px;
     font-size: 20px;
@@ -22,19 +24,19 @@
     border-radius: 100px;
 }
 
-body{
+body {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
-body, html{
+body, html {
     margin: 0;
     padding: 0;
 }
 
-*{
+* {
     box-sizing: border-box;
-    font-family: 'Hiragino Kaku Gothic ProN','Hiragino Sans', Meiryo, sans-serif;
+    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
 }

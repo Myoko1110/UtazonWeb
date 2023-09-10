@@ -1,99 +1,117 @@
-.wrapper{
+.wrapper {
     background-color: #E3E6E6;
     display: flex;
     justify-content: center;
 }
-.subwrapper{
+
+.subwrapper {
     display: flex;
     margin: 20px;
     width: 100%;
     justify-content: center;
 }
-.history{
+
+.history {
     background-color: #ffffff;
     max-width: 1300px;
     width: 100%;
     padding: 20px;
 }
-.history a{
+
+.history a {
     margin: 0 20px 0 0;
     font-size: 12px;
 }
-.history{
+
+.history {
     background-color: #ffffff;
     max-width: 1300px;
     width: 100%;
     padding: 20px;
 }
-.history-title h2{
+
+.history-title h2 {
     font-weight: 400;
     font-size: 28px;
     padding: 0 0 15px;
     border-bottom: 1px solid #dddddd;
     margin-bottom: 0;
 }
-.history-title ul{
+
+.history-title ul {
     display: flex;
-    margin: 10px 0!important;
-    padding: 0!important;
+    margin: 10px 0 !important;
+    padding: 0 !important;
     list-style: none;
 }
-.history-title ul li{
+
+.history-title ul li {
     margin: 0 10px;
 }
-.history-title ul li a{
+
+.history-title ul li a {
     color: #007185;
     font-size: 16px;
     margin: 0;
 }
-.history-title ul li a:hover{
+
+.history-title ul li a:hover {
     color: #C7511F;
 }
-.main{
+
+.main {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.main-list{
+
+.main-list {
     list-style: none;
     max-width: 1000px;
     width: 100%;
     padding: 0 40px;
 }
-.main-list li{
+
+.main-list li {
     display: flex;
     padding: 20px 0;
     border-bottom: 1px #e8e8e8 solid;
 }
-.main-img{
+
+.main-img {
     width: 280px;
     height: 240px;
     object-fit: contain;
     background-color: #f8f8f8;
     cursor: pointer;
 }
-.main-info{
+
+.main-info {
     padding: 10px 15px;
     width: calc(100% - 280px);
 }
-.main-name{
+
+.main-name {
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
 }
-.main-info a{
+
+.main-info a {
     font-weight: 400;
     font-size: 18px;
     margin: 0;
     color: #000000;
     text-decoration: none;
 }
-.main-info a:hover{
+
+.main-info a:hover {
     color: #006cc4;
 }
-.main-star{
+
+.main-star {
     -webkit-background-size: 512px 512px;
     background-size: 512px 512px;
     background-repeat: no-repeat;
@@ -101,29 +119,35 @@
     width: 80px;
     background-image: url("../star.png");
 }
-.main-star__box{
+
+.main-star__box {
     display: flex;
     align-items: center;
     margin: 3px 0;
 }
-.main-star__box p{
+
+.main-star__box p {
     margin: 0 0 0 5px;
     font-size: 14px;
 }
-.main-price a{
+
+.main-price a {
     color: #b12704;
     font-size: 21px;
     margin: 0;
     text-decoration: none;
 }
-.main-price a:hover{
+
+.main-price a:hover {
     color: #b12704;
 }
-.main-price a span{
+
+.main-price a span {
     font-size: 12px;
     vertical-align: top;
 }
-.main-price p{
+
+.main-price p {
     margin: 3px;
     padding: 4px 8px;
     background-color: #b12704;
@@ -133,30 +157,37 @@
     font-size: 14px;
     border-radius: 5px;
 }
-.main-point{
+
+.main-point {
     color: #b12704;
     margin: 0;
     font-size: 14px;
 }
-@media(max-width: 799px){
-    .main-img{
+
+@media (max-width: 799px) {
+    .main-img {
         width: 210px;
         height: 180px;
     }
-    .main-list{
+
+    .main-list {
         padding: 0 10px;
     }
-    .main-list li{
+
+    .main-list li {
         padding: 10px 0;
     }
-    .main-info{
+
+    .main-info {
         width: calc(100% - 210px);
     }
-    .subwrapper{
+
+    .subwrapper {
         margin: 0;
     }
 }
-@media(max-width: 499px) {
+
+@media (max-width: 499px) {
     .main-name {
         font-size: 15px !important;
     }

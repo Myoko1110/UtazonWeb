@@ -1,5 +1,6 @@
-from config.models import Item, Sale
 from django.contrib import admin
+
+from config.models import Item, Sale
 
 
 class ItemAdmin(admin.ModelAdmin):

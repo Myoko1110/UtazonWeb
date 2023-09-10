@@ -78,28 +78,18 @@
 		            </label>
 	            </form>
             </div>
-			{% if session.valid %}
-			<a onclick="logout_confirm()" class="nav-link">
+						{% if session.valid %}
+			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				{% if session.valid %}
-		        	<p>{{ info.mc_id }}さん</p>
-		        	<h1>ログアウト</h1>
-				{% else %}
-					<p>ゲストさん</p>
-		        	<h1>ログイン</h1>
-				{% endif %}
+				    <p>{{ info.mc_id }}さん</p>
+		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
 			{% else %}
 			<a href="/login" class="nav-link">
                 <div class="nav-belt__account">
-				{% if session.valid %}
-		        	<p>{{ info.mc_id }}さん</p>
-		        	<h1>ログアウト</h1>
-				{% else %}
 					<p>ゲストさん</p>
 		        	<h1>ログイン</h1>
-				{% endif %}
 	        	</div>
 			</a>
 			{% endif %}
@@ -201,8 +191,7 @@
                 <span>0</span>
                 {% endif %}
                 </a>
-				<a class="nav-mobile__category-child">ヘルプ</a>
-				<a class="nav-mobile__category-child">プライム</a>
+
 			</div>
 			<div class="nav-mobile__category">
 				<p>カテゴリー</p>
@@ -231,7 +220,7 @@
 			<div class="review-value">
                 <div class="review-value__item">
                     <h3>在庫を追加するアイテムを選択<span class="required" id="item_required">1つ以上選択して下さい</span>
-                        {% if error == "1" %}<span class="required" style="display: block">出品時と同じアイテム・アイテム名・エンチャント・スタック数のものを選択して下さい</span>{% endif %}
+                        {% if error == "1" %}<span class="required" style="display: block">出品時と同じアイテム・アイテム名・エンチャント・スタック数・耐久値のものを選択して下さい。<br>もう一度上のフィールドを埋めてください</span>{% endif %}
                     </h3>
                     <div class="chest">
                         <span class="muci">
@@ -246,7 +235,7 @@
                                         {% with texture_path="textures/item/" ext=".png" %}
                                         <div data-index="{{ forloop.counter0 }}">
                                             <img src="{% static texture_path|add:i.item_material|add:ext %}">
-                                            <p>{{ i.amount }}</p>
+                                            {% if i.amount != 1 %}<p>{{ i.amount }}</p>{% endif %}
                                         </div>
                                         {% endwith %}
                                         {% endif %}
@@ -258,7 +247,7 @@
                             </span>
                         </span>
                         <p class="chest-text" style="margin: 5px 0 0;">この中にアイテムを入れるにはサーバー内で<span>/utazon stockgui</span>を実行して下さい</p>
-                        <p class="chest-text" style="margin: 0 0 5px;">すべて同じアイテム・エンチャント・アイテム名・スタック数のものを選択して下さい</p>
+                        <p class="chest-text" style="margin: 0 0 5px;">すべて同じアイテム・エンチャント・アイテム名・スタック数・耐久値のものを選択して下さい</p>
                     </div>
                 </div>
 				<div class="review-value__submit" id="submit">

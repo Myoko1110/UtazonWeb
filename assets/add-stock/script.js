@@ -13,7 +13,7 @@ $(document).ready(function () {
 
         selectedItems = $(".isSelectIndex");
 
-        if ( selectedItems.length === 0) {
+        if (selectedItems.length === 0) {
             if (selectedElements.length === 0) {
                 $("#item_required").css("display", "block");
             }

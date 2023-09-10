@@ -13,7 +13,6 @@ SECRET_KEY = 'django-insecure-=ijf2u=)n_aom%_ph)_8p$aam9)z7j4#6r3bc$h$(p*-qk)r8q
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
-
 DISCORD_CLIENT = {
     'CLIENT-ID': os.environ["DISCORD_CLIENT_ID"],
     'CLIENT-SECRET': os.environ["DISCORD_CLIENT_SECRET"],
@@ -146,7 +145,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -159,7 +157,6 @@ USE_I18N = True
 USE_TZ = True
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 8 * 1024 * 1024
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

@@ -12,4 +12,7 @@ urlpatterns = [
     path('on_sale/edit/post/', views.item_edit_post, name='item_edit_post'),
     path('on_sale/stock/', views.item_stock, name='item_stock'),
     path('on_sale/stock/post/', views.item_stock_post, name='item_stock_post'),
+    path('on_sale/delete/', views.item_delete, name='item_delete'),
+    path('on_sale/return/', views.item_return, name='item_return'),
+    path('on_sale/return/post/', views.item_return_post, name='item_return_post'),
 ]

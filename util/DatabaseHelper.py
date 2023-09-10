@@ -140,7 +140,8 @@ def get_item_from_user(mc_uuid):
                 stock = cursor.fetchone()
                 result[i]["stock"] = stock["stock"]
                 result[i]["image"] = json.loads(result[i]["image"])
-                result[i]["sale"] = util.ItemHelper.get_sale(result[i]["sale_id"], result[i]["price"])
+                result[i]["sale"] = util.ItemHelper.get_sale(result[i]["sale_id"],
+                                                             result[i]["price"])
                 result[i]["item_price_format"] = f"{result[i]['price']:,.2f}"
 
     return result
@@ -221,7 +222,6 @@ def get_discord_id(uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["linked"])
     with cnx:
         with cnx.cursor() as cursor:
-
             sql = "SELECT * FROM linked WHERE mc_uuid=%s"
             cursor.execute(sql, (uuid,))
 
@@ -236,7 +236,6 @@ def get_mc_uuid(discord_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-
             sql = "SELECT mc_uuid FROM linked WHERE discord_id=%s"
             cursor.execute(sql, (discord_id,))
             result = cursor.fetchone()
@@ -280,7 +279,8 @@ def save_session(session_id, session_value, mc_uuid, access_token, now, expires,
                 sql = """INSERT INTO `utazon_session` (
                          `session_id`, `session_val`, `mc_uuid`, `access_token`, `login_date`, `expires`, `logged_IP`
                          ) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-                cursor.execute(sql, (session_id, session_value, mc_uuid, access_token, now, expires, logged_IP))
+                cursor.execute(sql, (
+                    session_id, session_value, mc_uuid, access_token, now, expires, logged_IP))
 
             except mysql.connector.Error as err:
                 if err.errno == 1062:
@@ -304,7 +304,9 @@ def add_order(mc_uuid, items, delivery_time, order_id, amount, used_point):
                                          `mc_uuid`, `order_item`, `delivery_time` ,`order_time`,
                                          `order_id`, `amount`, `used_point`, `status`, `canceled`
                                          ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-                    cursor.execute(sql, (mc_uuid, items, delivery_time, now, order_id, amount, used_point, True, False,))
+                    cursor.execute(sql, (
+                        mc_uuid, items, delivery_time, now, order_id, amount, used_point, True,
+                        False,))
                 except mysql.connector.Error as err:
                     if err.errno == 1062:
                         continue
@@ -326,7 +328,8 @@ def get_order(order_id=None):
                 result = cursor.fetchall()
 
                 for i in range(len(result)):
-                    result[i]["delivery_time"] = result[i]["delivery_time"].strftime("%Y-%m-%d %H:%M:%S")
+                    result[i]["delivery_time"] = result[i]["delivery_time"].strftime(
+                        "%Y-%m-%d %H:%M:%S")
                     result[i]["order_time"] = result[i]["order_time"].strftime("%Y-%m-%d %H:%M:%S")
                     order_item_load = json.loads(result[i]["order_item"])
 
@@ -481,13 +484,36 @@ def update_item(item_id, item_name, price, image):
     return True
 
 
+def increase_purchases(item_id):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "UPDATE utazon_item SET purchases_number = purchases_number + 1 WHERE item_id=%s"
+            cursor.execute(sql, (item_id,))
+            cnx.commit()
+    return True
+
+
 def add_item(item_id, item_name, price, image, kind, category, mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
             sql = """INSERT INTO utazon_item (item_id, item_name, price, image, review, kind, category, purchases_number, mc_uuid)
                      VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-            cursor.execute(sql, (item_id, item_name, price, image, "[]", kind, category, 0, mc_uuid,))
+            cursor.execute(sql,
+                           (item_id, item_name, price, image, "[]", kind, category, 0, mc_uuid,))
+            cnx.commit()
+    return True
+
+
+def delete_item(item_id):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "DELETE FROM utazon_item WHERE item_id=%s;"
+            cursor.execute(sql, (item_id,))
+            sql = "DELETE FROM utazon_itemstack WHERE item_id=%s"
+            cursor.execute(sql, (item_id,))
             cnx.commit()
     return True
 
@@ -519,7 +545,9 @@ def get_revenues():
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
-            threedaysago = datetime.datetime.now().replace(minute=0, second=0, microsecond=0) - datetime.timedelta(days=3)
+            threedaysago = datetime.datetime.now().replace(minute=0, second=0,
+                                                           microsecond=0) - datetime.timedelta(
+                days=3)
 
             sql = "SELECT * FROM utazon_revenues WHERE bought_datetime < %s"
             cursor.execute(sql, (threedaysago,))
@@ -531,21 +559,26 @@ def delete_revenues():
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            threedaysago = datetime.datetime.now().replace(minute=0, second=0, microsecond=0) - datetime.timedelta(days=3)
+            threedaysago = datetime.datetime.now().replace(minute=0, second=0,
+                                                           microsecond=0) - datetime.timedelta(
+                days=3)
 
-            sql = """DELETE FROM utazon_revenues WHERE bought_datetime < %s"""
+            sql = "DELETE FROM utazon_revenues WHERE bought_datetime < %s"
             cursor.execute(sql, (threedaysago,))
             cnx.commit()
     return True
 
 
-def add_item_stack(item_id, item_name, item_material, item_enchantment, stack_size, stock):
+def add_item_stack(item_id, item_name, item_material, item_enchantment, item_damage, stack_size,
+                   stock):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = """INSERT INTO utazon_itemstack (item_id, item_display_name, item_material, item_enchantments, stack_size, stock)
-                     VALUES (%s, %s, %s, %s, %s, %s)"""
-            cursor.execute(sql, (item_id, item_name, item_material, item_enchantment, stack_size, stock))
+            sql = """INSERT INTO utazon_itemstack (item_id, item_display_name, item_material, item_enchantments, item_damage, stack_size, stock)
+                     VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+            cursor.execute(sql, (
+                item_id, item_name, item_material, item_enchantment, item_damage, stack_size,
+                stock))
             cnx.commit()
     return True
 

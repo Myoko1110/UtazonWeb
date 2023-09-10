@@ -15,7 +15,7 @@ getcontext().prec = 10
 per_point = Decimal(settings.PER_POINT)
 point_return = Decimal(settings.POINT_RETURN)
 
-deposit_rate = Decimal("100") - Decimal(str(settings.CANCELLATION_FEE)) / Decimal("100")
+deposit_rate = Decimal("100") - Decimal(str(settings.CANCELLATION_FEE))
 
 
 def buy(request):
@@ -114,9 +114,7 @@ def buy_confirm(request):
 
         # ポイント関係
         point = request.GET.get("point")
-        print(point)
         if float(point) != 0.0:
-            print("aa")
             if not float(point).is_integer():
                 raise Exception("ポイントが整数値ではありません")
 
@@ -132,7 +130,7 @@ def buy_confirm(request):
 
             # 理由を作成
             reason = (", ".join(reason_list) +
-                      f", ポイント使用({point}pt:{Decimal(str(point)) * per_point})(OrderID: {order_id})")
+                      f", ポイント使用({point}pt:{Decimal(str(point)) * per_point})(注文番号: {order_id})")
 
         else:
             amount_float = float(amount)
@@ -143,7 +141,9 @@ def buy_confirm(request):
         # 在庫を減らす
         for i in order_item_list:
             util.DatabaseHelper.reduce_stock(i["item_id"], i["qty"])
-            util.DatabaseHelper.add_revenues(mc_uuid, i["item_id"], i["price"], i["qty"], amount_float, i["mc_uuid"])
+            util.DatabaseHelper.add_revenues(mc_uuid, i["item_id"], i["price"], i["qty"],
+                                             amount_float, i["mc_uuid"])
+            util.DatabaseHelper.increase_purchases(i["item_id"])
 
         # 出金
         withdraw_player = util.SocketHelper.withdraw_player(mc_uuid, amount_float, reason)
@@ -199,12 +199,12 @@ def buy_cancel(request):
         amount = order_obj["amount"]
 
         # 入金する価格を計算
-        deposit_price = deposit_rate * Decimal(str(amount))
+        deposit_price = (deposit_rate / Decimal("100")) * Decimal(str(amount))
         deposit_price = float(deposit_price.quantize(Decimal(".01"), rounding=ROUND_DOWN))
 
         # 理由作成し、入金
-        reason = (f"注文のキャンセル(OrderID: {order_id})" +
-                  f"(入金額: {amount}の{deposit_price}%(キャンセル料{settings.CANCELLATION_FEE}%))")
+        reason = (f"注文番号: {order_id})" +
+                  f"(入金額: {amount}の{deposit_rate}%(キャンセル料{settings.CANCELLATION_FEE}%)")
         deposit_player = util.SocketHelper.deposit_player(mc_uuid, deposit_price, reason)
 
         # エラーが出たらリダイレクト

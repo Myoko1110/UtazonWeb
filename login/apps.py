@@ -106,6 +106,7 @@ def table_create():
                                                     item_name VARCHAR(64),
                                                     item_material VARCHAR(64),
                                                     item_enchantments JSON,
+                                                    item_damage INT,
                                                     stack_size INT,
                                                     stock BIGINT
                                                     )"""

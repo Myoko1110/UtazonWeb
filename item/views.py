@@ -6,7 +6,6 @@ from decimal import Decimal, getcontext
 from django.http import Http404
 from django.shortcuts import redirect, render
 
-import account.deposit_scheduler
 import util
 from config import settings
 
@@ -147,7 +146,6 @@ def cart(request):
         user_later_id = util.DatabaseHelper.get_user_later(info.mc_uuid)
         user_later = util.ItemHelper.get_item.id_list(user_later_id)
 
-
         # 在庫確認し、買えるか確認
         if 0 not in [i["stock"] for i in user_cart]:
             buy_able = True
@@ -199,7 +197,6 @@ def cart_delete(request):
 
             # 該当のものだったら
             if item_id in child and child[0] == item_id:
-
                 # 削除してアップデート
                 user_cart_id.remove(child)
                 util.DatabaseHelper.update_user_cart(user_cart_id, mc_uuid)

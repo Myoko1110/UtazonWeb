@@ -155,6 +155,8 @@ class get_index_item:
             obj_list = []
             for j in item_list:
                 item_obj = util.DatabaseHelper.get_item(j)
+                if not item_obj:
+                    continue
                 item_obj["image"] = json.loads(item_obj["image"])
                 obj_list.append(item_obj)
             self.special_feature_list[i.title] = obj_list
@@ -359,7 +361,7 @@ def create_order_id():
     オーダーIDを作成します
     :return: オーダーID
     """
-    
+
     return (f"U{str(random.randint(0, 999)).zfill(3)}-" +
             f"{str(random.randint(0, 999999)).zfill(6)}-" +
             f"{str(random.randint(0, 999999)).zfill(6)}")

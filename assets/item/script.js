@@ -2,16 +2,16 @@ const xhr = new XMLHttpRequest();
 const host = `http://${location.host}`;
 let cart_number = 1;
 
-$(function (){
+$(function () {
 
     // アイテムの写真を切り替える
-    $(".item-about__img-list-img").on("mouseenter", function (){
+    $(".item-about__img-list-img").on("mouseenter", function () {
         src = $(this).data("src")
         $(".item-about__img-index-img").attr("src", src);
     });
 
     // 役に立ったを送信する
-    $(".review-list__value-use-btn-useful").on("click", function (e){
+    $(".review-list__value-use-btn-useful").on("click", function (e) {
         e.preventDefault();
         let link = $(this).data("href");
 
@@ -22,7 +22,7 @@ $(function (){
         $(`p[data-href="${link}"]`).css("display", "block");
     });
 
-    $('#card_add').on("input", function() {
+    $('#card_add').on("input", function () {
         cart_number = $(this).val();
     });
 
@@ -36,7 +36,7 @@ $(function (){
         prev.innerHTML = "&#10094;";
         slider.append(prev);
         let next = document.createElement("span");
-          next.classList.add("next-001");
+        next.classList.add("next-001");
         next.innerHTML = "&#10095;";
         slider.append(next);
 
@@ -48,7 +48,7 @@ $(function (){
             let dot = document.createElement("span");
             dot.classList.add("dot");
             dot.classList.add(`index${cont_slide + 1}`);
-            if(cont_slide == 0){
+            if (cont_slide == 0) {
                 dot.classList.add("isActive");
             }
             dots.append(dot);
@@ -57,7 +57,7 @@ $(function (){
                 slides.forEach((slide, cont_slide) => {
                     slide.style = "left: -" + (slideIndex - 1) * 100 + "%;";
                 });
-                for(var i = 1; i <= slides.length; i++){
+                for (var i = 1; i <= slides.length; i++) {
                     document.querySelector(`.index${i}`).classList.remove("isActive");
                 }
                 document.querySelector(`.index${slideIndex}`).classList.add("isActive");
@@ -69,7 +69,7 @@ $(function (){
             slides.forEach((slide, cont_slide) => {
                 slide.style = "left: -" + (slideIndex - 1) * 100 + "%;";
             });
-            for(var i = 1; i <= slides.length; i++){
+            for (var i = 1; i <= slides.length; i++) {
                 document.querySelector(`.index${i}`).classList.remove("isActive");
             }
             document.querySelector(`.index${slideIndex}`).classList.add("isActive");
@@ -81,13 +81,13 @@ $(function (){
             slides.forEach((slide, cont_slide) => {
                 slide.style = "left: -" + (slideIndex - 1) * 100 + "%;";
             });
-            for(var i = 1; i <= slides.length; i++){
+            for (var i = 1; i <= slides.length; i++) {
                 document.querySelector(`.index${i}`).classList.remove("isActive");
             }
             document.querySelector(`.index${slideIndex}`).classList.add("isActive");
         });
         slider.addEventListener("touchstart", (e) => {
-        startX = e.touches[0].clientX;
+            startX = e.touches[0].clientX;
         });
 
         slider.addEventListener("touchmove", (e) => {
@@ -99,7 +99,7 @@ $(function (){
                 slide.style.transition = "none";
                 slide.style.left = `calc(-${(slideIndex - 1) * 100}% + ${distX}px)`;
             });
-            for(var i = 1; i <= slides.length; i++){
+            for (var i = 1; i <= slides.length; i++) {
                 document.querySelector(`.index${i}`).classList.remove("isActive");
             }
             document.querySelector(`.index${slideIndex}`).classList.add("isActive");
@@ -120,7 +120,7 @@ $(function (){
                 slide.style.transition = "";
                 slide.style.left = `-${(slideIndex - 1) * 100}%`;
             });
-            for(var i = 1; i <= slides.length; i++){
+            for (var i = 1; i <= slides.length; i++) {
                 document.querySelector(`.index${i}`).classList.remove("isActive");
             }
             document.querySelector(`.index${slideIndex}`).classList.add("isActive");

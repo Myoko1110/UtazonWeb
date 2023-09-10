@@ -1,25 +1,29 @@
-.global-header{
+.global-header {
     background-color: #131921;
     height: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.global-header img{
+
+.global-header img {
     height: 70px;
 }
-.global-header a{
+
+.global-header a {
     width: fit-content;
     height: 70px;
 }
-.main{
+
+.main {
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 30px 0;
     height: calc(100vh - 160px);
 }
-.main__box{
+
+.main__box {
     width: 400px;
     height: 320px;
     border: 1px #c7c7c7 solid;
@@ -30,14 +34,17 @@
     justify-content: center;
     margin: 10px;
 }
-.main__box h1{
+
+.main__box h1 {
     margin: 0 0 20px;
     text-align: center;
 }
-.main__box p{
+
+.main__box p {
     font-size: 13px;
 }
-.main__box-button{
+
+.main__box-button {
     background-color: #5468ff;
     color: #ffffff;
     width: 100%;
@@ -50,31 +57,35 @@
     font-weight: 400;
     border-radius: 10px;
 }
-.main__box-button:hover{
+
+.main__box-button:hover {
     background-color: #4758d7;
 }
-.main__box-button svg{
+
+.main__box-button svg {
     width: 22px;
     height: 22px;
     fill: #ffffff;
     margin: 0 10px 0 0;
 }
-.main__error{
+
+.main__error {
     color: #ad0000;
     font-size: 14px;
     margin: 10px 0 0;
     text-align: center;
 }
 
-body, html{
+body, html {
     margin: 0;
     padding: 0;
 }
-a{
+
+a {
     text-decoration: none;
 }
 
-*{
+* {
     box-sizing: border-box;
-    font-family: 'Hiragino Kaku Gothic ProN','Hiragino Sans', Meiryo, sans-serif;
+    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
 }

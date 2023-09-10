@@ -10,7 +10,6 @@ from config import settings
 
 
 def login(request):
-
     # codeパラメーターを参照
     code = request.GET.get("code")
 

@@ -6,6 +6,7 @@ from config import settings
 
 allocation_per = Decimal(str(settings.ALLOCATION_PER)) / Decimal(100)
 
+
 def deposit_revenues():
     revenues = util.DatabaseHelper.get_revenues()
 
@@ -49,7 +50,7 @@ def deposit_revenues():
             total_amount = Decimal(str(j["item_price"])) * Decimal(str(j["qty"]))
             reason_list.append(f"{i}({j['qty']}個:{total_amount})")
 
-        reason = ", ".join(reason_list) + f"(この配分額率{settings.ALLOCATION_PER}%)"
+        reason = ", ".join(reason_list) + f"(入金額: {value['amount']}の{settings.ALLOCATION_PER}%)"
 
         util.SocketHelper.deposit_revenues(sale_by, amount, reason)
         util.DatabaseHelper.delete_revenues()

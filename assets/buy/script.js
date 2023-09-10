@@ -1,4 +1,4 @@
-$(function(){
+$(function () {
     const point_span = $(".point");
     const submit_button = $("#order_confirm");
     const point_input = $(".buy-point__input");
@@ -18,33 +18,33 @@ $(function(){
     }
 
     // max設定
-    if (point_input.attr("max") > total.div(per_point).toNumber()){
+    if (point_input.attr("max") > total.div(per_point).toNumber()) {
         point_input.attr("max", total.div(per_point).toNumber());
     }
 
     // 購入確定ボタンを押したときの処理
-    submit_button.on("click", function (e){
+    submit_button.on("click", function (e) {
         e.preventDefault();
         console.log(buynow)
-        if(buynow === "couldn't access"){
+        if (buynow === "couldn't access") {
             return;
         }
 
         let point = Number($(".buy-point__input").val());
 
-        if (point > total.div(per_point).toNumber()){
+        if (point > total.div(per_point).toNumber()) {
             $("#error1").css("display", "block");
             $("#error2").css("display", "none");
             $("#error3").css("display", "none");
             return;
         }
-        if (point > user_point || point < 0){
+        if (point > user_point || point < 0) {
             $("#error2").css("display", "block");
             $("#error1").css("display", "none");
             $("#error3").css("display", "none");
             return;
         }
-        if (!Number.isInteger(point)){
+        if (!Number.isInteger(point)) {
             $("#error3").css("display", "block");
             $("#error1").css("display", "none");
             $("#error2").css("display", "none");
@@ -54,7 +54,7 @@ $(function(){
     });
 
     // ポイント設定したときの処理
-    point_input.on("input", function (e){
+    point_input.on("input", function (e) {
 
         // 入力されたポイント
         let InputPoint = new Decimal(String($(".buy-point__input").val()));
@@ -65,14 +65,21 @@ $(function(){
         // 請求額からポイントを減算
         let ViewPrice = total.sub(PointToPrice);
 
-        amount_view.text(ViewPrice.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        amount_view.text(ViewPrice.toNumber().toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }));
 
-        try{
+        try {
             let player_balance_after = player_balance.sub(ViewPrice);
-            $("#after_balance").text(player_balance_after.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-        }catch (TypeError){}
+            $("#after_balance").text(player_balance_after.toNumber().toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }));
+        } catch (TypeError) {
+        }
         let point = new Decimal(amount_view.text()).mul(point_return)
 
-        $("#get_point").text(point.toNumber().toLocaleString(undefined, { maximumFractionDigits: 2 }));
+        $("#get_point").text(point.toNumber().toLocaleString(undefined, {maximumFractionDigits: 2}));
     });
 });

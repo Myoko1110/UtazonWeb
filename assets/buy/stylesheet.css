@@ -1,121 +1,148 @@
-.wrapper{
+.wrapper {
     background-color: #E3E6E6;
     display: flex;
     justify-content: center;
 }
-.subwrapper{
+
+.subwrapper {
     display: flex;
     margin: 20px;
     width: 100%;
     justify-content: center;
 }
-.buy{
+
+.buy {
     background-color: #ffffff;
     max-width: 1100px;
     width: 100%;
     padding: 20px;
 }
-.buy-title{
+
+.buy-title {
     border-bottom: 1px solid #dddddd;
     display: flex;
     align-items: flex-end;
 }
-.buy-title h2{
+
+.buy-title h2 {
     font-weight: 400;
     font-size: 28px;
     padding: 0 0 15px;
     margin-bottom: 0;
     margin-right: 10px;
 }
-.buy-title a{
+
+.buy-title a {
     margin: 16px 0;
     display: block;
     color: #007185;
 }
-.buy-list{
+
+.buy-list {
     display: flex;
     margin: 20px 0 0;
     padding: 20px 0 0;
 }
-@media(max-width: 800px){
-    .buy-list{
+
+@media (max-width: 800px) {
+    .buy-list {
         display: block;
     }
 }
-.buy-balance{
+
+.buy-balance {
     border-top: 1px solid #e8e8e8;
 }
-.buy-balance__money{
+
+.buy-balance__money {
     font-weight: 700;
     font-size: 20px;
     margin-left: 10px;
 }
-.buy-schedule{
+
+.buy-schedule {
     border-top: 1px solid #e8e8e8;
 }
-.buy-point{
+
+.buy-point {
     border-top: 1px solid #e8e8e8;
     margin: 0 0 20px;
 }
-.buy-schedule__date{
+
+.buy-schedule__date {
     color: #007600;
 }
-.buy-list p, .buy-list h3{
+
+.buy-list p, .buy-list h3 {
     margin: 0;
 }
-.buy-subtitle span{
+
+.buy-subtitle span {
     margin: 0 10px 0 0;
 }
-.buy-point p{
+
+.buy-point p {
     font-size: 13px;
 }
-.buy-left{
+
+.buy-left {
     width: 200px;
 }
-.buy-right p{
+
+.buy-right p {
     font-size: 15px;
 }
-.buy-items ul{
+
+.buy-items ul {
     padding: 0;
 }
-.buy-items__list{
+
+.buy-items__list {
     list-style: none;
     display: flex;
 }
-.buy-items__list img{
+
+.buy-items__list img {
     width: 150px;
     height: 150px;
     object-fit: contain;
 }
-.buy-items__box{
+
+.buy-items__box {
     margin: 0 0 0 10px;
 }
-.buy-items__box h3{
+
+.buy-items__box h3 {
     font-weight: 400;
 }
-.buy-items__box p{
+
+.buy-items__box p {
     font-weight: 700;
     font-size: 18px;
     margin-top: 5px;
 }
-.buy-items__box h3{
+
+.buy-items__box h3 {
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
 }
-.buy-point__input{
+
+.buy-point__input {
     border: 1px solid #DDD;
     border-radius: 4px 4px 4px 4px;
     padding: 3px 5px;
     width: 75px;
 }
-.buy-confirm{
+
+.buy-confirm {
     border-top: 1px solid #e8e8e8;
     display: flex;
     padding-top: 20px;
 }
-.buy-confirm__btn{
+
+.buy-confirm__btn {
     margin: 0 20px;
     display: flex;
     align-items: center;
@@ -123,60 +150,75 @@
     flex-direction: column;
     width: 145px;
 }
-.buy-confirm__btn a{
+
+.buy-confirm__btn a {
     background-color: #14adff;
     padding: 10px 20px;
     border-radius: 10px;
 }
-.buy-confirm__btn a:hover{
+
+.buy-confirm__btn a:hover {
     background-color: #118bcc;
 }
-.buy-confirm__description h3{
+
+.buy-confirm__description h3 {
     margin: 0;
     color: #b12704;
 }
-.buy-confirm__description p{
+
+.buy-confirm__description p {
     color: #565959;
     font-size: 12px;
     margin: 10px 0;
 }
-.buy-confirm__description a{
+
+.buy-confirm__description a {
     font-size: 14px;
 }
-body{
+
+body {
     background-color: #E3E6E6;
 }
-html, body{
+
+html, body {
     height: 100%;
 }
-@media(min-width: 800px){
-    .buy-right__box{
+
+@media (min-width: 800px) {
+    .buy-right__box {
         display: flex;
     }
 }
-@media(max-width: 799px){
-    .subwrapper{
+
+@media (max-width: 799px) {
+    .subwrapper {
         margin: 10px;
     }
-    .buy-right{
-        display: block!important;
+
+    .buy-right {
+        display: block !important;
         margin-left: 10px;
     }
-    .buy-items__box h3{
+
+    .buy-items__box h3 {
         font-size: 15px;
     }
-    .buy-confirm{
+
+    .buy-confirm {
         display: block;
     }
-    .buy-confirm__description{
+
+    .buy-confirm__description {
         margin-top: 10px;
     }
 }
-@media(max-width: 499px){
-    .buy-items__list img{
+
+@media (max-width: 499px) {
+    .buy-items__list img {
         width: 100px;
     }
-    .buy-schedule__date{
+
+    .buy-schedule__date {
         font-size: 16px;
     }
 }

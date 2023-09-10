@@ -13,7 +13,6 @@ class Item(models.Model):
     category = models.CharField(64),
     purchases_number = models.BigIntegerField(default=0, null=True, blank=True)
 
-
     class Meta:
         db_table = 'utazon_item'
 

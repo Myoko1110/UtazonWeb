@@ -1,9 +1,9 @@
 const xhr = new XMLHttpRequest();
 
-$(function (){
+$(function () {
 
     // カート内のアイテム数を更新
-    $(".cart-product__number-input").on("input", function (){
+    $(".cart-product__number-input").on("input", function () {
         let item_id = $(this).data("id");
         let value = $(this).val();
 

@@ -1,5 +1,5 @@
 let selected = "all";
-$(function() {
+$(function () {
     logo = $(".nav-belt__logo").outerWidth(true);
     menu = $(".nav-belt__menu").outerWidth(true);
     address = $(".nav-belt__address").outerWidth(true);
@@ -8,28 +8,28 @@ $(function() {
     cart = $(".nav-belt__cart").outerWidth(true);
     window_width = $(window).width();
 
-    if (window_width >= 1000){
+    if (window_width >= 1000) {
         width = window_width - (logo + address + account + returns + cart) - 165;
-    }else if(window_width >= 800){
+    } else if (window_width >= 800) {
         width = window_width - (logo + account + cart) - 165;
-    }else{
+    } else {
         width = window_width - 75;
     }
     $(".nav-belt__search-input").css("width", width);
 
     const host = window.location.host;
-    $("#search").submit(function (e){
+    $("#search").submit(function (e) {
         e.preventDefault();
         let query = $("#search_query").val();
 
-        if (selected === "all"){
+        if (selected === "all") {
             location.href = `//${host}/search/?q=${query}`;
-        }else{
+        } else {
             location.href = `//${host}/search/?q=${query}&category=${selected}`;
         }
     });
 
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
         logo = $(".nav-belt__logo").outerWidth(true);
         menu = $(".nav-belt__menu").outerWidth(true);
         address = $(".nav-belt__address").outerWidth(true);
@@ -38,18 +38,18 @@ $(function() {
         cart = $(".nav-belt__cart").outerWidth(true);
         window_width = $(window).width();
 
-        if (window_width >= 1000){
+        if (window_width >= 1000) {
             width = window_width - (logo + address + account + returns + cart) - 165;
-        }else if(window_width >= 800){
+        } else if (window_width >= 800) {
             width = window_width - (logo + account + cart) - 165;
-        }else{
+        } else {
             width = window_width - 75;
 
         }
         $(".nav-belt__search-input").css("width", width);
     });
 
-    $(".nav-belt__search-select").on("change", function (){
+    $(".nav-belt__search-select").on("change", function () {
         selected = $("option:selected").val();
     });
 
@@ -61,12 +61,14 @@ $(function() {
     });
 });
 
-function close_box(){
+function close_box() {
     $("#expires").css("display", "none");
     $("#logout").css("display", "none");
     $("#order_cancel").css("display", "none");
+    $("#delete").css("display", "none");
+    $("#order_redelivery").css("display", "none");
 }
 
-function logout_confirm(){
+function logout_confirm() {
     $("#logout").css("display", "flex");
 }

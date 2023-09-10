@@ -12,7 +12,6 @@ from config import settings
 
 @csrf_exempt
 def order_list(request):
-
     if not auth_password(request):
         raise Http404
 
@@ -79,7 +78,6 @@ def order_complete(request):
 
 
 def auth_password(request):
-
     # クライアントのIPを取得
     forwarded_addresses = request.META.get("HTTP_X_FORWARDED_FOR")
     if forwarded_addresses:
@@ -88,16 +86,19 @@ def auth_password(request):
         client_addr = request.META.get("REMOTE_ADDR")
 
     if request.method != "POST":
-        logging.warning(f"order_listにGETメゾットでアクセスされましたが失敗しました(IP:{client_addr})")
+        logging.warning(
+            f"order_listにGETメゾットでアクセスされましたが失敗しました(IP:{client_addr})")
         return False
 
     password = request.META.get("HTTP_PASS")
 
     if not password:
-        logging.warning(f"order_listにPOSTメゾットでアクセスされましたがパスワードが入力されていませんでした(IP:{client_addr})")
+        logging.warning(
+            f"order_listにPOSTメゾットでアクセスされましたがパスワードが入力されていませんでした(IP:{client_addr})")
         return False
 
     if password != settings.POST_PASS:
-        logging.warning(f"order_listにPOSTメゾットでアクセスされましたがパスワードが違いました(IP:{client_addr})")
+        logging.warning(
+            f"order_listにPOSTメゾットでアクセスされましたがパスワードが違いました(IP:{client_addr})")
         return False
     return True
