@@ -45,6 +45,7 @@ def list_item(request):
             "category": settings.CATEGORIES,
             "categories": util.ItemHelper.get_category.all(),
             "money_unit": settings.MONEY_UNIT,
+            "allocation_per": settings.ALLOCATION_PER,
             "session": is_session,
             "info": info,
         }

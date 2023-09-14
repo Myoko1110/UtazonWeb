@@ -107,19 +107,19 @@ $(document).ready(function () {
         $("#category_required").css("display", "none");
         $("#about_required").css("display", "none");
 
-        title = $("#title").val();
-        text = $("#text").val();
+        let title = $("#title").val();
+        let text = $("#text").val();
 
-        image_lengh = update_image.length + new_image.length;
-        selectedElements = $('.isSelect');
+        let image_lengh = update_image.length + new_image.length;
+        let selectedElements = $('.isSelect');
 
-        inputValues = [];
+        let inputValues = [];
         $(".review__about-value-1 .review-value-1__list input").each(function () {
             inputValue = $(this).val();
             inputValues.push(inputValue);
         });
 
-        if (title === "" || image_lengh > 5 || image_lengh === 0 || Number(text) === 0 || selectedElements.length !== 1 ) {
+        if (title === "" || image_lengh > 5 || image_lengh === 0 || Number(text) === 0 || selectedElements.length !== 1 || selectedElements.length === 0 || inputValues[0] === "") {
             if (title === "") {
                 $("#title_required").css("display", "block");
             }
@@ -143,10 +143,16 @@ $(document).ready(function () {
             }
             return;
         }
-        var category = selectedElements.data("en");
-        var hostUrl = location.protocol + '//' + location.host + "/mypage/on_sale/edit/post/";
 
-        params = {
+        let res = confirm("アイテムの情報を更新しますか？")
+        if (!res){
+            return;
+        }
+
+        let category = selectedElements.data("en");
+        let hostUrl = location.protocol + '//' + location.host + "/mypage/on_sale/edit/post/";
+
+        let params = {
             title: title,
             text: text,
             about: JSON.stringify(inputValues),

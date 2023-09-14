@@ -96,8 +96,8 @@ $(document).ready(function () {
         $(this).toggleClass("isSelectIndex");
     });
 
-    // 送信
-    $("#submit").on('click', function () {
+    // 次へ
+    $("#next").on("click", function (){
         $("#title_required").css("display", "none");
         $("#text_required").css("display", "none");
         $("#image_required").css("display", "none");
@@ -106,36 +106,36 @@ $(document).ready(function () {
         $("#category_required").css("display", "none");
         $("#about_required").css("display", "none");
 
-        title = $("#title").val();
-        text = $("#text").val();
+        let item_name = $("#title").val();
+        let item_price = $("#text").val();
 
-        image_lengh = new_image.length;
-        selectedElements = $('.isSelect');
-        selectedItems = $(".isSelectIndex");
+        let image_length = new_image.length;
+        let selectedCategory = $('.isSelect');
+        let selectedItems = $(".isSelectIndex");
 
-        inputValues = [];
+        let inputValues = [];
         $(".review__about-value-1 .review-value-1__list input").each(function () {
-            inputValue = $(this).val();
+            const inputValue = $(this).val();
             inputValues.push(inputValue);
         });
 
-        if (title === "" || image_lengh > 5 || image_lengh === 0 || Number(text) === 0 || selectedElements.length !== 1 || selectedItems.length === 0) {
-            if (title === "") {
+        if (item_name === "" || image_length > 5 || image_length === 0 || Number(item_price) === 0 || selectedCategory.length !== 1 || selectedItems.length === 0) {
+            if (item_name === "") {
                 $("#title_required").css("display", "block");
             }
-            if (image_lengh === 0) {
+            if (image_length === 0) {
                 $("#image_required").css("display", "block");
             }
-            if (image_lengh > 5) {
+            if (image_length > 5) {
                 $("#image_over").css("display", "block");
             }
-            if (Number(text) === 0) {
+            if (Number(item_price) === 0) {
                 $("#text_required").css("display", "block");
             }
-            if (selectedElements.length !== 1) {
+            if (selectedCategory.length !== 1) {
                 $("#category_required").css("display", "block");
             }
-            if (selectedElements.length === 0) {
+            if (selectedCategory.length === 0) {
                 $("#item_required").css("display", "block");
             }
             if (inputValues[0] === "") {
@@ -144,18 +144,68 @@ $(document).ready(function () {
             return;
         }
 
-        var category = selectedElements.data("en");
-        var hostUrl = location.protocol + '//' + location.host + "/mypage/list_item/post/";
+        $(".product").css("display", "none");
+        $(".caution").css("display", "block");
+        $(window).scrollTop(0);
+    });
 
-        var indexList = [];
-        $(".isSelectIndex").each(function () {
-            var dataIndex = $(this).data("index");
-            indexList.push(dataIndex);
+    $("#return").on("click", function (){
+        $(".product").css("display", "block");
+        $(".caution").css("display", "none");
+        $(window).scrollTop(0);
+    });
+
+    // 送信
+    $("#submit").on('click', function () {
+
+        let item_name = $("#title").val();
+        let item_price = $("#text").val();
+
+        let selectedCategory = $('.isSelect');
+        let selectedItems = $(".isSelectIndex");
+
+        let inputValues = [];
+        $(".review__about-value-1 .review-value-1__list input").each(function () {
+            const inputValue = $(this).val();
+            inputValues.push(inputValue);
         });
 
-        params = {
-            title: title,
-            text: text,
+        let category = selectedCategory.data("en");
+        let hostUrl = location.protocol + '//' + location.host + "/mypage/list_item/post/";
+
+        const item0 = selectedItems.eq(0);
+
+        let isAllSame = false;
+        let indexList = [];
+        selectedItems.each(function() {
+            if ($(this).data("namespacedkey") !== item0.data("namespacedkey")){
+                isAllSame = true;
+            }
+            if ($(this).data("amount") !== item0.data("amount")){
+                isAllSame = true;
+            }
+            if (JSON.stringify($(this).data("enchantment")) !== JSON.stringify(item0.data("enchantment"))){
+                isAllSame = true;
+            }
+            if ($(this).data("damage") !== item0.data("damage")){
+                isAllSame = true;
+            }
+            let dataIndex = $(this).data("index");
+            indexList.push(dataIndex);
+        });
+        if (isAllSame){
+            $("#item_same").css("display", "block");
+            return;
+        }
+
+        let res = confirm("アイテムを出品しますか？")
+        if (!res){
+            return;
+        }
+
+        let params = {
+            title: item_name,
+            text: item_price,
             about: JSON.stringify(inputValues),
             category: category,
             items: JSON.stringify(indexList)

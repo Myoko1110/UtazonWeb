@@ -11,24 +11,46 @@ $(document).ready(function () {
     // 送信
     $("#submit").on('click', function () {
 
-        selectedItems = $(".isSelectIndex");
+        let selectedItems = $(".isSelectIndex");
 
         if (selectedItems.length === 0) {
-            if (selectedElements.length === 0) {
-                $("#item_required").css("display", "block");
-            }
+            $("#item_required").css("display", "block");
             return;
         }
 
-        var hostUrl = location.protocol + '//' + location.host + "/mypage/on_sale/stock/post/";
+        const item0 = selectedItems.eq(0);
 
-        var indexList = [];
-        $(".isSelectIndex").each(function () {
+        let isAllSame = false;
+        let indexList = [];
+        selectedItems.each(function() {
+            if ($(this).data("namespacedkey") !== item0.data("namespacedkey")){
+                isAllSame = true;
+            }
+            if ($(this).data("amount") !== item0.data("amount")){
+                isAllSame = true;
+            }
+            if (JSON.stringify($(this).data("enchantment")) !== JSON.stringify(item0.data("enchantment"))){
+                isAllSame = true;
+            }
+            if ($(this).data("damage") !== item0.data("damage")){
+                isAllSame = true;
+            }
             var dataIndex = $(this).data("index");
             indexList.push(dataIndex);
         });
+        if (isAllSame){
+            $("#item_same").css("display", "block");
+            return;
+        }
 
-        params = {
+        let hostUrl = location.protocol + '//' + location.host + "/mypage/on_sale/stock/post/";
+
+        let res = confirm("アイテムの在庫を追加しますか？")
+        if (!res){
+            return;
+        }
+
+        let params = {
             items: JSON.stringify(indexList),
             item_id: item_id
         };

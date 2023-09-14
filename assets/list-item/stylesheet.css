@@ -29,6 +29,7 @@
 .review-title__item {
     display: flex;
     align-items: center;
+    margin-top: 10px;
 }
 
 .review-title__item img {

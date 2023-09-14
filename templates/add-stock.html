@@ -220,7 +220,8 @@
 			<div class="review-value">
                 <div class="review-value__item">
                     <h3>在庫を追加するアイテムを選択<span class="required" id="item_required">1つ以上選択して下さい</span>
-                        {% if error == "1" %}<span class="required" style="display: block">出品時と同じアイテム・アイテム名・エンチャント・スタック数・耐久値のものを選択して下さい。<br>もう一度上のフィールドを埋めてください</span>{% endif %}
+                        {% if error == "1" %}<span class="required" style="display: block">出品時と同じアイテム・アイテム名・エンチャント・スタック数・耐久値のものを選択して下さい。</span>{% endif %}
+                        <span class="required" id="item_same">出品時と同じアイテム・アイテム名・エンチャント・スタック数・耐久値のものを選択して下さい。</span>
                     </h3>
                     <div class="chest">
                         <span class="muci">
@@ -233,7 +234,7 @@
                                     <span class="muci-slot">
                                         {% if i %}
                                         {% with texture_path="textures/item/" ext=".png" %}
-                                        <div data-index="{{ forloop.counter0 }}">
+                                        <div data-index="{{ forloop.counter0 }}" data-namespacedkey="{{ i.item_material }}" data-amount="{{ i.amount }}" data-enchantment="{{ i.item_enchantments }}" data-damage="{{ i.item_damage }}">
                                             <img src="{% static texture_path|add:i.item_material|add:ext %}">
                                             {% if i.amount != 1 %}<p>{{ i.amount }}</p>{% endif %}
                                         </div>
