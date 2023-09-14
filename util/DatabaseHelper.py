@@ -474,12 +474,12 @@ def increase_stock(item_id, amount):
     return True
 
 
-def update_item(item_id, item_name, price, image):
+def update_item(item_id, item_name, price, image, about, category):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "UPDATE utazon_item SET item_name=%s, price=%s, image=%s WHERE item_id=%s"
-            cursor.execute(sql, (item_name, price, image, item_id))
+            sql = "UPDATE utazon_item SET item_name=%s, price=%s, image=%s, kind=%s, category=%s WHERE item_id=%s"
+            cursor.execute(sql, (item_name, price, image, about, category, item_id))
             cnx.commit()
     return True
 

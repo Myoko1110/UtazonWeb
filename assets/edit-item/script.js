@@ -20,13 +20,16 @@ $(document).ready(function () {
                 $(".review-value-2").css("display", "block")
             }
         });
+        $(".review-value-1__list img").on("click", function () {
+            $(this).parent().remove();
+        });
     }
 
 
     const image = $(".review-value__image").data("img");
     const item_id = $(".review-title__item p").data("id");
-    const mc_uuid = $(".review-title__item p").data("uuid");
     let update_image = image;
+    const trash_svg = $(".review__about-value-1").data("svg");
 
     let imageElement = "";
     for (let i in image) {
@@ -40,7 +43,23 @@ $(document).ready(function () {
         document.querySelector(".fileAdd input").click();
     });
     $("#fileInput").on("change", function () {
-        var fileReader = new FileReader();
+        $("#image_size").css("display", "none");
+
+        // 選択されたファイルの数を取得
+        const fileCount = this.files.length;
+
+        if (fileCount !== 1) {
+            return;
+        }
+
+        const fileSize = this.files[0].size;
+
+        if (fileSize > 2 * 1024 * 1024) {
+            $("#image_size").css("display", "block");
+            return;
+        }
+
+        let fileReader = new FileReader();
         fileReader.onload = (function () {
             src = fileReader.result;
 
@@ -55,54 +74,112 @@ $(document).ready(function () {
         });
         fileReader.readAsDataURL(this.files[0]);
     });
+
+    // 概要追加
+    $(".review__about-value-2").on("click", function () {
+        $(".review__about-value-1").append(`<div class="review-value-1__list"><input type="text"><img src="${trash_svg}"></div>`)
+        addImageHoverHandlers();
+    });
+
+    // カテゴリーの開閉
+    $(".category-list div").on("click", function () {
+        ul = $(this).parent().find("ul");
+
+        if (ul.css("display") === "none") {
+            ul.css("display", "block");
+        } else {
+            ul.css("display", "none");
+        }
+    });
+
+    // カテゴリーの選択
+    $(".category-child_li").on("click", function () {
+        $(".isSelect").removeClass("isSelect");
+        $(this).addClass("isSelect");
+    });
+
     $("#submit").on('click', function () {
+        $("#title_required").css("display", "none");
+        $("#text_required").css("display", "none");
+        $("#image_required").css("display", "none");
+        $("#image_over").css("display", "none");
+        $("#text_required").css("display", "none");
+        $("#category_required").css("display", "none");
+        $("#about_required").css("display", "none");
+
         title = $("#title").val();
         text = $("#text").val();
 
         image_lengh = update_image.length + new_image.length;
+        selectedElements = $('.isSelect');
 
-        if (title === "" || text === "" || image_lengh === 0) {
+        inputValues = [];
+        $(".review__about-value-1 .review-value-1__list input").each(function () {
+            inputValue = $(this).val();
+            inputValues.push(inputValue);
+        });
+
+        if (title === "" || image_lengh > 5 || image_lengh === 0 || Number(text) === 0 || selectedElements.length !== 1 ) {
             if (title === "") {
                 $("#title_required").css("display", "block");
-            }
-            if (text === "") {
-                $("#text_required").css("display", "block");
             }
             if (image_lengh === 0) {
                 $("#image_required").css("display", "block");
             }
-
-            return false;
+            if (image_lengh > 5) {
+                $("#image_over").css("display", "block");
+            }
+            if (Number(text) === 0) {
+                $("#text_required").css("display", "block");
+            }
+            if (selectedElements.length !== 1) {
+                $("#category_required").css("display", "block");
+            }
+            if (selectedElements.length === 0) {
+                $("#item_required").css("display", "block");
+            }
+            if (inputValues[0] === "") {
+                $("#about_required").css("display", "block");
+            }
+            return;
         }
-
+        var category = selectedElements.data("en");
         var hostUrl = location.protocol + '//' + location.host + "/mypage/on_sale/edit/post/";
 
-        // 画像のアップロード処理を行う
-        var formData = new FormData();
-        formData.append('item_id', item_id);
-        formData.append('mc_uuid', mc_uuid);
-        formData.append('title', title);
-        formData.append('text', text);
-        formData.append("update_image", JSON.stringify(update_image))
-
-        // 新しい画像を追加
+        params = {
+            title: title,
+            text: text,
+            about: JSON.stringify(inputValues),
+            update_image: JSON.stringify(update_image),
+            category: category,
+            item_id: item_id,
+        };
         for (let i = 0; i < new_image.length; i++) {
-            const base64Data = new_image[i]
-            formData.append('new_image', base64Data); // ファイル名も指定
+            params.new_image = new_image[i];
         }
 
-        $.ajax({
-            type: 'POST',
-            url: hostUrl,
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                location.href = `/mypage/on_sale/`;
-            },
-            error: function (error) {
-                $("#cnxError").css("display", "block");
-            }
-        });
+        post(hostUrl, params);
+
     });
 });
+
+
+function post(path, params, method = 'post') {
+    const form = document.createElement('form');
+    form.method = method;
+    form.action = path;
+
+    for (const key in params) {
+        if (params.hasOwnProperty(key)) {
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = key;
+            hiddenField.value = params[key];
+
+            form.appendChild(hiddenField);
+        }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}

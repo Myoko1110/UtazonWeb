@@ -766,8 +766,9 @@ footer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 10px 0 0;
+    margin: 0;
     padding: 10px;
+    width: 100%;
 }
 
 .footer__link ul {
@@ -805,4 +806,7 @@ footer img {
 footer p {
     margin: 0;
     font-size: 13px;
+}
+.wrapper{
+    min-height: calc(100vh - 100px);;
 }

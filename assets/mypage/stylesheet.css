@@ -16,6 +16,7 @@
     max-width: 1100px;
     width: 100%;
     padding: 20px;
+    height: fit-content;
 }
 
 .mypage-title {
@@ -51,6 +52,7 @@
     display: block;
     margin: 5px;
     width: fit-content;
+    cursor: pointer;
 }
 
 .main {
@@ -198,6 +200,13 @@
 }
 
 .mypage-account {
+}
+.main-tool{
+    display: flex;
+    flex-wrap: wrap;
+}
+.main-tool a{
+    margin: 4px;
 }
 
 @media (max-width: 799px) {

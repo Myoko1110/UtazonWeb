@@ -4,7 +4,7 @@ import os
 import re
 import secrets
 
-from django.http import Http404, HttpResponse
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
@@ -110,7 +110,6 @@ def list_item_post(request):
                         break
             except AttributeError:
                 pass
-
         if not category_valid:
             raise ValueError("category is invalid")
 
@@ -163,6 +162,7 @@ def list_item_post(request):
         image_path = []
         fs = settings.MEDIA_ROOT / 'item' / str(item_id)
         for i in new_image:
+            db = ""
             while True:
                 try:
                     file_ext = re.match(r"data:image/(.*);base64,", i).groups()[0]
@@ -240,9 +240,11 @@ def item_edit(request):
             raise Http404
 
         item["images"] = json.loads(item["image"])
+        item["kind"] = json.loads(item["kind"])
 
         context = {
             "item": item,
+            "category": settings.CATEGORIES,
             "categories": util.ItemHelper.get_category.all(),
             "money_unit": settings.MONEY_UNIT,
             "session": is_session,
@@ -264,10 +266,9 @@ def item_edit_post(request):
         info = util.UserHelper.get_info.from_session(request)
 
         item_id = request.POST.get("item_id")
-        mc_uuid = request.POST.get("mc_uuid")
 
         db_mc_uuid = util.DatabaseHelper.get_item(item_id)["mc_uuid"]
-        if db_mc_uuid != mc_uuid or db_mc_uuid != info.mc_uuid:
+        if db_mc_uuid != info.mc_uuid:
             raise Http404
 
         item_name = request.POST.get("title")
@@ -284,6 +285,38 @@ def item_edit_post(request):
         except ValueError:
             raise ValueError("item_price is not float")
 
+        about = request.POST.get("about")
+        if not about:
+            raise ValueError("about is empty")
+        try:
+            about_decode = json.loads(about)
+            if type(about_decode) != list:
+                raise ValueError("about is not list of json")
+        except json.JSONDecodeError:
+            raise ValueError("about is not json")
+
+        category = request.POST.get('category')
+
+        category_valid = False
+        if not category:
+            raise ValueError("category is empty")
+        for i, j in settings.CATEGORIES.items():
+            if i == category:
+                category_valid = True
+                break
+            try:
+                for key, value in j.items():
+                    if key == "JAPANESE":
+                        continue
+                    if key == category:
+                        category_valid = True
+                        break
+            except AttributeError:
+                pass
+
+        if not category_valid:
+            raise ValueError("category is invalid")
+
         image = request.POST.get("update_image")
         if not image:
             raise ValueError("image is empty")
@@ -297,6 +330,7 @@ def item_edit_post(request):
         new_image = request.POST.getlist('new_image')
 
         for i in new_image:
+            db = ""
             while True:
                 try:
                     file_ext = re.match(r"data:image/(.*);base64,", i).groups()[0]
@@ -323,9 +357,9 @@ def item_edit_post(request):
                     break
 
         image = json.dumps(image)
-        util.DatabaseHelper.update_item(item_id, item_name, item_price, image)
+        util.DatabaseHelper.update_item(item_id, item_name, item_price, image, about, category)
 
-        return HttpResponse("success")
+        return redirect(f"/item/?id={item_id}")
 
 
 def item_stock(request):

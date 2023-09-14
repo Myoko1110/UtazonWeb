@@ -138,6 +138,7 @@
 .review-value-1__list {
     display: flex;
     align-items: center;
+    width: 100%;
 }
 
 .review__about-value-1 input {
@@ -213,7 +214,7 @@
     background-color: #C6C6C6;
     border: 3px solid;
     border-color: #DBDBDB #5B5B5B #5B5B5B #DBDBDB;
-    padding: 10px;
+    padding: 3px 10px 10px;
     text-align: left;
     white-space: nowrap;
     vertical-align: bottom;

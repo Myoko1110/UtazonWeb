@@ -94,11 +94,12 @@ $(document).ready(function () {
     // アイテムの選択
     $(".muci-slot div").on("click", function () {
         $(this).toggleClass("isSelectIndex");
-    })
+    });
 
     // 送信
     $("#submit").on('click', function () {
         $("#title_required").css("display", "none");
+        $("#text_required").css("display", "none");
         $("#image_required").css("display", "none");
         $("#image_over").css("display", "none");
         $("#text_required").css("display", "none");
@@ -118,7 +119,7 @@ $(document).ready(function () {
             inputValues.push(inputValue);
         });
 
-        if (title === "" || image_lengh === 0 || image_lengh > 5 || Number(text) === 0 || selectedElements.length !== 1 || selectedItems.length === 0) {
+        if (title === "" || image_lengh > 5 || image_lengh === 0 || Number(text) === 0 || selectedElements.length !== 1 || selectedItems.length === 0) {
             if (title === "") {
                 $("#title_required").css("display", "block");
             }
