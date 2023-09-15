@@ -159,8 +159,8 @@ def search_item(item_query, category=None):
                     result = cursor.fetchall()
 
             else:
-                sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s"
-                cursor.execute(sql, (f"%{item_query}%",))
+                sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s OR JSON_CONTAINS(search_keyword, %s, '$')"
+                cursor.execute(sql, (f"%{item_query}%", f'"{item_query}"'))
 
                 # mc_uuidのレコードを取得
                 result = cursor.fetchall()
@@ -494,14 +494,14 @@ def increase_purchases(item_id):
     return True
 
 
-def add_item(item_id, item_name, price, image, kind, category, mc_uuid):
+def add_item(item_id, item_name, price, image, kind, category, search_keyword, mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = """INSERT INTO utazon_item (item_id, item_name, price, image, review, kind, category, purchases_number, mc_uuid)
-                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+            sql = """INSERT INTO utazon_item (item_id, item_name, price, image, review, kind, category, purchases_number, search_keyword, mc_uuid)
+                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
             cursor.execute(sql,
-                           (item_id, item_name, price, image, "[]", kind, category, 0, mc_uuid,))
+                           (item_id, item_name, price, image, "[]", kind, category, 0, search_keyword, mc_uuid,))
             cnx.commit()
     return True
 

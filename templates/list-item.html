@@ -215,16 +215,16 @@
             <form method="post" class="product">
                 <div class="review-value">
                     <div class="review-value__title">
-                        <h3>商品名<span class="required" id="title_required">必須項目です</span></h3>
+                        <h3><span class="review-required">*</span>商品名<span class="required" id="title_required">必須項目です</span></h3>
                         <input name="name" id="title" type="text">
 
                     </div>
                     <div class="review-value__text">
-                        <h3>価格<span class="required" id="text_required">価格は{{ money_unit }}0.01 以上にしてください</span></h3>
+                        <h3><span class="review-required">*</span>価格<span class="required" id="text_required">価格は{{ money_unit }}0.01 以上にしてください</span></h3>
                         <span>{{ money_unit }}</span><input name="price" id="text" type="number" step="0.01" value="0">
                     </div>
                     <div class="review-value__image" data-img="{{ item.image }}">
-                        <h3>画像（5つまで）<span class="required" id="image_required">必須項目です</span><span class="required" id="image_over">画像は5つまでです</span><span class="required" id="image_size">ファイルサイズが2MBを超えています</span></h3>
+                        <h3><span class="review-required">*</span>画像（5つまで）<span class="required" id="image_required">必須項目です</span><span class="required" id="image_over">画像は5つまでです</span><span class="required" id="image_size">ファイルサイズが2MBを超えています</span></h3>
                         <div class="review-value__image-list">
                             <div class="review-value-1"></div>
                             <div class="review-value-2">
@@ -236,7 +236,7 @@
                         </div>
                     </div>
                     <div class="review-value__about">
-                        <h3>概要<span class="required" id="about_required">必須項目です</span></h3>
+                        <h3><span class="review-required">*</span>概要<span class="required" id="about_required">必須項目です</span></h3>
                         <div class="review-value__about-list">
                             <div class="review__about-value-1" data-svg="{% static 'list-item/trash-can-solid.svg' %}">
                                 <div class="review-value-1__list">
@@ -251,7 +251,7 @@
                         </div>
                     </div>
                     <div class="review-value__category">
-                        <h3>カテゴリーを選択<span class="required" id="category_required">必須項目です</span></h3>
+                        <h3><span class="review-required">*</span>カテゴリーを選択<span class="required" id="category_required">必須項目です</span></h3>
                         <ul style="list-style: none">
                             {% for i, j in category.items %}
                             <li class="category-list">
@@ -275,7 +275,7 @@
                         </ul>
                     </div>
                     <div class="review-value__item" id="item">
-                        <h3>出品するアイテムを選択<span class="required" id="item_required">1つ以上選択して下さい</span>
+                        <h3><span class="review-required">*</span>出品するアイテムを選択<span class="required" id="item_required">1つ以上選択して下さい</span>
                         {% if error == "1" %}<span class="required" style="display: block">出品時と同じアイテム・アイテム名・エンチャント・スタック数のものを選択して下さい</span>{% endif %}
                         </h3>
                         <div class="chest">
@@ -302,9 +302,14 @@
                                     {% endfor %}
                                 </span>
                             </span>
-                            <p class="chest-text" style="margin: 5px 0 0;">この中にアイテムを入れるにはサーバー内で<span>/utazon stockgui</span>を実行して下さい</p>
-                            <p class="chest-text" style="margin: 0 0 5px;">すべて同じアイテム・エンチャント・アイテム名・スタック数・耐久値のものを選択して下さい</p>
+                            <p class="chest-text" style="margin: 5px 0 0;text-align: left">この中にアイテムを入れるにはサーバー内で<span>/utazon stockgui</span>を実行して下さい</p>
+                            <p class="chest-text" style="margin: 0 0 5px;text-align: left">すべて同じアイテム・エンチャント・アイテム名・スタック数・耐久値のものを選択して下さい</p>
                         </div>
+                    </div>
+                    <div class="review-value__keyword" id="item">
+                        <h3>検索キーワードを設定<span class="required" id="keyword_over">150文字以内に設定して下さい</span></h3>
+                        <textarea id="keyword" placeholder="例）オークの板材 オーク 建築 ブロック 建築ブロック 板材"></textarea>
+                        <p class="chest-text" style="margin: 0 0 5px;text-align: left">半角スペースを用いて区切って下さい</p>
                     </div>
                     <div class="review-value__submit" id="next">
                         <a>次へ</a>
@@ -317,7 +322,7 @@
                 <ul>
                     <li>売上金は売上額の{{ allocation_per }}%が商品購入後の３日後に振り込まれます。</li>
                     <li>ふざけた出品はおやめ下さい。削除します。</li>
-                    <li></li>
+                    <li>出品をしたらすぐに販売が開始されます。</li>
                 </ul>
                 <div class="review-value__submit">
                     <a id="return" style="background-color: #e7e7e7">戻る</a>

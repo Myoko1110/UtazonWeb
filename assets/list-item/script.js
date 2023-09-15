@@ -108,6 +108,7 @@ $(document).ready(function () {
 
         let item_name = $("#title").val();
         let item_price = $("#text").val();
+        let keyword = $("#keyword").val();
 
         let image_length = new_image.length;
         let selectedCategory = $('.isSelect');
@@ -119,7 +120,7 @@ $(document).ready(function () {
             inputValues.push(inputValue);
         });
 
-        if (item_name === "" || image_length > 5 || image_length === 0 || Number(item_price) === 0 || selectedCategory.length !== 1 || selectedItems.length === 0) {
+        if (item_name === "" || image_length > 5 || image_length === 0 || Number(item_price) === 0 || selectedCategory.length !== 1 || selectedItems.length === 0 || keyword.length > 150) {
             if (item_name === "") {
                 $("#title_required").css("display", "block");
             }
@@ -141,6 +142,9 @@ $(document).ready(function () {
             if (inputValues[0] === "") {
                 $("#about_required").css("display", "block");
             }
+            if (keyword.length > 150) {
+                $("#keyword_over").css("display", "block");
+            }
             return;
         }
 
@@ -160,6 +164,7 @@ $(document).ready(function () {
 
         let item_name = $("#title").val();
         let item_price = $("#text").val();
+        let keyword = $("#keyword").val();
 
         let selectedCategory = $('.isSelect');
         let selectedItems = $(".isSelectIndex");
@@ -208,7 +213,8 @@ $(document).ready(function () {
             text: item_price,
             about: JSON.stringify(inputValues),
             category: category,
-            items: JSON.stringify(indexList)
+            items: JSON.stringify(indexList),
+            keyword: keyword
         };
         for (let i = 0; i < new_image.length; i++) {
             params.new_image = new_image[i];

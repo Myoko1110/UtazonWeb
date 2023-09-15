@@ -124,6 +124,15 @@ def list_item_post(request):
         except json.JSONDecodeError:
             raise ValueError("items is not json")
 
+        keyword = request.POST.get("keyword")
+        if keyword:
+            if len(keyword) > 150:
+                raise ValueError("keyword is over 150 characters")
+            keyword = keyword.split(" ")
+            keyword = json.dumps(keyword)
+        else:
+            keyword = "[]"
+
         waiting_stock = json.loads(util.DatabaseHelper.get_waiting_stock(info.mc_uuid))
 
         item_amount = waiting_stock[items[0]]["amount"]
@@ -192,7 +201,7 @@ def list_item_post(request):
         image_path = json.dumps(image_path)
 
         util.DatabaseHelper.add_item(
-            item_id, item_name, item_price, image_path, about, category, info.mc_uuid)
+            item_id, item_name, item_price, image_path, about, category, keyword, info.mc_uuid)
 
         util.DatabaseHelper.add_item_stack(
             item_id, item_display_name, item_material, item_enchantment, item_damage, item_amount,
