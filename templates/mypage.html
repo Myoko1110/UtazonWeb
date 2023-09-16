@@ -7,9 +7,11 @@
     <link rel="stylesheet" href="{% static 'mypage/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#232f3e">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
 </head>
 <body>
@@ -211,6 +213,24 @@
 			<div class="mypage-title">
 				<h2>マイページ</h2>
 			</div>
+            <div class="mypage-info">
+                <img src="https://crafatar.com/avatars/{{ info.mc_uuid }}?size=150">
+                <div class="mypage-info__text">
+                    <div>
+                        <span>ユーザー名</span>
+                        <p>{{ info.mc_id }}</p>
+                        <p style="font-size: 11px;color: #8c8c8c">{{ info.mc_uuid }}</p>
+                    </div>
+                    <div>
+                        <span>DiscordID</span>
+                        <p>{{ info.discord_id }}</p>
+                    </div>
+                    <div>
+                        <span>出品している商品数</span>
+                        <p>{{ onsale_item_length }}個</p>
+                    </div>
+                </div>
+            </div>
 			<div class="mypage-main">
 				<a class="mypage-main__link" href="on_sale/">販売中のアイテム</a>
 				<a class="mypage-main__link" href="list_item/">出品する</a>

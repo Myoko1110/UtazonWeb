@@ -3,7 +3,7 @@ import json
 import random
 from decimal import Decimal, getcontext
 
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 
 import util
@@ -621,3 +621,7 @@ def status(request):
 
     else:
         return redirect("/login")
+
+
+def suggest(request):
+    return HttpResponse(settings.SUGGEST)

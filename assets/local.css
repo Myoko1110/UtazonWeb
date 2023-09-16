@@ -810,3 +810,10 @@ footer p {
 .wrapper{
     min-height: calc(100vh - 100px);;
 }
+.ui-menu-item, .ui-menu-item-wrapper {
+    border: none!important;
+    cursor: pointer;
+}
+.ui-state-active{
+    color: #2b88c2 !important;
+}

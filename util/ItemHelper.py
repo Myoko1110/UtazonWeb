@@ -228,7 +228,7 @@ class get_category:
                     # englishが親カテゴリーだった時の処理
                     if category == english:
                         try:
-                            self.jp = value["JAPANESE"]
+                            self.jp = value["japanese"]
                             self.en = english
                             self.parent = None
                             return
@@ -242,7 +242,7 @@ class get_category:
                         for en, jp in value.items():
                             # 該当のものが見つかったら
                             if en == english:
-                                parent_jp = categories[category]["JAPANESE"]
+                                parent_jp = categories[category]["japanese"]
                                 self.jp = jp
                                 self.en = english
                                 self.parent = {"en": category, "jp": parent_jp}
@@ -266,11 +266,7 @@ class get_category:
 
         categories = settings.CATEGORIES
 
-        child_categories = {}
-        for i in categories.keys():
-            if parent_category == i:
-                child_categories = categories[i].copy()
-                child_categories.pop("JAPANESE")
+        child_categories = categories[parent_category]["category"]
 
         return child_categories
 
@@ -283,12 +279,11 @@ class get_category:
         """
 
         categories = settings.CATEGORIES
-        categories_key = categories.keys()
         result = {}
 
-        for i in categories_key:
+        for i in categories.keys():
             try:
-                category_jp = categories[i]["JAPANESE"]
+                category_jp = categories[i]["japanese"]
                 result[category_jp] = i
             except TypeError:
                 pass

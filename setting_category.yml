@@ -1,0 +1,276 @@
+trading:
+  japanese: 取引
+  category:
+    beds: ベッド
+    emeralds: エメラルド
+    books: 本
+    paper: 紙
+    rotten_flesh: 腐った肉
+
+combat:
+  japanese: 戦闘
+  category:
+    swords: 剣
+    bows: 弓・クロスボウ・矢
+    trident: トライデント
+    helmet: ヘルメット・帽子
+    chestplate: チェストプレート
+    leggings: レギンス
+    boots: ブーツ
+    armor_stand: 防具立て
+
+tools:
+  japanese: 道具
+  category:
+    pickaxe: ツルハシ
+    axe: 斧
+    shovel: シャベル
+    hoe: クワ
+    shears: ハサミ
+    fishing_rod: 釣り竿
+    saddle: 鞍
+    buckets: バケツ
+    flint: 火打ち石
+
+colorful:
+  japanese: 色付きブロック
+  category:
+    wool: 羊毛
+    banners: 旗
+    concrete: コンクリート
+    terracotta: テラコッタ
+    glass: ガラス
+
+wood:
+  japanese: 木
+  category:
+    logs: 原木
+    planks: 板材
+    slabs: ハーフブロック
+    stairs: 階段
+    signs: 看板
+    boats: ボート
+    doors: ドア
+    trapdoors: トラップドア
+    fences: フェンス
+
+ground:
+  japanese: 土壌
+  category:
+    cobble_stone: 丸石
+    stone: 石
+    smooth_stone: なめらかな石
+    andesite: 安山岩
+    diorite: 閃緑岩
+    granite: 花崗岩
+    gravel: 砂利
+    dirt: 土
+    grass_block: 草ブロック
+    podzol: ポトゾル
+    mycelium: 菌糸
+    sand: 砂
+    clay: 年度
+    snow: 雪
+    obsidian: 黒曜石
+
+mob_drops:
+  japanese: MOBドロップ
+  category:
+    feathers: 羽毛
+    leather: 革・皮
+    ink_sac: イカスミ
+    bones: 骨
+    spider_eyes: クモの目
+    string: 糸
+    slime_ball: スライムボール
+
+potion_brewing:
+  japanese: 醸造
+  category:
+    brewing_stand: 醸造台
+    glowstone_dust: グロウストーンダスト
+    gun_powder: 火薬
+    redstone_dust: レッドストーンダスト
+    golden_plant: きらめく植物系
+    blaze_powder: ブレイズパウダー
+    glass_bottle: ガラス瓶
+    nether_wart: ネザーウォート
+    dragon_breath: ドラゴンブレス
+    fermented_spyder_eye: 発行したクモの目
+    rabbit_foot: ウサギの足
+    pufferfish: フグ
+    ghast_tear: ガストの涙
+    phantom_membrane: ファントムの皮膜
+    magma_cream: マグマクリーム
+
+minerals:
+  japanese: 鉱物
+  category:
+    coals: 石炭・木炭
+    irons: 鉄
+    golds: 金
+    diamonds: ダイヤモンド
+    netherite: ネザライト
+
+farming:
+  japanese: 農業
+  category:
+    honey_bottles: ハチミツ入りの瓶
+    sweet_berries: スイートベリー
+    carrots: ニンジン
+    potatoes: ジャガイモ
+    wheat: 小麦
+    melons: スイカ
+    pumpkins: カボチャ
+
+misc:
+  japanese: その他のアイテム
+  category:
+    mob_heads: MOBの頭
+    dragon_egg: エンダードラゴンの卵
+    netherstar_beacon: ネザースター・ビーコン
+    totem: 不死のトーテム
+    explorer: 宝の地図
+    light_block: トーチ・ランタン・照明系
+
+food:
+  japanese: 食料
+  category:
+    golden_food: 金の食べ物
+    beef: 牛肉
+    mutton: 羊肉
+    porkchop: 豚肉
+    chicken: 鶏肉
+    rabbit: ウサギ
+    cod: タラ
+    salmon: サケ
+    mushroom: キノコ
+    stew: シチュー
+    beetroot: ビートルート
+    baked_poteto: ベイクドポテト
+    apples: リンゴ
+    bread: パン
+    pumpkin_pie: パンプキンパイ
+    cake: ケーキ
+    cookies: クッキー
+    milk: 牛乳
+    sugar: 砂糖
+    bowl: ボウル
+
+ocean:
+  japanese: 海
+  category:
+    kelp: 昆布
+    sea_grass: 海藻
+    coral: サンゴ
+    conduit: 海の心・オウム貝・コンジット
+    prismarine: プリズマリン系
+    sponges: スポンジ
+    fish_buckets: 魚入りのバケツ
+    sea_pickles: シーピクルス
+    turtle_eggs: カメの卵
+    fish: 魚
+    ice: 氷系
+
+red_stone:
+  japanese: レッドストーン
+  category:
+    red_stone: レッドストーン系
+    dropper: 発射系・ホッパー
+    rails: レール・トロッコ
+    dertector: 日照・オブザーバー
+    lamp: レッドストーンランプ
+    musics: 音楽・レコード
+    piston: ピストン
+    buttons: ボタン・レバー・入力系
+    slime_block: スライム・ハチミツブロック
+    target: ターゲットブロック
+
+enchanting:
+  japanese: エンチャント
+  category:
+    sharpness: ダメージ増加
+    bane: 虫特効
+    smite: アンデッド特効
+    looting: ドロップ増加
+    knockback: ノックバック
+    fire_aspect: 火属性
+    sweeping_edge: 範囲ダメージ増加
+    flame: フレイム
+    power: 射撃ダメージ増加
+    punch: パンチ
+    infinity: 無限
+    piercing: 貫通
+    multishot: 拡散
+    quick_charge: 高速装填
+    channeling: チャネリング
+    loyalty: 忠誠
+    riptide: 激流
+    impaling: 串刺し
+    aqua_affinity: 水中採掘
+    respiration: 水中呼吸
+    blast_protection: 爆発耐性
+    fire_protection: 火炎耐性
+    projectile: 飛び道具耐性
+    depth_strider: 水中歩行
+    frost_walker: 氷上歩行
+    feather_falling: 落下耐性
+    thorns: 棘の鎧
+    binding: 束縛の呪い
+    vanishing: 消滅の呪い
+    efficiency: 効率強化
+    unbreaking: 耐久力
+    mending: 修繕
+    fortune: 幸運
+    silk_touch: シルクタッチ
+    lure: 入れ食い
+    luck: 宝釣り
+    lapis_lazuli: ラピスラズリ
+    anvil: 金床
+    grindstone: 砥石
+
+end:
+  japanese: エンド
+  category:
+    ender: エンダーマン系
+    ender_chest: エンダーチェスト
+    chorus: コーラスフルーツ系
+    end_stone: エンドストーン
+    shulker: シュルカー
+    purpur: プルプァブロック
+    elytra: エリトラ
+
+nether:
+  japanese: ネザー
+  category:
+    netherrack: ネザーラック
+    gold_ore: ネザー金鉱石
+    nether_bricks: ネザーレンガ
+    magma_block: マグマブロック
+    soul_sand: ソウルサンド
+    soul_soil: ソウルソイル
+    quartz: クォーツ系
+    blaze_rods: ブレイズロッド
+    basalt: 玄武岩
+
+natural:
+  japanese: 自然
+  category:
+    flowers: 花
+    clay_pot: 花瓶
+    fern: シダ
+    grass: 草
+    lily_pad: スイレンの葉
+    vines: ツタ
+    dead_bush: 枯れ木
+    cobwebs: クモの巣
+    mushroom_blocks: キノコブロック
+    cocoa: カカオ豆
+    cacti: サボテン
+    sugarcane: サトウキビ
+    bamboo: 竹・足場
+    bee: ハチ系
+    saplings: 苗木
+    leaves: 葉
+
+other: 該当なし

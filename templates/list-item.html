@@ -7,9 +7,11 @@
     <link rel="stylesheet" href="{% static 'list-item/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#232f3e">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
 	<script src="{% static 'list-item/script.js' %}"></script>
 </head>
@@ -212,10 +214,19 @@
 			<div class="review-title">
 				<h2>商品を出品する</h2>
 			</div>
+            <div class="review-nav">
+                <ul>
+                    <li class="isActive">出品情報</li>
+                    <li class>画像</li>
+                    <li class>説明</li>
+                    <li class>アイテム</li>
+                </ul>
+            </div>
             <form method="post" class="product">
                 <div class="review-value">
+                    <p style="text-align: right;margin: 3px 0"><span class="review-required">*</span>は必須項目です</p>
                     <div class="review-value__title">
-                        <h3><span class="review-required">*</span>商品名<span class="required" id="title_required">必須項目です</span></h3>
+                        <h3 style="margin-top: 0"><span class="review-required">*</span>商品名<span class="required" id="title_required">必須項目です</span></h3>
                         <input name="name" id="title" type="text">
 
                     </div>
@@ -223,8 +234,8 @@
                         <h3><span class="review-required">*</span>価格<span class="required" id="text_required">価格は{{ money_unit }}0.01 以上にしてください</span></h3>
                         <span>{{ money_unit }}</span><input name="price" id="text" type="number" step="0.01" value="0">
                     </div>
-                    <div class="review-value__image" data-img="{{ item.image }}">
-                        <h3><span class="review-required">*</span>画像（5つまで）<span class="required" id="image_required">必須項目です</span><span class="required" id="image_over">画像は5つまでです</span><span class="required" id="image_size">ファイルサイズが2MBを超えています</span></h3>
+                    <div class="review-value__image" style="display: none" data-img="{{ item.image }}">
+                        <h3 style="margin-top: 0"><span class="review-required">*</span>画像（5つまで）<span class="required" id="image_required">必須項目です</span><span class="required" id="image_over">画像は5つまでです</span><span class="required" id="image_size">ファイルサイズが2MBを超えています</span></h3>
                         <div class="review-value__image-list">
                             <div class="review-value-1"></div>
                             <div class="review-value-2">
@@ -235,8 +246,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="review-value__about">
-                        <h3><span class="review-required">*</span>概要<span class="required" id="about_required">必須項目です</span></h3>
+                    <div class="review-value__about" style="display: none">
+                        <h3 style="margin-top: 0"><span class="review-required">*</span>概要<span class="required" id="about_required">必須項目です</span></h3>
                         <div class="review-value__about-list">
                             <div class="review__about-value-1" data-svg="{% static 'list-item/trash-can-solid.svg' %}">
                                 <div class="review-value-1__list">
@@ -255,10 +266,10 @@
                         <ul style="list-style: none">
                             {% for i, j in category.items %}
                             <li class="category-list">
-                                {% if j.JAPANESE %}
-                                <div>{{ j.JAPANESE }}</div>
+                                {% if j.japanese %}
+                                <div>{{ j.japanese }}</div>
                                 <ul class="category-child">
-                                    {% for key, value in j.items %}
+                                    {% for key, value in j.category.items %}
                                     {% if key != "JAPANESE" %}
                                     <li class="category-child_li" data-en="{{ key }}">{{ value }}</li>
                                     {% endif %}
@@ -274,8 +285,8 @@
                             {% endfor %}
                         </ul>
                     </div>
-                    <div class="review-value__item" id="item">
-                        <h3><span class="review-required">*</span>出品するアイテムを選択<span class="required" id="item_required">1つ以上選択して下さい</span>
+                    <div class="review-value__item" id="item" style="display: none">
+                        <h3 style="margin-top: 0"><span class="review-required">*</span>出品するアイテムを選択<span class="required" id="item_required">1つ以上選択して下さい</span>
                         {% if error == "1" %}<span class="required" style="display: block">出品時と同じアイテム・アイテム名・エンチャント・スタック数のものを選択して下さい</span>{% endif %}
                         </h3>
                         <div class="chest">
@@ -306,14 +317,14 @@
                             <p class="chest-text" style="margin: 0 0 5px;text-align: left">すべて同じアイテム・エンチャント・アイテム名・スタック数・耐久値のものを選択して下さい</p>
                         </div>
                     </div>
-                    <div class="review-value__keyword" id="item">
-                        <h3>検索キーワードを設定<span class="required" id="keyword_over">150文字以内に設定して下さい</span></h3>
+                    <div class="review-value__keyword" id="item" style="display: none">
+                        <h3>検索キーワード<span class="required" id="keyword_over">150文字以内に設定して下さい</span></h3>
                         <textarea id="keyword" placeholder="例）オークの板材 オーク 建築 ブロック 建築ブロック 板材"></textarea>
-                        <p class="chest-text" style="margin: 0 0 5px;text-align: left">半角スペースを用いて区切って下さい</p>
+                        <p class="chest-text" style="margin: 5px 0 0;text-align: left">半角スペースを用いて区切って下さい</p>
                     </div>
                     <div class="review-value__submit" id="next">
                         <a>次へ</a>
-                        <span class="required" id="cnxError">エラーが発生しました</span>
+                        <span class="required" id="nextError" style="padding-top: 5px;">入力内容に不備があります</span>
                     </div>
                 </div>
             </form>

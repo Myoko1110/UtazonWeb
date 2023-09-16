@@ -7,9 +7,11 @@
     <link rel="stylesheet" href="{% static 'list-item/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#232f3e">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
 	<script src="{% static 'edit-item/script.js' %}"></script>
 </head>
@@ -270,14 +272,14 @@
                     <ul style="list-style: none">
                         {% for i, j in category.items %}
                         <li class="category-list">
-                            {% if j.JAPANESE %}
-                            <div>{{ j.JAPANESE }}</div>
+                            {% if j.japanese %}
+                            <div>{{ j.japanese }}</div>
                             {% if item.category in j.keys %}
                             <ul class="category-child" style="display: block;">
                             {% else %}
                             <ul class="category-child">
                             {% endif %}
-                                {% for key, value in j.items %}
+                                {% for key, value in j.category.items %}
                                 {% if key != "JAPANESE" %}
                                 {% if key == item.category %}
                                 <li class="category-child_li isSelect" data-en="{{ key }}">{{ value }}</li>

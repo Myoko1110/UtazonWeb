@@ -15,9 +15,13 @@
     background-color: #ffffff;
     max-width: 800px;
     width: 100%;
-    padding: 20px;
+    padding: 20px 0;
+    height: fit-content;
 }
 
+.review-title{
+    padding: 0 20px;
+}
 .review-title h2 {
     font-weight: 400;
     font-size: 28px;
@@ -46,6 +50,9 @@
     white-space: nowrap;
 }
 
+.review-value{
+    padding: 0 20px;
+}
 .review-value__star {
     margin-top: 20px;
 }
@@ -61,6 +68,9 @@
 .review-value__title input {
     width: 100%;
     font-size: 15px;
+}
+.review-value h3{
+    margin: 40px 0 10px;
 }
 
 .review-value__text textarea {
@@ -280,7 +290,28 @@
 .review-value__keyword textarea{
     width: 100%;
     height: 100px;
-    font-size: 18px;
+    font-size: 15px;
+}
+.review-nav{
+    width: 100%;
+    padding: 0 20px;
+    background-color: #eeeeee;
+}
+.review-nav ul{
+    display: flex;
+    list-style: none;
+    padding: 5px 0 0;
+    margin: 0;
+}
+.review-nav li{
+    margin: 0 3px;
+    padding: 5px 15px;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+}
+.review-nav li.isActive{
+    background-color: #ffffff;
+
 }
 
 .required {

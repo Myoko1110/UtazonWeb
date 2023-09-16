@@ -96,6 +96,53 @@ $(document).ready(function () {
         $(this).toggleClass("isSelectIndex");
     });
 
+    $(".review-nav li").on("click", function (){
+        let tab = $(this).text();
+        $(".review-nav li").removeClass("isActive");
+        $(this).addClass("isActive");
+
+        if (tab === "出品情報") {
+            $(".review-value__title").css("display", "block");
+            $(".review-value__text").css("display", "block");
+            $(".review-value__category").css("display", "block");
+
+            $(".review-value__image").css("display", "none");
+            $(".review-value__about").css("display", "none");
+            $(".review-value__keyword").css("display", "none");
+            $(".review-value__item").css("display", "none");
+
+        }else if (tab === "画像") {
+            $(".review-value__image").css("display", "block");
+            
+            $(".review-value__title").css("display", "none");
+            $(".review-value__text").css("display", "none");
+            $(".review-value__category").css("display", "none");
+            $(".review-value__about").css("display", "none");
+            $(".review-value__keyword").css("display", "none");
+            $(".review-value__item").css("display", "none");
+
+        }else if (tab === "説明") {
+            $(".review-value__about").css("display", "block");
+            $(".review-value__keyword").css("display", "block");
+
+            $(".review-value__title").css("display", "none");
+            $(".review-value__text").css("display", "none");
+            $(".review-value__category").css("display", "none");
+            $(".review-value__image").css("display", "none");
+            $(".review-value__item").css("display", "none");
+
+        }else if (tab === "アイテム") {
+            $(".review-value__item").css("display", "block");
+
+            $(".review-value__title").css("display", "none");
+            $(".review-value__text").css("display", "none");
+            $(".review-value__category").css("display", "none");
+            $(".review-value__image").css("display", "none");
+            $(".review-value__about").css("display", "none");
+            $(".review-value__keyword").css("display", "none");
+        }
+    })
+
     // 次へ
     $("#next").on("click", function (){
         $("#title_required").css("display", "none");
@@ -145,6 +192,7 @@ $(document).ready(function () {
             if (keyword.length > 150) {
                 $("#keyword_over").css("display", "block");
             }
+            $("#nextError").css("display", "block");
             return;
         }
 

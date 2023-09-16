@@ -185,3 +185,9 @@ async def send_security(discord_id):
         description="あなたのアカウントへの新しいログインが検出されました。ご自身によるものであれば、何もする必要はありません。ログインに心当たりがない場合は、運営にお問い合わせください。"
     )
     await author.send(embed=embed)
+
+
+async def get_user_name(discord_id):
+    author = await client.fetch_user(discord_id)
+    print(author.name)
+    return author.name

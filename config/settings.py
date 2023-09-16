@@ -1,13 +1,18 @@
+import json
 import os
+import re
 from decimal import Decimal
 from pathlib import Path
 
+import pykakasi
 import yaml
 from dotenv import load_dotenv
 
 import bot
 
 load_dotenv()
+kakasi = pykakasi.kakasi()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=ijf2u=)n_aom%_ph)_8p$aam9)z7j4#6r3bc$h$(p*-qk)r8q'
 DEBUG = True
@@ -30,7 +35,7 @@ POST_PASS = os.environ["POST_PASS"]
 SOCKET_PORT = os.environ["SOCKET_PORT"]
 SOCKET_HOST = os.environ["SOCKET_HOST"]
 
-with open("settings.yml", encoding="utf-8") as sf:
+with open("setting_item.yml", encoding="utf-8") as sf:
     sf = yaml.load(sf, Loader=yaml.SafeLoader)
 
 SESSION_EXPIRES = sf["session"]["expires"]
@@ -79,11 +84,51 @@ DATABASE_CONFIG = {
     },
 }
 
-with open("categories.yml", encoding="utf-8") as f:
+with open("setting_category.yml", encoding="utf-8") as f:
     CATEGORIES = yaml.load(f, Loader=yaml.SafeLoader)
 
-# Application definition
+with open("setting_suggest.yml", encoding="utf-8") as f:
+    SUGGEST = yaml.load(f, Loader=yaml.SafeLoader)
+for i in range(len(SUGGEST)):
+    try:
+        hiragana = SUGGEST[i][1]
+        rs = kakasi.convert(hiragana)
 
+        kana = ""
+        hepburn = ""
+        kunrei = ""
+        passport = ""
+        for j in rs:
+            kana += j["kana"]
+            hepburn += j["hepburn"]
+            kunrei += j["kunrei"]
+            passport += j["passport"]
+        SUGGEST[i].append(kana)
+        SUGGEST[i].append(hepburn)
+        SUGGEST[i].append(kunrei)
+        SUGGEST[i].append(passport)
+
+        # 伸ばし棒への対応
+        if "ー" in hiragana:
+            hiragana = hiragana.replace("ー", "?")
+            rs_ = kakasi.convert(hiragana)
+
+            hepburn_ = ""
+            kunrei_ = ""
+            passport_ = ""
+            for j in rs_:
+                hepburn_ += j["hepburn"].replace("?", "-")
+                kunrei_ += j["kunrei"].replace("?", "-")
+                passport_ += j["passport"].replace("?", "-")
+            SUGGEST[i].append(hepburn_)
+            SUGGEST[i].append(kunrei_)
+            SUGGEST[i].append(passport_)
+
+    except IndexError:
+        pass
+SUGGEST = json.dumps(SUGGEST, ensure_ascii=False)
+
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

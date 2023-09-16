@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import json
 import os
@@ -8,6 +9,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
+import bot
 import util.SessionHelper
 from config import settings
 
@@ -17,8 +19,16 @@ def mypage(request):
     if is_session.valid:
         info = util.UserHelper.get_info.from_session(request)
 
+        onsale_items = util.DatabaseHelper.get_item_from_user(info.mc_uuid)
+        onsale_item_length = len(onsale_items)
+
+        loop = asyncio.get_event_loop()
+        asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(bot.get_user_name(info.discord_id))
+
         context = {
             "categories": util.ItemHelper.get_category.all(),
+            "onsale_item_length": onsale_item_length,
             "session": is_session,
             "info": info,
         }

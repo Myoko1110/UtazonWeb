@@ -21,4 +21,5 @@ urlpatterns = [
     path('history/', views.history, name='history'),
     path('browsing-history/', views.browsing_history, name='browsing_history'),
     path('history/status/', views.status, name='status'),
+    path('suggest/', views.suggest, name='suggest'),
 ]
