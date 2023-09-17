@@ -144,7 +144,7 @@ $(document).ready(function () {
             return;
         }
 
-        let res = confirm("アイテムの情報を更新しますか？")
+        let res = confirm("商品の情報を更新しますか？")
         if (!res){
             return;
         }

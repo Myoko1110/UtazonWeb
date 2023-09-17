@@ -213,6 +213,10 @@
 		<p class="search-keyword">"{{ query }}"</p>
 	</div>
 	<div class="main">
+        {% if not result %}
+        <h3>{{ query }}の検索に一致する商品はありませんでした。
+        <br>キーワードを絞ってからもう一度お試し下さい。</h3>
+        {% endif %}
 		<ul class="main-list">
 			{% for child in result %}
 			<li>

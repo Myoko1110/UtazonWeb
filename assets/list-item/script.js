@@ -251,7 +251,7 @@ $(document).ready(function () {
             return;
         }
 
-        let res = confirm("アイテムを出品しますか？")
+        let res = confirm("商品を出品しますか？")
         if (!res){
             return;
         }

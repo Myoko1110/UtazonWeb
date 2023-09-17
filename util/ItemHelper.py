@@ -239,7 +239,7 @@ class get_category:
                             return
 
                     try:
-                        for en, jp in value.items():
+                        for en, jp in value["category"].items():
                             # 該当のものが見つかったら
                             if en == english:
                                 parent_jp = categories[category]["japanese"]

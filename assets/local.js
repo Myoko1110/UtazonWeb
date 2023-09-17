@@ -74,14 +74,20 @@ $(function () {
         $(".wrapper").toggleClass('isActive');
     });
 
+    $(".nav-belt__search-input").on("click", function () {
+        $(".nav-belt__search-background").fadeIn(100);
+    });
+    $(".nav-belt__search-background").on("click", function () {
+        $(".nav-belt__search-background").fadeOut(100);
+    });
     $(".nav-belt__search-input").autocomplete({
-        source: function(request, response){
+        source: function (request, response) {
             var suggests = [];
             var regexp = new RegExp('(' + request.term + ')');
 
-            $.each(suggestData, function(i, values){
-                for (let i = 0; i < values.length; i++){
-                    if(values[i].match(regexp)){
+            $.each(suggestData, function (i, values) {
+                for (let i = 0; i < values.length; i++) {
+                    if (values[i].match(regexp)) {
                         suggests.push(values[0]);
                         return true;
                     }
@@ -90,12 +96,15 @@ $(function () {
 
             response(suggests);
         },
-        autoFocus: true,
-        delay: 0,
+        autoFocus: false,
+        delay: 200,
         minLength: 1,
-        select: function(event, ui) {
+        select: function (event, ui) {
             let selectedValue = ui.item.value;
             location.href = "/search/?q=" + selectedValue;
+        },
+        close: function (event, ui) {
+            $(".nav-belt__search-background").css("display", "none");
         }
     });
 });
@@ -109,10 +118,10 @@ function close_box() {
 }
 
 function sleep(waitMsec) {
-  var startMsec = new Date();
+    var startMsec = new Date();
 
-  // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
-  while (new Date() - startMsec < waitMsec);
+    // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
+    while (new Date() - startMsec < waitMsec) ;
 }
 
 function logout_confirm() {

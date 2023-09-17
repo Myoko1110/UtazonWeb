@@ -22,10 +22,6 @@ def mypage(request):
         onsale_items = util.DatabaseHelper.get_item_from_user(info.mc_uuid)
         onsale_item_length = len(onsale_items)
 
-        loop = asyncio.get_event_loop()
-        asyncio.set_event_loop(loop)
-        result = loop.run_until_complete(bot.get_user_name(info.discord_id))
-
         context = {
             "categories": util.ItemHelper.get_category.all(),
             "onsale_item_length": onsale_item_length,

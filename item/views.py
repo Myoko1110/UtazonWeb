@@ -3,7 +3,7 @@ import json
 import random
 from decimal import Decimal, getcontext
 
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 
 import util
@@ -345,11 +345,13 @@ def search(request):
     if not query:
         return redirect("/")
 
+    query_load = query.split(" ")
+
     # カテゴリーを指定
     category_en = request.GET.get("category")
 
     # 結果を取得し、アイテム情報を取得
-    result = util.DatabaseHelper.search_item(query, category_en)
+    result = util.DatabaseHelper.search_item(query_load, category_en)
     result = util.ItemHelper.get_item.obj_list(result)
 
     # 結果数
@@ -483,7 +485,7 @@ def category(request):
 
             try:
                 result = []
-                for i in settings.CATEGORIES[cat_id].keys():
+                for i in settings.CATEGORIES[cat_id]["category"].keys():
 
                     # カテゴリずつ追加
                     child_category = util.DatabaseHelper.get_item_from_category(i)
@@ -624,4 +626,4 @@ def status(request):
 
 
 def suggest(request):
-    return HttpResponse(settings.SUGGEST)
+    return HttpResponse(settings.SUGGEST, content_type="application/json")

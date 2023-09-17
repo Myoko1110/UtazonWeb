@@ -147,23 +147,43 @@ def get_item_from_user(mc_uuid):
     return result
 
 
-def search_item(item_query, category=None):
+def search_item(item_query: list, category=None):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
+            result = []
             if category:
                 for i in util.ItemHelper.get_category.child(category):
-                    sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s AND category=%s"
-                    cursor.execute(sql, (f"%{item_query}%", i))
+                    for j in item_query:
+                        sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s AND category=%s"
+                        cursor.execute(sql, (f"%{j}%", i))
 
-                    result = cursor.fetchall()
+                        fetch = cursor.fetchall()
+                        for k in fetch:
+                            result.append(k)
 
             else:
-                sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s OR JSON_CONTAINS(search_keyword, %s, '$')"
-                cursor.execute(sql, (f"%{item_query}%", f'"{item_query}"'))
+                sql = "SELECT * FROM utazon_item WHERE"
+
+                for i in range(len(item_query)):
+                    if i == 0:
+                        sql += f" item_name LIKE '%{item_query[i]}%'"
+                    else:
+                        sql += f" AND item_name LIKE '%{item_query[i]}%'"
+
+                for i in range(len(item_query)):
+                    if i == 0:
+                        sql += f" OR JSON_CONTAINS(search_keyword, '\"{item_query[i]}\"', '$')"
+                    else:
+                        sql += f" AND JSON_CONTAINS(search_keyword, '\"{item_query[i]}\"', '$')"
+
+
+                cursor.execute(sql)
 
                 # mc_uuidのレコードを取得
-                result = cursor.fetchall()
+                fetch = cursor.fetchall()
+                for k in fetch:
+                    result.append(k)
 
     return result
 

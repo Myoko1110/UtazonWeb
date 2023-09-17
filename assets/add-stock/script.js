@@ -45,7 +45,7 @@ $(document).ready(function () {
 
         let hostUrl = location.protocol + '//' + location.host + "/mypage/on_sale/stock/post/";
 
-        let res = confirm("アイテムの在庫を追加しますか？")
+        let res = confirm("商品の在庫を追加しますか？")
         if (!res){
             return;
         }
