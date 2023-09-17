@@ -177,7 +177,6 @@ def search_item(item_query: list, category=None):
                     else:
                         sql += f" AND JSON_CONTAINS(search_keyword, '\"{item_query[i]}\"', '$')"
 
-
                 cursor.execute(sql)
 
                 # mc_uuidのレコードを取得

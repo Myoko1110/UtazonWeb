@@ -53,21 +53,34 @@
                     <img src="{% static 'logo.svg' %}">
                 </a>
             </div>
+            {% if session.invalid %}
+            <a href="https://discord.gg/d9Knvc9JCr" class="nav-link">
+            {% endif %}
             <div class="nav-belt__address">
+                {% if session.valid %}
                 <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
 	            <div class="nav-belt__address-dir">
 		            <div class="nav-belt__address-name">
 			            <p class="nav-belt__address-to">お届け先</p>
 		            </div>
 		            <div class="nav-belt__address-number">
-						{% if session.valid %}
 						<h1>1-0001仮</h1>
-						{% else %}
-						<h1>ログイン</h1>
-						{% endif %}
 		            </div>
 	            </div>
+                {% else %}
+	            <div class="nav-belt__address-dir">
+		            <div class="nav-belt__address-name">
+			            <p class="nav-belt__address-to">まだ参加してない？</p>
+		            </div>
+		            <div class="nav-belt__address-number">
+						<h1>Discord鯖に参加</h1>
+		            </div>
+	            </div>
+                {% endif %}
             </div>
+            {% if session.invalid %}
+            </a>
+            {% endif %}
             <div class="nav-belt__search">
 	            <form id="search">
 		            <select class="nav-belt__search-select">
