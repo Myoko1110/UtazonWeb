@@ -33,7 +33,7 @@
 .review-title__item {
     display: flex;
     align-items: center;
-    margin-top: 10px;
+    margin: 10px 0;
 }
 
 .review-title__item img {

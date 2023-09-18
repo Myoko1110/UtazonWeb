@@ -16,7 +16,7 @@ async def setup():
     global add_stock_url
     delivery_status_url = urljoin(settings.HOST, "history/status/?id=")
     order_history_url = urljoin(settings.HOST, "history/")
-    add_stock_url = urljoin(settings.HOST, "mypage/onsale/stock/?id=")
+    add_stock_url = urljoin(settings.HOST, "mypage/on_sale/stock/?id=")
 
 
 @client.event
@@ -42,7 +42,7 @@ async def send_order_confirm(discord_id, order_id, order_item_obj, delivery_time
         title="ご注文が確定されました",
         color=discord.Colour.green(),
         description="ご購入ありがとうございます。\nお客様のご注文が確定されたことをお知らせいたします。"
-                    + f"\n配送状況は[こちら]({delivery_status_url}{order_id})から"
+                    + f"配送状況は[こちら]({delivery_status_url}{order_id})からご確認ください。"
     )
     embed.set_footer(text="またのご利用をお待ちしております。")
 
@@ -78,8 +78,8 @@ async def send_order_cancel(discord_id, order_id, order_item_obj):
         title="ご注文がキャンセルされました",
         color=discord.Colour.red(),
         description="お客様のご注文がキャンセルされたことをお知らせいたします。"
-                    + f"\nまた、キャンセルにつき購入額の{settings.CANCELLATION_FEE}%分のキャンセル料がかかります。"
-                    + f"\n注文履歴は[こちら]({order_history_url})"
+                    + f"また、キャンセルにつき購入額の{settings.CANCELLATION_FEE}%分のキャンセル料がかかります。"
+                    + f"注文履歴は[こちら]({order_history_url})からご確認ください。"
     )
     embed.set_footer(text="またのご利用をお待ちしております。")
     order_item = ""
@@ -151,7 +151,7 @@ async def send_complete_order(discord_id, order_id):
         title="商品が配達が完了しました",
         color=discord.Colour.blue(),
         description="お客様の注文の商品が配達されましたことをお知らせいたします。"
-                    + f"返品はできませんので予めご了承ください。詳細は[こちら]({order_history_url}#{order_id})"
+                    + f"返品はできませんので予めご了承ください。詳細は[こちら]({order_history_url}#{order_id})からご確認ください。"
     )
     embed.set_footer(text="またのご利用をお待ちしております。")
 
@@ -173,7 +173,7 @@ async def send_redelivery(discord_id, order_id):
     embed = discord.Embed(
         title="注文の再配達を承りました",
         color=discord.Colour.green(),
-        description=f"お客様の注文の再配達を承りましたことをお知らせいたします。\n詳細は[こちら]({order_history_url}#{order_id})"
+        description=f"お客様の注文の再配達を承りましたことをお知らせいたします。詳細は[こちら]({order_history_url}#{order_id})からご確認ください。"
     )
     embed.set_footer(text="またのご利用をお待ちしております。")
 
@@ -194,9 +194,9 @@ async def send_stock(discord_id, item):
     author = await client.fetch_user(discord_id)
     embed = discord.Embed(
         title="出品中の商品の在庫が少なくなっています",
-        color=discord.Colour.green(),
-        description="お客様が販売中の商品の在庫の残りが15個になりましたことをお知らせいたします。"
-                    + f"\nつきましては、[こちら]({add_stock_url}{item['item_id']})より在庫の追加をお願いいたします。"
+        color=discord.Colour.orange(),
+        description="お客様が販売中の商品の在庫の残りが15個以下になりましたことをお知らせいたします。"
+                    + f"つきましては、[こちら]({add_stock_url}{item['item_id']})より在庫の追加をお願いいたします。"
     )
     embed.add_field(name="該当の商品", value=item["item_name"][:34], inline=False)
     embed.set_footer(text="またのご利用をお待ちしております。")

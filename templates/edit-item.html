@@ -231,6 +231,13 @@
 					<p data-id="{{ item.item_id }}">{{ item.item_name }}</p>
 				</div>
 			</div>
+            <div class="review-nav">
+                <ul>
+                    <li class="isActive">出品情報</li>
+                    <li class>画像</li>
+                    <li class>説明</li>
+                </ul>
+            </div>
             <form method="post">
 			<div class="review-value">
 				<div class="review-value__title">
@@ -242,7 +249,7 @@
 					<h3>価格<span class="required" id="text_required">必須項目です</span></h3>
 					<span>{{ money_unit }}</span><input name="price" id="text" type="number" step="0.01" value="{{ item.price }}">
 				</div>
-                <div class="review-value__image" data-img="{{ item.image }}">
+                <div class="review-value__image" style="display: none" data-img="{{ item.image }}">
                     <h3>画像（5つまで）<span class="required" id="image_required">必須項目です</span></h3>
                     <div class="review-value__image-list">
                         <div class="review-value-1"></div>
@@ -254,7 +261,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="review-value__about">
+                <div class="review-value__about" style="display: none">
                     <h3>概要<span class="required" id="about_required">必須項目です</span></h3>
                     <div class="review-value__about-list">
                         <div class="review__about-value-1" data-svg="{% static 'list-item/trash-can-solid.svg' %}">
@@ -280,25 +287,23 @@
                         </div>
                     </div>
                 </div>
-                <div class="review-value__category">
+                <div class="review-value__category" data-category="item.category">
                     <h3>カテゴリー<span class="required" id="category_required">必須項目です</span></h3>
                     <ul style="list-style: none">
                         {% for i, j in category.items %}
                         <li class="category-list">
                             {% if j.japanese %}
                             <div>{{ j.japanese }}</div>
-                            {% if item.category in j.keys %}
+                            {% if item.category in j.category.keys %}
                             <ul class="category-child" style="display: block;">
                             {% else %}
                             <ul class="category-child">
                             {% endif %}
                                 {% for key, value in j.category.items %}
-                                {% if key != "JAPANESE" %}
                                 {% if key == item.category %}
                                 <li class="category-child_li isSelect" data-en="{{ key }}">{{ value }}</li>
                                 {% else %}
                                 <li class="category-child_li" data-en="{{ key }}">{{ value }}</li>
-                                {% endif %}
                                 {% endif %}
                                 {% endfor %}
                             </ul>

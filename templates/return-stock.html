@@ -225,7 +225,7 @@
 	<div class="subwrapper">
 		<div class="review">
 			<div class="review-title">
-				<h2>商品の在庫をもどす</h2>
+				<h2>商品の在庫を戻す</h2>
 				<div class="review-title__item">
 					<img src="{{ item.image.0 }}">
 					<p data-id="{{ item.item_id }}">{{ item.item_name }}</p>
@@ -234,8 +234,8 @@
             <form method="post">
 			<div class="review-value">
 				<div class="review-value__text">
-					<h3>戻す数<span class="required" id="text_required">必須項目です</span></h3>
-					<input name="price" id="text" type="number" max="{{ item_stock }}" value="0"><span>個</span>
+					<h3>戻す数量<span class="required" id="text_required">必須項目です</span></h3>
+					<input name="price" id="text" type="number" max="{{ item_stock }}" min="0" value="0"><span>個</span>
 				</div>
 				<div class="review-value__submit" id="submit">
 					<a>戻す</a>

@@ -141,7 +141,7 @@ $(document).ready(function () {
             $(".review-value__about").css("display", "none");
             $(".review-value__keyword").css("display", "none");
         }
-    })
+    });
 
     // 次へ
     $("#next").on("click", function (){

@@ -1,4 +1,3 @@
-import asyncio
 import base64
 import json
 import os
@@ -9,7 +8,6 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
-import bot
 import util.SessionHelper
 from config import settings
 
@@ -321,9 +319,8 @@ def item_edit_post(request):
                 category_valid = True
                 break
             try:
-                for key, value in j.items():
-                    if key == "JAPANESE":
-                        continue
+                print(j)
+                for key, value in j["category"].items():
                     if key == category:
                         category_valid = True
                         break

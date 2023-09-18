@@ -30,6 +30,7 @@ $(document).ready(function () {
     const item_id = $(".review-title__item p").data("id");
     let update_image = image;
     const trash_svg = $(".review__about-value-1").data("svg");
+    const category = $(".review-value__category").data("category");
 
     let imageElement = "";
     for (let i in image) {
@@ -98,6 +99,44 @@ $(document).ready(function () {
         $(this).addClass("isSelect");
     });
 
+    $(".review-nav li").on("click", function (){
+        let tab = $(this).text();
+        $(".review-nav li").removeClass("isActive");
+        $(this).addClass("isActive");
+
+        if (tab === "出品情報") {
+            $(".review-value__title").css("display", "block");
+            $(".review-value__text").css("display", "block");
+            $(".review-value__category").css("display", "block");
+
+            $(".review-value__image").css("display", "none");
+            $(".review-value__about").css("display", "none");
+            $(".review-value__keyword").css("display", "none");
+            $(".review-value__item").css("display", "none");
+
+        }else if (tab === "画像") {
+            $(".review-value__image").css("display", "block");
+
+            $(".review-value__title").css("display", "none");
+            $(".review-value__text").css("display", "none");
+            $(".review-value__category").css("display", "none");
+            $(".review-value__about").css("display", "none");
+            $(".review-value__keyword").css("display", "none");
+            $(".review-value__item").css("display", "none");
+
+        }else if (tab === "説明") {
+            $(".review-value__about").css("display", "block");
+            $(".review-value__keyword").css("display", "block");
+
+            $(".review-value__title").css("display", "none");
+            $(".review-value__text").css("display", "none");
+            $(".review-value__category").css("display", "none");
+            $(".review-value__image").css("display", "none");
+            $(".review-value__item").css("display", "none");
+
+        }
+    });
+
     $("#submit").on('click', function () {
         $("#title_required").css("display", "none");
         $("#text_required").css("display", "none");
@@ -149,7 +188,8 @@ $(document).ready(function () {
             return;
         }
 
-        let category = selectedElements.data("en");
+        let selectedCategory = selectedElements.data("en");
+
         let hostUrl = location.protocol + '//' + location.host + "/mypage/on_sale/edit/post/";
 
         let params = {
@@ -157,7 +197,7 @@ $(document).ready(function () {
             text: text,
             about: JSON.stringify(inputValues),
             update_image: JSON.stringify(update_image),
-            category: category,
+            category: selectedCategory,
             item_id: item_id,
         };
         for (let i = 0; i < new_image.length; i++) {

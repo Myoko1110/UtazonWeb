@@ -145,8 +145,12 @@ def buy_confirm(request):
                                              amount_float, i["mc_uuid"])
             util.DatabaseHelper.increase_purchases(i["item_id"])
 
-            if util.DatabaseHelper.get_item_stock(i["item_id"]) == 15:
-                bot.send_stock(info.discord_id, i)
+            stock = util.DatabaseHelper.get_item_stock(i["item_id"])
+            if 15 in range(stock, stock + i["qty"]):
+                asyncio.run_coroutine_threadsafe(
+                    bot.send_stock(info.discord_id, i),
+                    bot.client.loop
+                )
 
         # 出金
         withdraw_player = util.SocketHelper.withdraw_player(mc_uuid, amount_float, reason)
