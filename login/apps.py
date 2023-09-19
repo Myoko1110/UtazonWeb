@@ -60,8 +60,10 @@ def table_create():
                                                     kind JSON,
                                                     category VARCHAR(64),
                                                     purchases_number BIGINT,
-                                                    mc_uuid VARCHAR(36)
-                                                    )"""
+                                                    mc_uuid VARCHAR(36),
+                                                    search_keyword JSON,
+                                                    FULLTEXT (item_name) WITH PARSER ngram
+                                                    ) DEFAULT CHARSET = utf8 ENGINE = InnoDB"""
             cursor.execute(sql)
 
             sql = """CREATE TABLE IF NOT EXISTS `utazon_user` (
@@ -103,7 +105,7 @@ def table_create():
 
             sql = """CREATE TABLE IF NOT EXISTS `utazon_itemstack` (
                                                     item_id BIGINT UNIQUE,
-                                                    item_name VARCHAR(64),
+                                                    item_display_name VARCHAR(64),
                                                     item_material VARCHAR(64),
                                                     item_enchantments JSON,
                                                     item_damage INT,

@@ -1,5 +1,6 @@
 import datetime
 import json
+import math
 import random
 from decimal import Decimal, getcontext
 
@@ -53,7 +54,7 @@ def item(request):
     item_id = request.GET.get("id")
 
     # item_idのレコードを取得
-    result = util.DatabaseHelper.get_item(item_id)
+    result = util.ItemHelper.get_item()
 
     if not result:
         raise Http404
@@ -345,24 +346,34 @@ def search(request):
     if not query:
         return redirect("/")
 
-    query_load = query.split(" ")
-
     # カテゴリーを指定
     category_en = request.GET.get("category")
+    page = request.GET.get("page")
+    if page:
+        page = int(page)
 
     # 結果を取得し、アイテム情報を取得
-    result = util.DatabaseHelper.search_item(query_load, category_en)
+    result = util.DatabaseHelper.search_item(query, category_en, page)
+    result_length = util.DatabaseHelper.count_item(query, category_en, page)
     result = util.ItemHelper.get_item.obj_list(result)
 
-    # 結果数
-    search_results = len(result)
+    if not page:
+        page = 1
+
+    page_length = range(1, math.ceil(result_length / 25) + 1)
 
     is_session = util.SessionHelper.is_session(request)
     context = {
         "result": result,
+        "result_length": result_length,
+        "result_length_range": page_length,
+        "result_length_last": page_length[-1],
         "query": query,
+        "category_en": category_en,
+        "page": page,
+        "next_page": page + 1,
+        "prev_page": page - 1,
         "category": category,
-        "search_results": search_results,
         "point_return": util.ItemHelper.point_return_percent,
         "categories": util.ItemHelper.get_category.all(),
         "money_unit": settings.MONEY_UNIT,

@@ -136,7 +136,7 @@ def buy_confirm(request):
             amount_float = float(amount)
 
             # 理由を作成
-            reason = ", ".join(reason_list) + f"(OrderID: {order_id})"
+            reason = ", ".join(reason_list) + f"(注文番号: {order_id})"
 
         # 在庫を減らす
         for i in order_item_list:

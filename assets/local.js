@@ -35,6 +35,7 @@ $(function () {
     $("#search").submit(function (e) {
         e.preventDefault();
         let query = $("#search_query").val();
+        query = query.replace(" ", "+");
 
         if (selected === "all") {
             location.href = `//${host}/search/?q=${query}`;
@@ -83,16 +84,31 @@ $(function () {
     $(".nav-belt__search-input").autocomplete({
         source: function (request, response) {
             var suggests = [];
-            var regexp = new RegExp('(' + request.term + ')');
+            var query = request.term;
 
-            $.each(suggestData, function (i, values) {
-                for (let i = 0; i < values.length; i++) {
-                    if (values[i].match(regexp)) {
-                        suggests.push(values[0]);
-                        return true;
+            if (query.length !== 1) {
+                var regexp = new RegExp('(' + query + ')');
+
+                $.each(suggestData, function (i, values) {
+                    for (let i = 0; i < values.length; i++) {
+                        if (values[i].match(regexp)) {
+                            suggests.push(values[0]);
+                            return true;
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                $.each(suggestData, function (i, values) {
+                    console.log(values)
+                    for (let i = 0; i < values.length; i++) {
+                        if (values[i].startsWith(query)) {
+                            suggests.push(values[0]);
+                            return true;
+                        }
+                    }
+                });
+            }
+
 
             response(suggests);
         },
@@ -104,7 +120,7 @@ $(function () {
             location.href = "/search/?q=" + selectedValue;
         },
         close: function (event, ui) {
-            $(".nav-belt__search-background").css("display", "none");
+            $(".nav-belt__search-background").fadeOut(100);
         }
     });
 });
@@ -115,13 +131,6 @@ function close_box() {
     $("#order_cancel").css("display", "none");
     $("#delete").css("display", "none");
     $("#order_redelivery").css("display", "none");
-}
-
-function sleep(waitMsec) {
-    var startMsec = new Date();
-
-    // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
-    while (new Date() - startMsec < waitMsec) ;
 }
 
 function logout_confirm() {

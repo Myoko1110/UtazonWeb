@@ -82,7 +82,8 @@
 		            <select class="nav-belt__search-select">
 						<option value="all">すべて</option>
 						{% for jp, en in categories.items %}
-			            <option value="{{ en }}"{% if category == en %} selected{% endif %}>{{ jp }}</option>
+                            {{ en }}
+			            <option value="{{ en }}"{% if category_en == en %} selected{% endif %}>{{ jp }}</option>
 						{% endfor %}
 		            </select>
 	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com" value="{{ query }}" id="search_query">
@@ -92,7 +93,7 @@
 		            </label>
 	            </form>
             </div>
-						{% if session.valid %}
+			{% if session.valid %}
 			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
 				    <p>{{ info.mc_id }}さん</p>

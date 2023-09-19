@@ -147,42 +147,76 @@ def get_item_from_user(mc_uuid):
     return result
 
 
-def search_item(item_query: list, category=None):
+def search_item(item_query: list, category=None, page=None):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
             result = []
             if category:
                 for i in util.ItemHelper.get_category.child(category):
-                    for j in item_query:
-                        sql = "SELECT * FROM utazon_item WHERE item_name LIKE %s AND category=%s"
-                        cursor.execute(sql, (f"%{j}%", i))
+                    print(i)
+                    sql = "SELECT * FROM utazon_item WHERE MATCH(item_name) AGAINST(%s) AND category=%s"
 
-                        fetch = cursor.fetchall()
-                        for k in fetch:
-                            result.append(k)
+                    for j in item_query.split("+"):
+                        sql += f" OR JSON_CONTAINS(search_keyword, '\"{j}\"', '$')"
+
+                    sql += " ORDER BY purchases_number DESC, item_name LIMIT 25"
+                    if page:
+                        sql += f" OFFSET {(page - 1) * 25}"
+                    cursor.execute(sql, (item_query, i))
+
+                    # mc_uuidのレコードを取得
+                    fetch = cursor.fetchall()
+                    for k in fetch:
+                        result.append(k)
 
             else:
-                sql = "SELECT * FROM utazon_item WHERE"
+                sql = "SELECT * FROM utazon_item WHERE MATCH(item_name) AGAINST(%s)"
 
-                for i in range(len(item_query)):
-                    if i == 0:
-                        sql += f" item_name LIKE '%{item_query[i]}%'"
-                    else:
-                        sql += f" AND item_name LIKE '%{item_query[i]}%'"
+                for i in item_query.split("+"):
+                    sql += f" OR JSON_CONTAINS(search_keyword, '\"{i}\"', '$')"
 
-                for i in range(len(item_query)):
-                    if i == 0:
-                        sql += f" OR JSON_CONTAINS(search_keyword, '\"{item_query[i]}\"', '$')"
-                    else:
-                        sql += f" AND JSON_CONTAINS(search_keyword, '\"{item_query[i]}\"', '$')"
-
-                cursor.execute(sql)
+                sql += " ORDER BY purchases_number DESC, item_name LIMIT 25"
+                if page:
+                    sql += f" OFFSET {(page - 1) * 25}"
+                cursor.execute(sql, (item_query,))
 
                 # mc_uuidのレコードを取得
                 fetch = cursor.fetchall()
                 for k in fetch:
                     result.append(k)
+
+    return result
+
+
+def count_item(item_query: list, category=None, page=None):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            result = 0
+            if category:
+                for i in util.ItemHelper.get_category.child(category):
+                    print(i)
+                    sql = "SELECT COUNT(*) FROM utazon_item WHERE MATCH(item_name) AGAINST(%s) AND category=%s"
+
+                    for j in item_query.split("+"):
+                        sql += f" OR JSON_CONTAINS(search_keyword, '\"{j}\"', '$')"
+                    cursor.execute(sql, (item_query, i))
+
+                    # mc_uuidのレコードを取得
+                    fetch = cursor.fetchone()
+                    result += fetch[0]
+
+            else:
+                sql = "SELECT COUNT(*) FROM utazon_item WHERE MATCH(item_name) AGAINST(%s)"
+
+                for i in item_query.split("+"):
+                    sql += f" OR JSON_CONTAINS(search_keyword, '\"{i}\"', '$')"
+
+                # mc_uuidのレコードを取得
+                cursor.execute(sql, (item_query,))
+                fetch = cursor.fetchone()
+                result += fetch[0]
 
     return result
 
