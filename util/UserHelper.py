@@ -86,7 +86,7 @@ def get_view_history(mc_uuid):
     :return: 閲覧履歴
     """
 
-    view_history = util.DatabaseHelper.get_user_view_history(mc_uuid)
+    view_history = util.DatabaseHelper.get_user_view_history_four(mc_uuid)
     view_history_obj = []
 
     if view_history:

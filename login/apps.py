@@ -38,7 +38,6 @@ def table_create():
     with cnx:
         with cnx.cursor() as cursor:
 
-            # テーブルが存在するか確認
             sql = """CREATE TABLE IF NOT EXISTS `utazon_session` (
                                                     session_id VARCHAR(64) UNIQUE,
                                                     session_val VARCHAR(256),
@@ -114,7 +113,7 @@ def table_create():
                                                     )"""
             cursor.execute(sql)
 
-            sql = """CREATE TABLE IF NOT EXISTS utazon_revenues (
+            sql = """CREATE TABLE IF NOT EXISTS `utazon_revenues` (
                                                     id BIGINT AUTO_INCREMENT UNIQUE,
                                                     mc_uuid VARCHAR(36),
                                                     item_id BIGINT,
@@ -126,12 +125,24 @@ def table_create():
                                                     )"""
             cursor.execute(sql)
 
+            sql = """CREATE TABLE IF NOT EXISTS `utazon_waitingstock` (
+                                                    mc_uuid VARCHAR(36),
+                                                    value JSON,
+                                                    updated_time DATETIME
+                                                    )"""
+            cursor.execute(sql)
+        cursor.close()
+        cnx.commit()
+
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["linked"])
+    with cnx:
+        with cnx.cursor() as cursor:
             # DiscordConnectに従う
             sql = """CREATE TABLE IF NOT EXISTS `linked` (
-                                                    mc_uuid VARCHAR(36) UNIQUE,
-                                                    discord_id BIGINT,
-                                                    link_time BIGINT
-                                                    )"""
+                                                        mc_uuid VARCHAR(36) UNIQUE,
+                                                        discord_id BIGINT,
+                                                        link_time BIGINT
+                                                        )"""
             cursor.execute(sql)
         cursor.close()
         cnx.commit()

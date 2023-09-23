@@ -110,7 +110,7 @@
 			{% endif %}
 			<a href="/history" class="nav-link">
 	        	<div class="nav-belt__returns">
-		        	<p>返品もこちら</p>
+		        	<p>閲覧履歴もこちら<p>
 		        	<h1>履歴</h1>
 	        	</div>
 			</a>
@@ -179,7 +179,7 @@
 			</div>
 			<a href="/history">
 	        	<div class="nav-mobile__returns">
-		        	<p>返品もこちら</p>
+		        	<p>閲覧履歴もこちら<p>
 		        	<h1>注文履歴・閲覧履歴</h1>
 	        	</div>
 			</a>
@@ -224,10 +224,12 @@
 <div class="wrapper">
 	<div class="subwrapper">
 		<div class="category">
-			{% if category.parent %}
-			<a href="?name={{ category.parent.en }}">{{ category.parent.jp }}</a>
-			{% endif %}
-			<h2 class="category-title">{{ category.jp }}</h2>
+            <div class="category-title">
+                {% if category.parent %}
+                <a href="?name={{ category.parent.en }}">{{ category.parent.jp }}</a>
+                {% endif %}
+                <h2>{{ category.jp }}</h2>
+            </div>
 			<div class="main">
 				<ul class="main-list">
 					{% if result %}

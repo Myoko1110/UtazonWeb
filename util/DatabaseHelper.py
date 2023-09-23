@@ -147,22 +147,17 @@ def get_item_from_user(mc_uuid):
     return result
 
 
-def search_item(item_query: list, category=None, page=None):
+def search_item(item_query: list, category=None):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
             result = []
             if category:
                 for i in util.ItemHelper.get_category.child(category):
-                    print(i)
-                    sql = "SELECT * FROM utazon_item WHERE MATCH(item_name) AGAINST(%s) AND category=%s"
-
                     for j in item_query.split("+"):
                         sql += f" OR JSON_CONTAINS(search_keyword, '\"{j}\"', '$')"
 
-                    sql += " ORDER BY purchases_number DESC, item_name LIMIT 25"
-                    if page:
-                        sql += f" OFFSET {(page - 1) * 25}"
+                    sql += " ORDER BY purchases_number DESC, item_name"
                     cursor.execute(sql, (item_query, i))
 
                     # mc_uuidのレコードを取得
@@ -176,47 +171,13 @@ def search_item(item_query: list, category=None, page=None):
                 for i in item_query.split("+"):
                     sql += f" OR JSON_CONTAINS(search_keyword, '\"{i}\"', '$')"
 
-                sql += " ORDER BY purchases_number DESC, item_name LIMIT 25"
-                if page:
-                    sql += f" OFFSET {(page - 1) * 25}"
+                sql += " ORDER BY purchases_number DESC, item_name"
                 cursor.execute(sql, (item_query,))
 
                 # mc_uuidのレコードを取得
                 fetch = cursor.fetchall()
                 for k in fetch:
                     result.append(k)
-
-    return result
-
-
-def count_item(item_query: list, category=None, page=None):
-    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
-    with cnx:
-        with cnx.cursor() as cursor:
-            result = 0
-            if category:
-                for i in util.ItemHelper.get_category.child(category):
-                    print(i)
-                    sql = "SELECT COUNT(*) FROM utazon_item WHERE MATCH(item_name) AGAINST(%s) AND category=%s"
-
-                    for j in item_query.split("+"):
-                        sql += f" OR JSON_CONTAINS(search_keyword, '\"{j}\"', '$')"
-                    cursor.execute(sql, (item_query, i))
-
-                    # mc_uuidのレコードを取得
-                    fetch = cursor.fetchone()
-                    result += fetch[0]
-
-            else:
-                sql = "SELECT COUNT(*) FROM utazon_item WHERE MATCH(item_name) AGAINST(%s)"
-
-                for i in item_query.split("+"):
-                    sql += f" OR JSON_CONTAINS(search_keyword, '\"{i}\"', '$')"
-
-                # mc_uuidのレコードを取得
-                cursor.execute(sql, (item_query,))
-                fetch = cursor.fetchone()
-                result += fetch[0]
 
     return result
 
@@ -275,10 +236,10 @@ def get_discord_id(uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["linked"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "SELECT * FROM linked WHERE mc_uuid=%s"
+            sql = "SELECT discord_id FROM linked WHERE mc_uuid=%s"
             cursor.execute(sql, (uuid,))
 
-            result = cursor.fetchone()[1]
+            result = cursor.fetchone()[0]
 
             if not result:
                 return False
@@ -286,7 +247,7 @@ def get_discord_id(uuid):
 
 
 def get_mc_uuid(discord_id):
-    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["linked"])
     with cnx:
         with cnx.cursor() as cursor:
             sql = "SELECT mc_uuid FROM linked WHERE discord_id=%s"
@@ -330,7 +291,8 @@ def save_session(session_id, session_value, mc_uuid, access_token, now, expires,
             try:
                 # sessionテーブルに保存
                 sql = """INSERT INTO `utazon_session` (
-                         `session_id`, `session_val`, `mc_uuid`, `access_token`, `login_date`, `expires`, `logged_IP`
+                         `session_id`, `session_val`, `mc_uuid`, `access_token`,
+                         `login_date`, `expires`, `logged_IP`
                          ) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
                 cursor.execute(sql, (
                     session_id, session_value, mc_uuid, access_token, now, expires, logged_IP))
@@ -440,8 +402,8 @@ def get_user_history(mc_uuid):
 def get_user_view_history(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
-        with cnx.cursor(dictionary=True) as cursor:
-            sql = "SELECT item_id FROM utazon_browsinghistory WHERE mc_uuid=%s LIMIT 4"
+        with cnx.cursor() as cursor:
+            sql = "SELECT item_id FROM utazon_browsinghistory WHERE mc_uuid=%s ORDER BY browsed_time DESC"
             cursor.execute(sql, (mc_uuid,))
 
             # mc_uuidのレコードを取得
@@ -451,6 +413,20 @@ def get_user_view_history(mc_uuid):
                 return False
     return result
 
+
+def get_user_view_history_four(mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = "SELECT item_id FROM utazon_browsinghistory WHERE mc_uuid=%s ORDER BY browsed_time DESC LIMIT 4"
+            cursor.execute(sql, (mc_uuid,))
+
+            # mc_uuidのレコードを取得
+            result = cursor.fetchall()
+
+            if not result:
+                return False
+    return result
 
 def add_user_view_history(mc_uuid, item_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])

@@ -24,6 +24,9 @@
 }
 
 .category-title {
+    margin-top: 24px;
+}
+.category-title h2 {
     font-weight: 400;
     font-size: 28px;
     padding: 0 0 15px;
@@ -138,7 +141,7 @@
 
 @media (max-width: 799px) {
     .main-img {
-        width: 210px;
+        width: calc(.41667 * (100vw - 8px));
         height: 180px;
     }
 
@@ -151,11 +154,19 @@
     }
 
     .main-info {
-        width: calc(100% - 210px);
+        width: calc(.58333 * (100vw - 8px));
     }
 
     .subwrapper {
         margin: 0;
+    }
+
+    .category {
+        padding: 0;
+    }
+
+    .category-title {
+        padding: 0 10px;
     }
 }
 
@@ -169,12 +180,10 @@
     }
 
     .main-img {
-        width: 130px;
         height: 166px;
     }
 
     .main-info {
-        width: calc(100% - 100px);
         padding-right: 0;
     }
 }

@@ -184,7 +184,7 @@ def list_item_post(request):
 
                     file_name = f"{secrets.token_urlsafe(4)}.{file_ext}"
 
-                    db = f'{settings.HOST}/media/item/{item_id}/{file_name}'
+                    db = f'/media/item/{item_id}/{file_name}'
                     binary_data = base64.b64decode(i)
 
                     if len(binary_data) > 1024 * 1024 * 2:
@@ -319,12 +319,13 @@ def item_edit_post(request):
                 category_valid = True
                 break
             try:
-                print(j)
                 for key, value in j["category"].items():
                     if key == category:
                         category_valid = True
                         break
             except AttributeError:
+                pass
+            except TypeError:
                 pass
 
         if not category_valid:
@@ -353,7 +354,7 @@ def item_edit_post(request):
                     file_name = f"{secrets.token_urlsafe(4)}.{file_ext}"
 
                     fs = settings.MEDIA_ROOT / 'item' / item_id / file_name
-                    db = f'{settings.HOST}/media/item/{item_id}/{file_name}'
+                    db = f'/media/item/{item_id}/{file_name}'
                     binary_data = base64.b64decode(i)
 
                     if len(binary_data) > 1024 * 1024 * 2:

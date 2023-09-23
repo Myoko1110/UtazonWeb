@@ -52,7 +52,7 @@ def deposit_revenues():
 
         reason = ", ".join(reason_list) + f"(入金額: {value['amount']}の{settings.ALLOCATION_PER}%)"
 
-        util.SocketHelper.deposit_revenues(sale_by, amount, reason)
+        util.SocketHelper.deposit_player(sale_by, amount, "ウェブショップ『Utazon』からの売上入金", reason)
         util.DatabaseHelper.delete_revenues()
 
 

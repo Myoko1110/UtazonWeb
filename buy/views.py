@@ -153,7 +153,8 @@ def buy_confirm(request):
                 )
 
         # 出金
-        withdraw_player = util.SocketHelper.withdraw_player(mc_uuid, amount_float, reason)
+        withdraw_player = util.SocketHelper.withdraw_player(mc_uuid, amount_float,
+                                                            "ウェブショップ『Utazon』で購入", reason)
 
         # サーバーオフライン処理
         if not withdraw_player:
@@ -210,9 +211,10 @@ def buy_cancel(request):
         deposit_price = float(deposit_price.quantize(Decimal(".01"), rounding=ROUND_DOWN))
 
         # 理由作成し、入金
-        reason = (f"注文番号: {order_id})" +
+        reason = (f"注文番号: {order_id}" +
                   f"(入金額: {amount}の{deposit_rate}%(キャンセル料{settings.CANCELLATION_FEE}%)")
-        deposit_player = util.SocketHelper.deposit_player(mc_uuid, deposit_price, reason)
+        deposit_player = util.SocketHelper.deposit_player(mc_uuid, deposit_price,
+                                                          "ウェブショップ『Utazon』からのキャンセルに伴う返金", reason)
 
         # エラーが出たらリダイレクト
         if not deposit_player:

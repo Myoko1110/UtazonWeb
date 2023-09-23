@@ -40,14 +40,15 @@
 .item-about__img-list-img {
     width: 42px;
     height: 42px;
-    object-fit: contain;
-    border: 1px #777777 solid;
-    border-radius: 7px;
+    object-fit: cover;
+    border: 1px #888C8C solid;
+    border-radius: 8px;
     cursor: pointer;
 }
 
 .item-about__img-index {
     height: 425px;
+    width: calc(100% - 42px);
     margin-left: 5px;
 }
 

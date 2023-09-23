@@ -54,7 +54,7 @@ def item(request):
     item_id = request.GET.get("id")
 
     # item_idのレコードを取得
-    result = util.ItemHelper.get_item()
+    result = util.DatabaseHelper.get_item(item_id)
 
     if not result:
         raise Http404
@@ -351,23 +351,23 @@ def search(request):
     page = request.GET.get("page")
     if page:
         page = int(page)
-
-    # 結果を取得し、アイテム情報を取得
-    result = util.DatabaseHelper.search_item(query, category_en, page)
-    result_length = util.DatabaseHelper.count_item(query, category_en, page)
-    result = util.ItemHelper.get_item.obj_list(result)
-
-    if not page:
+    else:
         page = 1
 
-    page_length = range(1, math.ceil(result_length / 25) + 1)
+    # 結果を取得し、アイテム情報を取得
+    result = util.DatabaseHelper.search_item(query, category_en)
+    paging = util.ItemHelper.paging(result, page)
+
+    result = util.ItemHelper.get_item.obj_list(paging[0])
 
     is_session = util.SessionHelper.is_session(request)
     context = {
         "result": result,
-        "result_length": result_length,
-        "result_length_range": page_length,
-        "result_length_last": page_length[-1],
+        "result_length": paging[1],
+        "result_range": paging[5],
+        "revable": paging[3],
+        "nextable": paging[4],
+        "result_displayed": (paging[6], paging[7]),
         "query": query,
         "category_en": category_en,
         "page": page,
@@ -580,13 +580,28 @@ def browsing_history(request):
     if is_session.valid:
         info = util.UserHelper.get_info.from_session(request)
 
+        page = request.GET.get("page")
+        if page:
+            page = int(page)
+        else:
+            page = 1
+
         # 閲覧履歴を取得し、アイテム情報を取得
-        browsing_history_obj = util.DatabaseHelper.get_user_view_history(info.mc_uuid)
-        history_item = [i["item_id"] for i in browsing_history_obj]
-        result = util.ItemHelper.get_item.id_list(history_item)
+        browsing_history_obj = [i[0] for i in util.DatabaseHelper.get_user_view_history(info.mc_uuid)]
+        paging = util.ItemHelper.paging(browsing_history_obj, page)
+        browsing_history_obj = paging[0]
+
+        result = util.ItemHelper.get_item.id_list(browsing_history_obj)
 
         context = {
             "result": result,
+            "result_length": paging[1],
+            "result_range": paging[5],
+            "revable": paging[3],
+            "nextable": paging[4],
+            "page": page,
+            "next_page": page + 1,
+            "prev_page": page - 1,
             "info": info,
             "session": is_session,
             "categories": util.ItemHelper.get_category.all(),

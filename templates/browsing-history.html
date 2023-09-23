@@ -109,7 +109,7 @@
 			{% endif %}
 			<a href="/history" class="nav-link">
 	        	<div class="nav-belt__returns">
-		        	<p>返品もこちら</p>
+		        	<p>閲覧履歴もこちら<p>
 		        	<h1>履歴</h1>
 	        	</div>
 			</a>
@@ -178,7 +178,7 @@
 			</div>
 			<a href="/history">
 	        	<div class="nav-mobile__returns">
-		        	<p>返品もこちら</p>
+		        	<p>閲覧履歴もこちら<p>
 		        	<h1>注文履歴・閲覧履歴</h1>
 	        	</div>
 			</a>
@@ -230,6 +230,9 @@
 					<li><a style="color: #afafaf">閲覧履歴</a></li>
 				</ul>
 			</div>
+            {% if not result %}
+            <h3>閲覧履歴はありません。</h3>
+            {% endif %}
 			<div class="main">
 				<ul class="main-list">
 					{% for child in result %}
@@ -280,6 +283,15 @@
 					</li>
 					{% endfor %}
 				</ul>
+                {% if result %}
+                <div class="main-page">
+                    <a {% if not revable %}class="isInvalid"{% else %}href="?page={{ prev_page }}"{% endif %}>前へ</a>
+                    {% for i in result_range %}
+                    <a {% if i == page %}style="font-weight: 700;border: 1px #000 solid"{% else %}href="?page={{ i }}" class="isActive"{% endif %}>{{ i }}</a>
+                    {% endfor %}
+                    <a {% if not nextable %}class="isInvalid"{% else %}href="?page={{ next_page }}"{% endif %}>次へ</a>
+                </div>
+                {% endif %}
 			</div>
 		</div>
 	</div>

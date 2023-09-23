@@ -109,7 +109,7 @@
 			{% endif %}
 			<a href="/history" class="nav-link">
 	        	<div class="nav-belt__returns">
-		        	<p>返品もこちら</p>
+		        	<p>閲覧履歴もこちら<p>
 		        	<h1>履歴</h1>
 	        	</div>
 			</a>
@@ -178,7 +178,7 @@
 			</div>
 			<a href="/history">
 	        	<div class="nav-mobile__returns">
-		        	<p>返品もこちら</p>
+		        	<p>閲覧履歴もこちら<p>
 		        	<h1>注文履歴・閲覧履歴</h1>
 	        	</div>
 			</a>
@@ -221,10 +221,12 @@
     </header>
 </div>
 <div class="wrapper">
+    {% if result %}
 	<div class="search">
-		<p class="search-number">検索結果{{ result_length }}件</p>
+		<p class="search-number">検索結果 {{ result_length }}件のうち {{ result_displayed.0 }}-{{ result_displayed.1 }}件</p>
 		<p class="search-keyword">"{{ query }}"</p>
 	</div>
+    {% endif %}
 	<div class="main">
         {% if not result %}
         <h3>{{ query }}の検索に一致する商品はありませんでした。
@@ -279,13 +281,15 @@
 			</li>
 			{% endfor %}
 		</ul>
+        {% if result %}
         <div class="main-page">
-            <a {% if not page or page == 1 %}class="isInvalid"{% else %}href="?q={{ query }}&page={{ prev_page }}"{% endif %}>前へ</a>
-            {% for i in result_length_range %}
-            <a href="?q={{ query }}&page={{ i }}" {% if i == page %}style="font-weight: 700;border: 1px #000 solid"{% endif %}>{{ i }}</a>
+            <a {% if not revable %}class="isInvalid"{% else %}href="?page={{ prev_page }}"{% endif %}>前へ</a>
+            {% for i in result_range %}
+            <a {% if i == page %}style="font-weight: 700;border: 1px #000 solid"{% else %}href="?q={{ query }}&page={{ i }}" class="isActive"{% endif %}>{{ i }}</a>
             {% endfor %}
-            <a {% if page == result_length_last %}class="isInvalid"{% else %}href="?q={{ query }}&page={{ next_page }}"{% endif %}>次へ</a>
+            <a {% if not nextable %}class="isInvalid"{% else %}href="?page={{ next_page }}"{% endif %}>次へ</a>
         </div>
+        {% endif %}
 	</div>
 </div>
 <footer>

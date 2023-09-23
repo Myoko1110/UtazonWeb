@@ -1,5 +1,6 @@
 import datetime
 import json
+import math
 import random
 from decimal import Decimal, ROUND_UP
 from statistics import mean
@@ -27,6 +28,8 @@ class get_item:
 
             # アイテム情報取得
             item_info = util.DatabaseHelper.get_item(item_id)
+            if not item_info:
+                continue
 
             # アイテムのセール情報を取得
             sale = util.ItemHelper.get_sale(item_info["sale_id"], item_info["price"])
@@ -298,7 +301,6 @@ def add_review_data(review_obj):
     :param review_obj: レビューJson
     :return: 必要な情報を追加したリスト
     """
-
     item_review = json.loads(review_obj.replace("\n", "<br>"))
 
     for i in item_review:
@@ -387,3 +389,60 @@ def calc_review_average(review_obj):
         review_average = None
 
     return review_average
+
+
+def paging(result: list or tuple, page: int):
+    """
+    結果をページングします
+    :return: [ページングした結果, 結果数, トータルのページ数, 次のページを表示可か, 前のページを表示可か, "ページングナビ用のrange"]
+    """
+
+    result_len = len(result)
+    page_len = math.ceil(result_len / 25)
+
+    min_index = (page - 1) * 25
+    max_index = page * 25
+
+    if max_index > result_len:
+        max_index = result_len
+
+    result_paging = result[min_index:max_index]
+
+    if min_index == 0:
+        revable = False
+    else:
+        revable = True
+
+    if max_index == result_len:
+        nextable = False
+    else:
+        nextable = True
+    page_range = generate_range(page_len, page)
+
+    return result_paging, result_len, page_len, revable, nextable, page_range, min_index + 1, max_index
+
+
+def generate_range(upper_limit, specified_number):
+    if upper_limit <= 0:
+        return ()
+
+    # 範囲の中央値を計算
+    mid = specified_number - 1  # 0-based
+    half_length = 2  # 範囲の半分の長さを設定
+
+    # 中央値周りの範囲を計算
+    start = max(mid - half_length, 0)
+    end = min(mid + half_length + 1, upper_limit)
+
+    # 範囲が5個になるように調整
+    while end - start < 5 and (start > 0 or end < upper_limit):
+        if start > 0:
+            start -= 1
+        elif end < upper_limit:
+            end += 1
+
+    # 1-based
+    start += 1
+    end += 1
+
+    return range(start, end)

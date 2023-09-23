@@ -189,7 +189,7 @@
 
 @media (max-width: 799px) {
     .main-img {
-        width: 210px;
+        width: calc(.41667 * (100vw - 8px));
         height: 180px;
     }
 
@@ -202,7 +202,16 @@
     }
 
     .main-info {
-        width: calc(100% - 210px);
+        width: calc(.58333 * (100vw - 8px));
+    }
+    .mypage{
+        padding: 0;
+    }
+    .mypage-main h3{
+        padding: 0 10px;
+    }
+    .mypage-title{
+        margin: 0 10px;
     }
 }
 
@@ -216,12 +225,10 @@
     }
 
     .main-img {
-        width: 130px;
         height: 166px;
     }
 
     .main-info {
-        width: calc(100% - 100px);
         padding-right: 0;
     }
 }
