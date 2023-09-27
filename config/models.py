@@ -10,8 +10,11 @@ class Item(models.Model):
     review = models.JSONField(null=True, blank=True)
     stock = models.BigIntegerField(null=True, blank=True),
     kind = models.JSONField(null=True, blank=True),
-    category = models.CharField(64),
+    category = models.CharField(max_length=64),
     purchases_number = models.BigIntegerField(default=0, null=True, blank=True)
+    mc_uuid = models.CharField(max_length=36)
+    search_keyword = models.JSONField()
+    created_at = models.DateTimeField()
 
     class Meta:
         db_table = 'utazon_item'

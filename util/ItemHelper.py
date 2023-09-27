@@ -113,6 +113,8 @@ class get_item:
 
                 # アイテム情報取得
                 result = util.DatabaseHelper.get_item(item_id)
+                if not result:
+                    continue
 
                 # アイテムのセール情報を取得
                 sale = util.ItemHelper.get_sale(result["sale_id"], result["price"])
@@ -296,25 +298,22 @@ class get_category:
 
 def add_review_data(review_obj):
     """
-    Webに表示するために必要なデータをレビューJsonに追加します
+    Webに表示するために必要なデータをレビューに追加します
 
-    :param review_obj: レビューJson
+    :param review_obj: レビュー
     :return: 必要な情報を追加したリスト
     """
-    item_review = json.loads(review_obj.replace("\n", "<br>"))
 
-    for i in item_review:
+    review_obj = list(review_obj)
+
+    for i in review_obj:
         # item_reviewにmc情報を追加
         mc_uuid = i["mc_uuid"]
         mc_id = util.UserHelper.get_info.from_uuid(mc_uuid).mc_id
         i["mc_id"] = mc_id
 
-        # item_reviewのdateをdatetimeオブジェクトに変換
-        date = datetime.datetime.strptime(i["date"], "%Y-%m-%d %H:%M:%S")
-        i["date"] = date
-
-    item_review = item_review
-    return item_review
+    review_obj = review_obj
+    return review_obj
 
 
 def calc_delivery_time():

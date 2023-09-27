@@ -1,7 +1,11 @@
 let new_image = [];
 $(document).ready(function () {
+    $("#item_required").css("display", "none");
+    $("#item_over").css("display", "none");
+    $("#item_same").css("display", "none");
 
     const item_id = $(".review-title__item p").data("id");
+    const stock = $(".review-title__item").data("stock");
 
     // アイテムの選択
     $(".muci-slot div").on("click", function () {
@@ -18,7 +22,12 @@ $(document).ready(function () {
             return;
         }
 
-        const item0 = selectedItems.eq(0);
+        if (Number(stock) + selectedItems.length > 5000) {
+            $("#item_over").css("display", "block");
+            return;
+        }
+
+        const item0 = $(".review-title__item");
 
         let isAllSame = false;
         let indexList = [];
@@ -33,6 +42,9 @@ $(document).ready(function () {
                 isAllSame = true;
             }
             if ($(this).data("damage") !== item0.data("damage")){
+                isAllSame = true;
+            }
+            if ($(this).data("name") !== item0.data("name")){
                 isAllSame = true;
             }
             var dataIndex = $(this).data("index");

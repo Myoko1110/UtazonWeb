@@ -1,10 +1,9 @@
 import datetime
 import json
-import math
 import random
 from decimal import Decimal, getcontext
 
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 
 import util
@@ -59,8 +58,11 @@ def item(request):
     if not result:
         raise Http404
 
+    if not result["status"]:
+        raise Http404
+
     # レビューにデータを追加
-    item_review = util.ItemHelper.add_review_data(result["review"])
+    item_review = util.ItemHelper.add_review_data(util.DatabaseHelper.get_review(item_id))
 
     # レビューの平均を計算
     item_review_av = util.ItemHelper.calc_review_average(item_review)
@@ -176,7 +178,7 @@ def cart(request):
         return util.SessionHelper.delete_cookie(request, "cart.html", context)
 
     else:
-        return redirect("/login")
+        return redirect("/login/")
 
 
 def cart_delete(request):
@@ -202,7 +204,7 @@ def cart_delete(request):
                 user_cart_id.remove(child)
                 util.DatabaseHelper.update_user_cart(user_cart_id, mc_uuid)
 
-    return redirect("/cart")
+    return redirect("/cart/")
 
 
 def cart_add(request):
@@ -232,7 +234,7 @@ def cart_add(request):
         # カートをアップデート
         util.DatabaseHelper.update_user_cart(user_cart_id, mc_uuid)
 
-    return redirect("/cart")
+    return redirect("/cart/")
 
 
 def cart_update(request):
@@ -258,7 +260,7 @@ def cart_update(request):
 
                     util.DatabaseHelper.update_user_cart(user_cart_id, mc_uuid)
 
-    return redirect("/cart")
+    return redirect("/cart/")
 
 
 def later_delete(request):
@@ -277,7 +279,7 @@ def later_delete(request):
             user_later_id.remove(item_id)
             util.DatabaseHelper.update_user_later(user_later_id, mc_uuid)
 
-    return redirect("/cart")
+    return redirect("/cart/")
 
 
 def later_to_cart(request):
@@ -308,7 +310,7 @@ def later_to_cart(request):
 
             util.DatabaseHelper.update_user_cart(user_cart_id, mc_uuid)
 
-    return redirect("/cart")
+    return redirect("/cart/")
 
 
 def cart_to_later(request):
@@ -338,7 +340,7 @@ def cart_to_later(request):
             user_later_id.append(item_id)
             util.DatabaseHelper.update_user_later(user_later_id, mc_uuid)
 
-    return redirect("/cart")
+    return redirect("/cart/")
 
 
 def search(request):
@@ -415,7 +417,7 @@ def review(request):
 
         return render(request, "review.html", context=context)
     else:
-        return redirect(f"item?id={item_id}")
+        return redirect(f"/item/?id={item_id}")
 
 
 def review_post(request):
@@ -433,34 +435,11 @@ def review_post(request):
         review_title = request.GET.get("title")
         review_text = request.GET.get("text")
 
-        # reviewを取得
-        result = util.DatabaseHelper.get_item(item_id)
-        item_review = json.loads(result["review"])
+        util.DatabaseHelper.add_item_review(item_id, int(review_star), review_title, review_text, mc_uuid)
 
-        # 現在時刻を取得
-        now = datetime.datetime.now().replace(microsecond=0)
-
-        new_review = {
-            "id": str(random.randint(0, 99999)).zfill(5),
-            "date": str(now),
-            "star": int(review_star),
-            "title": review_title,
-            "value": review_text,
-            "useful": 0,
-            "mc_uuid": mc_uuid,
-            "categories": util.ItemHelper.get_category.all(),
-        }
-
-        # 新規レビューを追加
-        item_review.append(new_review)
-        item_review = json.dumps(item_review)
-
-        # 追加したものにアップデート
-        util.DatabaseHelper.update_item_review(item_id, item_review)
-
-        return redirect(f"/item?id={item_id}")
+        return redirect(f"/item/?id={item_id}")
     else:
-        return redirect(f"/item?id={item_id}")
+        return redirect(f"/item/?id={item_id}")
 
 
 def review_userful(request):
@@ -471,18 +450,9 @@ def review_userful(request):
         raise Http404
 
     # レビューを取得
-    result = util.DatabaseHelper.get_item(item_id)
-    item_review = json.loads(result["review"])
+    util.DatabaseHelper.useful_item_review(item_id, review_id)
 
-    for i in range(len(item_review)):
-        # 該当のものがあったら
-        if item_review[i]["id"] == review_id:
-            item_review[i]["useful"] += 1
-
-    item_output = json.dumps(item_review)
-    util.DatabaseHelper.update_item_review(item_id, item_output)
-
-    return redirect(f"/item?id={item_id}")
+    return redirect(f"/item/?id={item_id}")
 
 
 def category(request):
@@ -502,11 +472,7 @@ def category(request):
                     child_category = util.DatabaseHelper.get_item_from_category(i)
 
                     # カテゴリにアイテムがなかったらスキップ
-                    if not child_category:
-                        continue
-
-                    # resultに追加
-                    else:
+                    if child_category:
                         for child in child_category:
                             result.append(child)
             except AttributeError:
@@ -572,7 +538,7 @@ def history(request):
         return util.SessionHelper.delete_cookie(request, "history.html", context=context)
 
     else:
-        return redirect("/login")
+        return redirect("/login/")
 
 
 def browsing_history(request):
@@ -587,7 +553,8 @@ def browsing_history(request):
             page = 1
 
         # 閲覧履歴を取得し、アイテム情報を取得
-        browsing_history_obj = [i[0] for i in util.DatabaseHelper.get_user_view_history(info.mc_uuid)]
+        browsing_history_obj = [i[0] for i in
+                                util.DatabaseHelper.get_user_view_history(info.mc_uuid)]
         paging = util.ItemHelper.paging(browsing_history_obj, page)
         browsing_history_obj = paging[0]
 
@@ -611,7 +578,7 @@ def browsing_history(request):
         return render(request, "browsing-history.html", context=context)
 
     else:
-        return redirect("/login")
+        return redirect("/login/")
 
 
 def status(request):
@@ -648,7 +615,7 @@ def status(request):
         return render(request, "order-status.html", context=context)
 
     else:
-        return redirect("/login")
+        return redirect("/login/")
 
 
 def suggest(request):

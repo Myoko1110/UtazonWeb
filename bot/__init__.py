@@ -203,6 +203,80 @@ async def send_stock(discord_id, item):
     await author.send(embed=embed)
 
 
+async def send_returnstock_item_notfound(discord_id):
+    """
+    商品が無効であることをDMに送信します
+
+    :param discord_id: DiscordID
+    """
+
+    author = await client.fetch_user(discord_id)
+    embed = discord.Embed(
+        title="在庫返却の配達ができませんでした",
+        color=discord.Colour.red(),
+        description="お客様の在庫返却の商品が無効だったため在庫返却がキャンセルされましたことをお知らせします。"
+    )
+    embed.set_footer(text="またのご利用をお待ちしております。")
+    await author.send(embed=embed)
+
+
+async def send_returnstock_mailbox_full(discord_id):
+    """
+    ポストにアイテムが入れられないことをDMに送信します
+
+    :param discord_id: DiscordID
+    """
+
+    author = await client.fetch_user(discord_id)
+    embed = discord.Embed(
+        title="在庫返却の配達ができませんでした",
+        color=discord.Colour.yellow(),
+        description="お客様のポストに商品を入れるスペースがなかったため、配達ができませんでした。"
+                    + "つきましては、ポストの整理をしていただくようお願いします。１時間後に配達が再実行されます。"
+    )
+    embed.set_footer(text="またのご利用をお待ちしております。")
+    await author.send(embed=embed)
+
+
+async def send_returnstock_mailbox_notfound(discord_id):
+    """
+    ポストにアイテムが見つからないことをDMに送信します
+
+    :param discord_id: DiscordID
+    """
+
+    author = await client.fetch_user(discord_id)
+    embed = discord.Embed(
+        title="在庫返却の配達ができませんでした",
+        color=discord.Colour.yellow(),
+        description="お客様のポストが見つかりませんでした。家にポストが設置されているか、"
+                    + "または登録した座標にポストがあるかをご確認していただくようお願いします。１時間後に配達が再実行されます。"
+    )
+    embed.set_footer(text="またのご利用をお待ちしております。")
+
+    await author.send(embed=embed)
+
+
+async def send_complete_returnstock(discord_id):
+    """
+    配達が完了したことをDMに送信します
+
+    :param discord_id: DiscordID
+    """
+
+    global order_history_url
+
+    author = await client.fetch_user(discord_id)
+    embed = discord.Embed(
+        title="在庫返却の配達が完了しました",
+        color=discord.Colour.blue(),
+        description="お客様の商品の在庫返却の配達が完了しましたことをお知らせいたします。"
+    )
+    embed.set_footer(text="またのご利用をお待ちしております。")
+
+    await author.send(embed=embed)
+
+
 async def send_security(discord_id):
     """
     新しいログインをDMで送信します

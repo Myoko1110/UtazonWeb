@@ -45,6 +45,7 @@ $(function () {
     $("#submit").on('click', function () {
         title = $("#title").val();
         text = $("#text").val();
+        console.log(text)
         if (title === "" || text === "" || review === 0) {
             if (title === "") {
                 $("#title_required").css("display", "block");
@@ -60,6 +61,7 @@ $(function () {
         let url = new URL(window.location.href);
         let params = url.searchParams;
 
-        location.href = `/review/post/?id=${params.get('id')}&star=${review}&title=${title}&text=${text}`
+        var newURL = `/review/post/?id=${params.get('id')}&star=${review}&title=${title}&text=` + encodeURIComponent(text)
+        location.href = newURL
     });
 });

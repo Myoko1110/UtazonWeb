@@ -28,8 +28,8 @@ def mailbox_full(request):
     if not auth_password(request):
         raise Http404
 
-    uuid = request.META.get("HTTP_MCUUID")
-    order_id = request.META.get("HTTP_ORDERID")
+    uuid = request.POST.get("uuid")
+    order_id = request.POST.get("orderid")
 
     discord_id = util.UserHelper.get_info.from_uuid(uuid).discord_id
 
@@ -46,8 +46,8 @@ def mailbox_notfound(request):
     if not auth_password(request):
         raise Http404
 
-    uuid = request.META.get("HTTP_MCUUID")
-    order_id = request.META.get("HTTP_ORDERID")
+    uuid = request.POST.get("uuid")
+    order_id = request.POST.get("orderid")
 
     discord_id = util.UserHelper.get_info.from_uuid(uuid).discord_id
 
@@ -64,13 +64,77 @@ def order_complete(request):
     if not auth_password(request):
         raise Http404
 
-    uuid = request.META.get("HTTP_MCUUID")
-    order_id = request.META.get("HTTP_ORDERID")
+    uuid = request.POST.get("uuid")
+    order_id = request.POST.get("orderid")
 
     discord_id = util.UserHelper.get_info.from_uuid(uuid).discord_id
 
     asyncio.run_coroutine_threadsafe(
         bot.send_complete_order(discord_id, order_id),
+        bot.client.loop
+    )
+
+    return HttpResponse("success")
+
+
+@csrf_exempt
+def returnstock_mailbox_full(request):
+    if not auth_password(request):
+        raise Http404
+
+    uuid = request.POST.get("uuid")
+    discord_id = util.UserHelper.get_info.from_uuid(uuid).discord_id
+
+    asyncio.run_coroutine_threadsafe(
+        bot.send_returnstock_mailbox_full(discord_id),
+        bot.client.loop
+    )
+
+    return HttpResponse("success")
+
+
+@csrf_exempt
+def returnstock_item_notfound(request):
+    if not auth_password(request):
+        raise Http404
+
+    uuid = request.POST.get("uuid")
+    discord_id = util.UserHelper.get_info.from_uuid(uuid).discord_id
+
+    asyncio.run_coroutine_threadsafe(
+        bot.send_returnstock_item_notfound(discord_id),
+        bot.client.loop
+    )
+
+    return HttpResponse("success")
+
+
+@csrf_exempt
+def returnstock_mailbox_notfound(request):
+    if not auth_password(request):
+        raise Http404
+
+    uuid = request.POST.get("uuid")
+    discord_id = util.UserHelper.get_info.from_uuid(uuid).discord_id
+
+    asyncio.run_coroutine_threadsafe(
+        bot.send_returnstock_mailbox_notfound(discord_id),
+        bot.client.loop
+    )
+
+    return HttpResponse("success")
+
+
+@csrf_exempt
+def returnstock_complete(request):
+    if not auth_password(request):
+        raise Http404
+
+    uuid = request.POST.get("uuid")
+    discord_id = util.UserHelper.get_info.from_uuid(uuid).discord_id
+
+    asyncio.run_coroutine_threadsafe(
+        bot.send_complete_returnstock(discord_id),
         bot.client.loop
     )
 

@@ -192,7 +192,7 @@ def buy_confirm(request):
 
     else:
         # 未ログイン処理
-        return redirect("/login")
+        return redirect("/login/")
 
 
 def buy_cancel(request):

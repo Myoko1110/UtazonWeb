@@ -30,7 +30,7 @@ def mypage(request):
         return render(request, "mypage.html", context=context)
 
     else:
-        return redirect("/login")
+        return redirect("/login/")
 
 
 def list_item(request):
@@ -57,7 +57,7 @@ def list_item(request):
         return render(request, "list-item.html", context=context)
 
     else:
-        return redirect("/login")
+        return redirect("/login/")
 
 
 @csrf_exempt
@@ -239,7 +239,7 @@ def on_sale(request):
         return render(request, "onsale.html", context=context)
 
     else:
-        return redirect("/login")
+        return redirect("/login/")
 
 
 def item_edit(request):
@@ -267,7 +267,7 @@ def item_edit(request):
         return render(request, "edit-item.html", context=context)
 
     else:
-        return redirect("/login")
+        return redirect("/login/")
 
 
 @csrf_exempt
@@ -388,6 +388,7 @@ def item_stock(request):
 
         item_id = request.GET.get("id")
         item = util.DatabaseHelper.get_item(item_id)
+        stack = util.DatabaseHelper.get_item_stack(item_id)
 
         if not item or item["mc_uuid"] != info.mc_uuid:
             raise Http404
@@ -398,6 +399,7 @@ def item_stock(request):
 
         context = {
             "item": item,
+            "stack": stack,
             "error": error,
             "waiting_stock": waiting_stock,
             "categories": util.ItemHelper.get_category.all(),
@@ -409,7 +411,7 @@ def item_stock(request):
         return render(request, "add-stock.html", context=context)
 
     else:
-        return redirect("/login")
+        return redirect("/login/")
 
 
 @csrf_exempt
@@ -443,18 +445,25 @@ def item_stock_post(request):
         item_name = item_stack["item_display_name"]
         item_enchantment = item_stack["item_enchantments"]
 
-        error = False
+        error1 = False
         for i in items:
-            item_stack = waiting_stock[i]
-            if item_amount != item_stack["amount"]:
-                error = True
-            elif item_material != item_stack["item_material"]:
-                error = True
-            elif item_name != item_stack["item_display_name"]:
-                error = True
-            elif item_enchantment != item_stack["item_enchantments"]:
-                error = True
+            j = waiting_stock[i]
+            if item_amount != j["amount"]:
+                error1 = True
+            elif item_material != j["item_material"]:
+                error1 = True
+            elif item_name != j["item_display_name"]:
+                error1 = True
+            elif item_enchantment != j["item_enchantments"]:
+                error1 = True
+
+        if error1:
+            return redirect(f"/mypage/on_sale/stock/?id={item_id}&error=1")
+
         stock = len(items)
+
+        if item_stack["stock"] + stock > 5000:
+            return redirect(f"/mypage/on_sale/stock/?id={item_id}&error=2")
 
         for i in items:
             waiting_stock[i] = None
@@ -465,10 +474,7 @@ def item_stock_post(request):
             info.mc_uuid, json.dumps(waiting_stock)
         )
 
-        if error:
-            return redirect(f"/mypage/on_sale/stock/?id={item_id}&error=1")
-        else:
-            return redirect(f"/item/?id={item_id}")
+        return redirect(f"/item/?id={item_id}")
 
 
 def item_delete(request):
@@ -486,48 +492,12 @@ def item_delete(request):
 
         stock = util.DatabaseHelper.get_item_stock(item_id)
 
-        if not return_waiting_stock(info.mc_uuid, item_id, stock):
-            return redirect("/mypage/on_sale/?error=1")
-
+        if stock != 0:
+            util.DatabaseHelper.add_return_stock(info.mc_uuid, item_id, stock)
         util.DatabaseHelper.delete_item(item_id)
-
         return redirect("/mypage/on_sale/")
 
-
-def return_waiting_stock(mc_uuid, item_id, amount: int):
-    waiting_stock = json.loads(util.DatabaseHelper.get_waiting_stock(mc_uuid))
-    empty_indexes = [i for i, item in enumerate(waiting_stock) if item is None]
-
-    if amount > len(empty_indexes):
-        return False
-
-    item_stack = util.DatabaseHelper.get_item_stack(item_id)
-    amount = item_stack["stack_size"]
-    item_material = item_stack["item_material"]
-    item_display_name = item_stack["item_display_name"]
-    item_enchantments = item_stack["item_enchantments"]
-    item_damage = item_stack["item_damage"]
-
-    new_items_tack = {
-        "amount": amount,
-        "item_material": item_material,
-        "item_display_name": item_display_name,
-        "item_enchantments": item_enchantments,
-        "item_damage": item_damage,
-    }
-
-    counter = 0
-    for i in empty_indexes:
-        waiting_stock[i] = new_items_tack
-        counter += 1
-
-        if counter == amount:
-            break
-
-    util.DatabaseHelper.update_waiting_stock(mc_uuid, json.dumps(waiting_stock))
-    return True
-
-
+        
 def item_return(request):
     is_session = util.SessionHelper.is_session(request)
     if is_session.valid:
@@ -554,7 +524,7 @@ def item_return(request):
         return render(request, "return-stock.html", context=context)
 
     else:
-        return redirect("/login")
+        return redirect("/login/")
 
 
 def item_return_post(request):
@@ -568,9 +538,5 @@ def item_return_post(request):
         if util.DatabaseHelper.get_item(item_id)["mc_uuid"] != info.mc_uuid:
             raise Http404
 
-        if not return_waiting_stock(info.mc_uuid, item_id, amount):
-            return redirect("/mypage/on_sale/return?error=1")
-
-        util.DatabaseHelper.reduce_stock(item_id, amount)
-
+        util.DatabaseHelper.add_return_stock(info.mc_uuid, item_id, amount)
         return redirect("/mypage/on_sale/")

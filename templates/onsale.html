@@ -280,9 +280,9 @@
 								{% endif %}
 								</div>
                                 <div class="main-tool">
-                                    <a href="edit/?id={{ child.item_id }}" style="background-color: #14adff;padding: 5px 10px;font-size: 15px;border-radius: 4px;">編集する</a>
-                                    <a href="stock/?id={{ child.item_id }}" style="!important;background-color: #14adff;padding: 5px 10px;font-size: 15px;border-radius: 4px;">在庫を追加する</a>
-                                    <a href="return/?id={{ child.item_id }}" style="!important;background-color: #14adff;padding: 5px 10px;font-size: 15px;border-radius: 4px;">在庫を手元に戻す</a>
+                                    <a href="stock/?id={{ child.item_id }}" style="!important;background-color: #14adff;padding: 5px 10px;font-size: 15px;border-radius: 4px;">在庫を追加</a>
+                                    <a href="return/?id={{ child.item_id }}" style="!important;background-color: #14adff;padding: 5px 10px;font-size: 15px;border-radius: 4px;">在庫を返却</a>
+                                    <a href="edit/?id={{ child.item_id }}" style="background-color: #14adff;padding: 5px 10px;font-size: 15px;border-radius: 4px;">編集</a>
                                     <a id="item_delete_btn" onclick="on_delete(this)" data-id="{{ child.item_id }}" style="!important;background-color: #b12704;padding: 5px 10px;font-size: 15px;border-radius: 4px;color: #ffffff;cursor: pointer">販売停止・削除する</a>
                                 </div>
 							</div>
@@ -295,7 +295,7 @@
 		</div>
 	</div>
 </div>
-{% if error %}
+{% if error == "1" %}
 <div class="box" id="expires">
 	<div class="box__box">
 		<div class="box__close">
@@ -303,7 +303,33 @@
 		</div>
 
 		<h1 style="display: flex;align-items: center"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 512 512" style="fill: #ad0000;margin-right: 10px"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>サーバーエラー</h1>
-		<p>商品の在庫を入れる場所がありませんでした。アイテムを整理してからもう一度お試し下さい。</p>
+		<p>サーバーに接続できませんでした。時間をおいてから再度お試しください。問題が続くようであれば、運営にお問い合わせ下さい。</p>
+        <a onclick="close_box()" style="cursor: pointer;background-color: #ad0000;">閉じる</a>
+	</div>
+</div>
+{% endif %}
+{% if error == "2" %}
+<div class="box" id="expires">
+	<div class="box__box">
+		<div class="box__close">
+			<svg onclick="close_box()" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+		</div>
+
+		<h1 style="display: flex;align-items: center"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 512 512" style="fill: #ad0000;margin-right: 10px"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>エラー</h1>
+		<p>お客様のポストが見つかりませんでした。家にポストが設置されているか、または登録した座標にポストがあるかをご確認の上、もう一度お試し下さい。</p>
+        <a onclick="close_box()" style="cursor: pointer;background-color: #ad0000;">閉じる</a>
+	</div>
+</div>
+{% endif %}
+{% if error == "3" %}
+<div class="box" id="expires">
+	<div class="box__box">
+		<div class="box__close">
+			<svg onclick="close_box()" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+		</div>
+
+		<h1 style="display: flex;align-items: center"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 512 512" style="fill: #ad0000;margin-right: 10px"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>エラー</h1>
+		<p>お客様のポストに商品を入れるスペースがなかったため、商品を入れることができませんでした。ポストの整理をしていただいた上、もう一度お試し下さい。</p>
         <a onclick="close_box()" style="cursor: pointer;background-color: #ad0000;">閉じる</a>
 	</div>
 </div>

@@ -505,11 +505,11 @@
 						<h2>{{ child.title }}</h2>
 					</div>
 					<div class="review-list__value">
-						<p class="review-list__value-date">{{ child.date.year }}年{{ child.date.month }}月{{ child.date.day }}日にレビュー済み</p>
-						<p class="review-list__value-text">{{ child.value }}</p>
+						<p class="review-list__value-date">{{ child.created_at.year }}年{{ child.created_at.month }}月{{ child.created_at.day }}日にレビュー済み</p>
+						<p class="review-list__value-text">{{ child.value | linebreaksbr }}</p>
 						<div class="review-list__value-use">
-							{% if child.useful != 0 %}
-							<p class="review-list__value-use-text">{{ child.useful }}人のお客様がこれが役に立ったと考えています</p>
+							{% if child.helpful != 0 %}
+							<p class="review-list__value-use-text">{{ child.helpful }}人のお客様がこれが役に立ったと考えています</p>
 							{% endif %}
 							<div class="review-list__value-use-btn">
 								<a class="review-list__value-use-btn-useful" data-href="/review/userful/?id={{ item_id }}&review_id={{ child.id }}">役に立った</a>

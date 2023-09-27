@@ -109,7 +109,7 @@ def get_item_from_category(cat_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
-            sql = "SELECT * FROM utazon_item WHERE category=%s"
+            sql = "SELECT * FROM utazon_item WHERE category=%s AND status=true"
             cursor.execute(sql, (cat_id,))
 
             # cat_idのレコードを取得
@@ -124,7 +124,7 @@ def get_item_from_user(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
-            sql = "SELECT * FROM utazon_item WHERE mc_uuid=%s"
+            sql = "SELECT * FROM utazon_item WHERE mc_uuid=%s AND status=true"
             cursor.execute(sql, (mc_uuid,))
 
             # cat_idのレコードを取得
@@ -154,8 +154,10 @@ def search_item(item_query: list, category=None):
             result = []
             if category:
                 for i in util.ItemHelper.get_category.child(category):
+
+                    sql = "SELECT * FROM utazon_item WHERE MATCH(item_name) AGAINST(%s) AND category=%s AND status=true"
                     for j in item_query.split("+"):
-                        sql += f" OR JSON_CONTAINS(search_keyword, '\"{j}\"', '$')"
+                        sql += f" OR JSON_CONTAINS(search_keyword, '\"{j}\"', '$') AND status=true"
 
                     sql += " ORDER BY purchases_number DESC, item_name"
                     cursor.execute(sql, (item_query, i))
@@ -166,10 +168,10 @@ def search_item(item_query: list, category=None):
                         result.append(k)
 
             else:
-                sql = "SELECT * FROM utazon_item WHERE MATCH(item_name) AGAINST(%s)"
+                sql = "SELECT * FROM utazon_item WHERE MATCH(item_name) AGAINST(%s) AND status=true"
 
                 for i in item_query.split("+"):
-                    sql += f" OR JSON_CONTAINS(search_keyword, '\"{i}\"', '$')"
+                    sql += f" OR JSON_CONTAINS(search_keyword, '\"{i}\"', '$') AND status=true"
 
                 sql += " ORDER BY purchases_number DESC, item_name"
                 cursor.execute(sql, (item_query,))
@@ -206,13 +208,27 @@ def update_user_later(later_value, mc_uuid):
     return True
 
 
-def update_item_review(item_id, value):
+def useful_item_review(item_id, id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "UPDATE utazon_item SET review=%s WHERE item_id=%s"
+            sql = "UPDATE utazon_review SET helpful=helpful+1 WHERE item_id=%s AND id=%s"
 
-            cursor.execute(sql, (value, item_id,))
+            cursor.execute(sql, (item_id, id))
+            cnx.commit()
+    return True
+
+
+def add_item_review(item_id, star, title, value, mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            now = datetime.datetime.now()
+
+            sql = """INSERT INTO `utazon_review` (item_id, created_at, star, title, value, helpful, mc_uuid)
+                     VALUES (%s, %s, %s, %s, %s, 0, %s)"""
+
+            cursor.execute(sql, (item_id, now, star, title, value, mc_uuid))
             cnx.commit()
     return True
 
@@ -292,7 +308,7 @@ def save_session(session_id, session_value, mc_uuid, access_token, now, expires,
                 # sessionテーブルに保存
                 sql = """INSERT INTO `utazon_session` (
                          `session_id`, `session_val`, `mc_uuid`, `access_token`,
-                         `login_date`, `expires`, `logged_IP`
+                         `login_at`, `expires`, `logged_IP`
                          ) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
                 cursor.execute(sql, (
                     session_id, session_value, mc_uuid, access_token, now, expires, logged_IP))
@@ -316,7 +332,7 @@ def add_order(mc_uuid, items, delivery_time, order_id, amount, used_point):
             while True:
                 try:
                     sql = """INSERT IGNORE INTO `utazon_order` (  
-                                         `mc_uuid`, `order_item`, `delivery_time` ,`order_time`,
+                                         `mc_uuid`, `order_item`, `delivery_at` ,`order_at`,
                                          `order_id`, `amount`, `used_point`, `status`, `canceled`
                                          ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
                     cursor.execute(sql, (
@@ -378,7 +394,7 @@ def redelivery_order(order_id, delivery_time):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "UPDATE utazon_order SET status=true, error=null, delivery_time=%s WHERE order_id=%s"
+            sql = "UPDATE utazon_order SET status=true, error=null, delivery_at=%s WHERE order_id=%s"
             cursor.execute(sql, (delivery_time, order_id,))
             cnx.commit()
     return True
@@ -388,7 +404,7 @@ def get_user_history(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
-            sql = "SELECT * FROM utazon_order WHERE mc_uuid=%s ORDER BY order_time DESC"
+            sql = "SELECT * FROM utazon_order WHERE mc_uuid=%s ORDER BY order_at DESC"
             cursor.execute(sql, (mc_uuid,))
 
             # mc_uuidのレコードを取得
@@ -403,7 +419,7 @@ def get_user_view_history(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "SELECT item_id FROM utazon_browsinghistory WHERE mc_uuid=%s ORDER BY browsed_time DESC"
+            sql = "SELECT item_id FROM utazon_browsinghistory WHERE mc_uuid=%s ORDER BY browsed_at DESC"
             cursor.execute(sql, (mc_uuid,))
 
             # mc_uuidのレコードを取得
@@ -418,7 +434,7 @@ def get_user_view_history_four(mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
-            sql = "SELECT item_id FROM utazon_browsinghistory WHERE mc_uuid=%s ORDER BY browsed_time DESC LIMIT 4"
+            sql = "SELECT item_id FROM utazon_browsinghistory WHERE mc_uuid=%s ORDER BY browsed_at DESC LIMIT 4"
             cursor.execute(sql, (mc_uuid,))
 
             # mc_uuidのレコードを取得
@@ -434,7 +450,7 @@ def add_user_view_history(mc_uuid, item_id):
         with cnx.cursor() as cursor:
             now = datetime.datetime.now()
 
-            sql = """INSERT INTO utazon_browsinghistory (mc_uuid, item_id, browsed_time
+            sql = """INSERT INTO utazon_browsinghistory (mc_uuid, item_id, browsed_at
                      ) VALUES (%s, %s, %s)"""
             cursor.execute(sql, (mc_uuid, item_id, now))
             cnx.commit()
@@ -525,12 +541,14 @@ def increase_purchases(item_id):
 
 def add_item(item_id, item_name, price, image, kind, category, search_keyword, mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    now = datetime.datetime.now()
     with cnx:
         with cnx.cursor() as cursor:
-            sql = """INSERT INTO utazon_item (item_id, item_name, price, image, review, kind, category, purchases_number, search_keyword, mc_uuid)
-                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+            sql = """INSERT INTO utazon_item (item_id, item_name, price, image, review, kind,
+                     category, purchases_number, search_keyword, mc_uuid, created_at, status)
+                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, true)"""
             cursor.execute(sql,
-                           (item_id, item_name, price, image, "[]", kind, category, 0, search_keyword, mc_uuid,))
+                           (item_id, item_name, price, image, "[]", kind, category, 0, search_keyword, mc_uuid, now))
             cnx.commit()
     return True
 
@@ -539,9 +557,7 @@ def delete_item(item_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
-            sql = "DELETE FROM utazon_item WHERE item_id=%s;"
-            cursor.execute(sql, (item_id,))
-            sql = "DELETE FROM utazon_itemstack WHERE item_id=%s"
+            sql = "UPDATE utazon_item SET status=false WHERE item_id=%s"
             cursor.execute(sql, (item_id,))
             cnx.commit()
     return True
@@ -563,7 +579,7 @@ def add_revenues(mc_uuid, item_id, item_price, qty, amount, sale_by):
         with cnx.cursor() as cursor:
             now = datetime.datetime.now()
 
-            sql = """INSERT INTO utazon_revenues (mc_uuid, item_id, item_price, qty, amount, bought_datetime, sale_by)
+            sql = """INSERT INTO utazon_revenues (mc_uuid, item_id, item_price, qty, amount, bought_at, sale_by)
                      VALUES (%s, %s, %s, %s, %s, %s, %s)"""
             cursor.execute(sql, (mc_uuid, item_id, item_price, qty, amount, now, sale_by))
             cnx.commit()
@@ -578,7 +594,7 @@ def get_revenues():
                                                            microsecond=0) - datetime.timedelta(
                 days=3)
 
-            sql = "SELECT * FROM utazon_revenues WHERE bought_datetime < %s"
+            sql = "SELECT * FROM utazon_revenues WHERE bought_at < %s"
             cursor.execute(sql, (threedaysago,))
             result = cursor.fetchall()
     return result
@@ -592,7 +608,7 @@ def delete_revenues():
                                                            microsecond=0) - datetime.timedelta(
                 days=3)
 
-            sql = "DELETE FROM utazon_revenues WHERE bought_datetime < %s"
+            sql = "DELETE FROM utazon_revenues WHERE bought_at < %s"
             cursor.execute(sql, (threedaysago,))
             cnx.commit()
     return True
@@ -630,6 +646,31 @@ def update_waiting_stock(mc_uuid, value):
             cursor.execute(sql, (value, mc_uuid))
             cnx.commit()
     return True
+
+
+def add_return_stock(mc_uuid, item_id, amount):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            now = datetime.datetime.now()
+            hour_ago = now + datetime.timedelta(minutes=60)
+
+            sql = """INSERT INTO utazon_returnstock (mc_uuid, item_id, amount, created_at, delivery_at, status)
+                   VALUES(%s, %s, %s, %s, %s, %s)"""
+            cursor.execute(sql, (mc_uuid, item_id, amount, now, hour_ago, True))
+            cnx.commit()
+    return True
+
+
+def get_review(item_id):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+
+            sql = """SELECT * FROM utazon_review WHERE item_id=%s"""
+            cursor.execute(sql, (item_id,))
+            result = cursor.fetchall()
+    return result
 
 
 def get_special_feature():

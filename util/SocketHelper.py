@@ -91,3 +91,4 @@ def deposit_player(uuid: str, amount: float, action: str, reason: str):
 
     except ConnectionRefusedError:
         return False
+

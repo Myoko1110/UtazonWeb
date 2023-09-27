@@ -226,17 +226,46 @@
 		<div class="review">
             <div class="review-title">
 				<h2>在庫を追加</h2>
-				<div class="review-title__item">
+				<div class="review-title__item" data-stock="{{ stack.stock }}" data-namespacedkey="{{ stack.item_material }}" data-amount="{{ stack.stack_size }}" data-enchantment="{{ stack.item_enchantments }}" data-damage="{{ stack.item_damage }}" data-name="{{ stack.item_display_name }}">
 					<img src="{{ item.images.0 }}">
 					<p data-id="{{ item.item_id }}" data-uuid="{{ item.mc_uuid }}">{{ item.item_name }}</p>
 				</div>
+                <p style="margin: 20px 0 0 0;">商品の概要</p>
+                <table>
+                    <tr>
+                        <th>アイテム名</th>
+                        {% if stack.item_display_name %}<td>{{ stack.item_display_name }}</td>{% else %}<td>&lt;null&gt;</td>{% endif %}
+                    </tr>
+                    <tr>
+                        <th>アイテムの種類</th>
+                        <td>{{ stack.item_material }}</td>
+                    </tr>
+                    <tr>
+                        <th>エンチャント情報</th>
+                        {% if stack.item_enchantments == "{}" %}<td>&lt;null&gt;</td>{% else %}<td>{{ stack.item_enchantments }}</td>{% endif %}
+                    </tr>
+                    <tr>
+                        <th>耐久値の減り</th>
+                        <td>{{ stack.item_damage }}</td>
+                    </tr>
+                    <tr>
+                        <th>スタック数</th>
+                        <td>{{ stack.stack_size }}</td>
+                    </tr>
+                    <tr>
+                        <th>現在の在庫数</th>
+                        <td>{{ stack.stock }}</td>
+                    </tr>
+                </table>
 			</div>
             <form method="post">
 			<div class="review-value">
                 <div class="review-value__item">
                     <h3>在庫を追加するアイテムを選択<span class="required" id="item_required">1つ以上選択して下さい</span>
-                        {% if error == "1" %}<span class="required" style="display: block">出品時と同じアイテム・アイテム名・エンチャント・スタック数・耐久値のものを選択して下さい。</span>{% endif %}
-                        <span class="required" id="item_same">出品時と同じアイテム・アイテム名・エンチャント・スタック数・耐久値のものを選択して下さい。</span>
+                        {% if error == "1" %}<span class="required" style="display: block">出品時と同じアイテム・アイテム名・エンチャント・スタック数・耐久値のものを選択して下さい</span>{% endif %}
+                        <span class="required" id="item_same">出品時と同じアイテム・アイテム名・エンチャント・スタック数・耐久値のものを選択して下さい</span>
+                        <span class="required" id="item_over">上限在庫数は5000個です</span>
+                        {% if error == "2" %}<span class="required" style="display: block">上限在庫数は5000個です</span>{% endif %}
                     </h3>
                     <div class="chest">
                         <span class="muci">
@@ -249,7 +278,7 @@
                                     <span class="muci-slot">
                                         {% if i %}
                                         {% with texture_path="textures/item/" ext=".png" %}
-                                        <div data-index="{{ forloop.counter0 }}" data-namespacedkey="{{ i.item_material }}" data-amount="{{ i.amount }}" data-enchantment="{{ i.item_enchantments }}" data-damage="{{ i.item_damage }}">
+                                        <div data-index="{{ forloop.counter0 }}" data-namespacedkey="{{ i.item_material }}" data-amount="{{ i.amount }}" data-enchantment="{{ i.item_enchantments }}" data-damage="{{ i.item_damage }}" data-name="{{ i.item_display_name }}">
                                             <img src="{% static texture_path|add:i.item_material|add:ext %}">
                                             {% if i.amount != 1 %}<p>{{ i.amount }}</p>{% endif %}
                                         </div>
