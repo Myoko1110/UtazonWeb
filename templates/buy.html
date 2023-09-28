@@ -225,6 +225,7 @@
 <div class="wrapper">
 	<div class="subwrapper">
 		<div class="buy">
+            {% if not invalid_item %}
 			<div class="buy-title">
 				<h2>レジ</h2>
 				{% if buy_now %}
@@ -347,6 +348,9 @@
 			{% else %}
 			<h3>商品がありません</h3>
 			{% endif %}
+            {% else %}
+            <h3>無効な商品が指定されています</h3>
+            {% endif %}
 		</div>
 	</div>
 </div>

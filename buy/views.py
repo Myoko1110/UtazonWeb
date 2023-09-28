@@ -38,6 +38,11 @@ def buy(request):
         item_total = items_info.total_amount
         user_cart_number = items_info.total_qty
 
+        invalid_item = False
+        item_status = [i["status"] for i in user_cart]
+        if 0 in item_status:
+            invalid_item = True
+
         # ユーザー残高取得
         player_balance = util.SocketHelper.get_balance(info.mc_uuid)
 
@@ -55,6 +60,7 @@ def buy(request):
 
         context = {
             "session": is_session,
+            "invalid_item": invalid_item,
             "info": info,
             "user_cart": user_cart,
             "user_cart_number": user_cart_number,
@@ -99,6 +105,10 @@ def buy_confirm(request):
         order_item_obj = util.ItemHelper.get_item.cart_list(order_item)
         amount = order_item_obj.total_amount
         order_item_list = order_item_obj.item_list
+
+        item_status = [i["status"] for i in order_item_list]
+        if 0 in item_status:
+            raise Exception("無効な商品が指定されました")
 
         # お届け時間を計算
         delivery_time = util.ItemHelper.calc_delivery_time_perfect()

@@ -58,9 +58,6 @@ def item(request):
     if not result:
         raise Http404
 
-    if not result["status"]:
-        raise Http404
-
     # レビューにデータを追加
     item_review = util.ItemHelper.add_review_data(util.DatabaseHelper.get_review(item_id))
 
@@ -102,6 +99,7 @@ def item(request):
         "item_review_av": item_review_av,
         "item_review_av_format": item_review_av_format,
         "item_category": item_category,
+        "status": result["status"],
         "rand_time": rand_time,
         "point_return": util.ItemHelper.point_return_percent,
         "categories": util.ItemHelper.get_category.all(),

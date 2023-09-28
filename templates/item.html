@@ -284,11 +284,12 @@
 
 							<span style="opacity: 0;">5つ星のうち{{ item_review_av }}</span>
 						</div>
-						<a>{{ item_review_number }}個の評価</a>
+						<a href="#review">{{ item_review_number }}個の評価</a>
 					</div>
 					{% endif %}
 				</div>
 				<div class="item-about__description-below">
+                    {% if status %}
                     {% if sale.status %}
                     <p class="item-about__description-below__sale">タイムセール</p>
                     <div>
@@ -300,9 +301,11 @@
                         <h1><span>{{ money_unit }}</span>{{ item_price }}</h1>
                     </div>
                     {% endif %}
-                    <p>ポイント:<span>{{ item_point }}pt</span><span>({{ point_return }}%)</span><a>詳細はこちら</a></p>
+                    <p>ポイント:<span>{{ item_point }}pt</span><span>({{ point_return }}%)</span><!--<a>詳細はこちら</a>--></p>
+                    {% endif %}
 				</div>
 				<div class="item-about__description-buy">
+                    {% if status %}
 					<div class="item-about__buy-delivery">
 						<p class="item-about__buy-delivery-box">
 							<span class="item-about__buy-delivery-type">無料配送</span>
@@ -314,20 +317,23 @@
 						<svg class="item-about__buy-address-map" viewBox="0 0 210 210" xmlns="http://www.w3.org/2000/svg"><defs id="defs2" /><g><path id="path790" style="fill:none;stroke:#000000;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers;stop-color:#000000;stroke-opacity:1;stroke-dasharray:none" d="m 175.59797,93.153942 c 0,39.039728 -70.6877,95.819318 -70.6877,95.819318 0,0 -70.6877,-56.77957 -70.687702,-95.819318 2e-6,-39.039739 31.647965,-70.687702 70.687702,-70.6877 39.03974,3e-6 70.6877,31.647964 70.6877,70.6877 z" /><circle style="fill:none;stroke:#000000;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers;stop-color:#000000" id="path790-3" cx="104.60429" cy="93.153938" r="34.623932" /></g></svg>
 						<p>〇〇 - 1-0001 にお届け</p>
 					</div>
+                    {% endif %}
 					<div class="item-about__buy-stock">
 						<p>
-							{% if item_stock > 15 %}
+                            {% if not status %}
+                            <span class="item-about__buy-stock-in" style="color: #B12704;">この商品は現在お取扱いできません</span>
+							{% elif item_stock > 15 %}
 							<span class="item-about__buy-stock-in">在庫あり。</span>
 							{% elif item_stock <= 15 and item_stock >= 1 %}
 							<span class="item-about__buy-stock-out">残り{{ item_stock }}点 ご注文はお早めに</span>
                             {% elif not item_stock %}
                             <span class="item-about__buy-stock-out">在庫なし</span>
 							{% endif %}
-							<span><span class="item-about__buy-stock-status">在庫状況</span>について</span>
+							<!--<span><span class="item-about__buy-stock-status">在庫状況</span>について</span>-->
                         </p>
 					</div>
 					<div class="item-about__buy-order">
-						{% if item_stock != 0 and session %}
+						{% if item_stock != 0 and session and status %}
 						<form method="get" action="">
 							<div class="item-about__buy-order-number">
 								<p>数量:</p>
@@ -336,7 +342,7 @@
 							<a onclick="location.href=`../buy?item=[[{{ item_id }}, ${cart_number}]]`" class="item-about__buy-order-input">今すぐ買う</a>
 							<a onclick="location.href=`../cart/add/?id={{ item_id }}&n=${cart_number}`" class="item-about__buy-order-cart">カートに入れる</a>
 						</form>
-                        {% elif item_stock == 0 %}
+                        {% elif item_stock == 0 or not status %}
 						{% else %}
 						<a href="../login" class="item-about__buy-order-cart" type="submit">ログインして購入</a>
 						{% endif %}
@@ -378,11 +384,12 @@
 				</div>
 			</div>
 			<div class="item-about__buy">
+                {% if status %}
 				<div class="item-about__buy-price">
 					<h1><span>{{ money_unit }}</span>{{ item_price }}</h1>
 				</div>
 				<div class="item-about__buy-point">
-					<p>ポイント:<span>{{ item_point }}pt</span><span>({{ point_return }}%)</span><a>詳細はこちら</a></p>
+					<p>ポイント:<span>{{ item_point }}pt</span><span>({{ point_return }}%)</span><!--<a>詳細はこちら</a>--></p>
 				</div>
 				<div class="item-about__buy-delivery">
 					<p class="item-about__buy-delivery-box">
@@ -395,19 +402,22 @@
 					<svg class="item-about__buy-address-map" viewBox="0 0 210 210" xmlns="http://www.w3.org/2000/svg"><defs id="defs2" /><g><path id="path790" style="fill:none;stroke:#000000;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers;stop-color:#000000;stroke-opacity:1;stroke-dasharray:none" d="m 175.59797,93.153942 c 0,39.039728 -70.6877,95.819318 -70.6877,95.819318 0,0 -70.6877,-56.77957 -70.687702,-95.819318 2e-6,-39.039739 31.647965,-70.687702 70.687702,-70.6877 39.03974,3e-6 70.6877,31.647964 70.6877,70.6877 z" /><circle style="fill:none;stroke:#000000;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers;stop-color:#000000" id="path790-3" cx="104.60429" cy="93.153938" r="34.623932" /></g></svg>
 					<p>〇〇 - 1-0001 にお届け</p>
 				</div>
+                {% endif %}
 				<div class="item-about__buy-stock">
 					<p>
-						{% if item_stock > 15 %}
+                        {% if not status %}
+                        <span class="item-about__buy-stock-in" style="color: #B12704;">この商品は現在お取扱いできません</span>
+						{% elif item_stock > 15 %}
 						<span class="item-about__buy-stock-in">在庫あり。</span>
 						{% elif item_stock <= 15 and item_stock >= 1%}
 						<span class="item-about__buy-stock-out">残り{{ item_stock }}点 ご注文はお早めに</span>
                         {% elif not item_stock %}
                         <span class="item-about__buy-stock-out">在庫なし</span>
 						{% endif %}
-						<span><span class="item-about__buy-stock-status">在庫状況</span>について</span>
+						<!--<span><span class="item-about__buy-stock-status">在庫状況</span>について</span>-->
 				</div>
 				<div class="item-about__buy-order">
-					{% if item_stock != 0 and session %}
+					{% if item_stock != 0 and session and status %}
 					<form method="get" action="">
 						<div class="item-about__buy-order-number">
 							<p>数量:</p>
@@ -416,7 +426,7 @@
 						<a onclick="location.href=`../buy?item=[[{{ item_id }}, ${cart_number}]]`" class="item-about__buy-order-input">今すぐ買う</a>
 						<a onclick="location.href=`../cart/add/?id={{ item_id }}&n=${cart_number}`" class="item-about__buy-order-cart">カートに入れる</a>
 					</form>
-                    {% elif item_stock == 0 %}
+                    {% elif item_stock == 0 or not status %}
 					{% else %}
 					<a href="../login" class="item-about__buy-order-cart" type="submit">ログインして購入</a>
 					{% endif %}
@@ -424,7 +434,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="review">
+	<div class="review" id="review">
 		<div class="review-left">
 			<h2>カスタマーレビュー</h2>
 			{% if item_review_av %}
