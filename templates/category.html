@@ -280,6 +280,15 @@
 						</div>
 					</li>
 					{% endfor %}
+                    <div style="display: flex;justify-content: center">
+                        <div class="main-page">
+                            <a {% if not revable %}class="isInvalid"{% else %}href="?page={{ prev_page }}"{% endif %}>前へ</a>
+                            {% for i in result_range %}
+                            <a {% if i == page %}style="font-weight: 700;border: 1px #000 solid"{% else %}href="?page={{ i }}" class="isActive"{% endif %}>{{ i }}</a>
+                            {% endfor %}
+                            <a {% if not nextable %}class="isInvalid"{% else %}href="?page={{ next_page }}"{% endif %}>次へ</a>
+                        </div>
+                    </div>
 					{% else %}
 					<h2>カテゴリーの商品がありません</h2>
 					{% endif %}

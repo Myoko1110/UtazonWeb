@@ -358,7 +358,7 @@ def search(request):
 
     # 結果を取得し、アイテム情報を取得
     result = util.DatabaseHelper.search_item(query, category_en)
-    paging = util.ItemHelper.paging(result, page)
+    paging = util.ItemHelper.paging(result, page, 25)
 
     result = util.ItemHelper.get_item.obj_list(paging[0])
 
@@ -488,8 +488,23 @@ def category(request):
     # カテゴリーを取得
     category_obj = util.ItemHelper.get_category.info.from_id(cat_id)
 
+    page = request.GET.get("page")
+    if page:
+        page = int(page)
+    else:
+        page = 1
+    paging = util.ItemHelper.paging(result, page, 25)
+    result = paging[0]
+
     is_session = util.SessionHelper.is_session(request)
     context = {
+        "result_length": paging[1],
+        "result_range": paging[5],
+        "revable": paging[3],
+        "nextable": paging[4],
+        "page": page,
+        "next_page": page + 1,
+        "prev_page": page - 1,
         "result": result,
         "category": category_obj,
         "categories": util.ItemHelper.get_category.all(),
@@ -516,10 +531,25 @@ def history(request):
     if is_session.valid:
         info = util.UserHelper.get_info.from_session(request)
 
+        page = request.GET.get("page")
+        if page:
+            page = int(page)
+        else:
+            page = 1
+
         # 注文履歴を取得
         order_history = util.UserHelper.get_history(info.mc_uuid)
+        paging = util.ItemHelper.paging(order_history, page, 10)
+        order_history = paging[0]
 
         context = {
+            "result_length": paging[1],
+            "result_range": paging[5],
+            "revable": paging[3],
+            "nextable": paging[4],
+            "page": page,
+            "next_page": page + 1,
+            "prev_page": page - 1,
             "order_history": order_history,
             "session": is_session,
             "info": info,
@@ -555,7 +585,7 @@ def browsing_history(request):
         # 閲覧履歴を取得し、アイテム情報を取得
         browsing_history_obj = [i[0] for i in
                                 util.DatabaseHelper.get_user_view_history(info.mc_uuid)]
-        paging = util.ItemHelper.paging(browsing_history_obj, page)
+        paging = util.ItemHelper.paging(browsing_history_obj, page, 25)
         browsing_history_obj = paging[0]
 
         result = util.ItemHelper.get_item.id_list(browsing_history_obj)
@@ -591,8 +621,8 @@ def status(request):
         order_obj = util.DatabaseHelper.get_order(order_id)
 
         # 時関系
-        order_time = order_obj["order_time"]
-        order_delivery = order_obj["delivery_time"]
+        order_time = order_obj["order_at"]
+        order_delivery = order_obj["delivery_at"]
 
         # 進捗%を取得
         status_per = util.calc_time_percentage(order_time, order_delivery)

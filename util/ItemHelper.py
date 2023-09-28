@@ -390,17 +390,17 @@ def calc_review_average(review_obj):
     return review_average
 
 
-def paging(result: list or tuple, page: int):
+def paging(result: list or tuple, page: int, count: int):
     """
     結果をページングします
     :return: [ページングした結果, 結果数, トータルのページ数, 次のページを表示可か, 前のページを表示可か, "ページングナビ用のrange"]
     """
 
     result_len = len(result)
-    page_len = math.ceil(result_len / 25)
+    page_len = math.ceil(result_len / count)
 
-    min_index = (page - 1) * 25
-    max_index = page * 25
+    min_index = (page - 1) * count
+    max_index = page * count
 
     if max_index > result_len:
         max_index = result_len

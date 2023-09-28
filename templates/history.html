@@ -242,7 +242,7 @@
 					<div class="history-list__info">
 						<div class="history-list__info-child">
 							<span>注文日</span>
-							<p>{{ child.order_time.year }}年{{ child.order_time.month }}月{{ child.order_time.day }}日</p>
+							<p>{{ child.order_at.year }}年{{ child.order_at.month }}月{{ child.order_at.day }}日</p>
 						</div>
 						<div class="history-list__info-child">
 							<span>合計</span>
@@ -269,9 +269,9 @@
                             <h2>配達できませんでした<span style="font-weight: 400;font-style: italic;font-size: 18px">: ポストが見つかりません</span></h2>
                             {% endif %}
 						{% elif child.status %}
-						<h2>{{ child.delivery_time.year }}年{{ child.delivery_time.month }}月{{ child.delivery_time.day }}日 {{ child.delivery_time.hour }}時に配達予定です</h2>
+						<h2>{{ child.delivery_at.year }}年{{ child.delivery_at.month }}月{{ child.delivery_at.day }}日 {{ child.delivery_at.hour }}時に配達予定です</h2>
 						{% else %}
-						<h2>{{ child.delivery_time.year }}年{{ child.delivery_time.month }}月{{ child.delivery_time.day }}日に配達しました</h2>
+						<h2>{{ child.delivery_at.year }}年{{ child.delivery_at.month }}月{{ child.delivery_at.day }}日に配達しました</h2>
                         {% endif %}
 						{% for item in child.order_item %}
 						<div class="history-list__value-product">
@@ -317,9 +317,19 @@
 				</li>
 				{% endfor %}
 			</ul>
+            <div style="display: flex;justify-content: center">
+                <div class="main-page" style="width: fit-content">
+                    <a {% if not revable %}class="isInvalid"{% else %}href="?page={{ prev_page }}"{% endif %}>前へ</a>
+                    {% for i in result_range %}
+                    <a {% if i == page %}style="font-weight: 700;border: 1px #000 solid"{% else %}href="?page={{ i }}" class="isActive"{% endif %}>{{ i }}</a>
+                    {% endfor %}
+                    <a {% if not nextable %}class="isInvalid"{% else %}href="?page={{ next_page }}"{% endif %}>次へ</a>
+                </div>
+            </div>
 			{% else %}
 			<p>注文履歴がありません</p>
 			{% endif %}
+
 		</div>
 	</div>
 </div>

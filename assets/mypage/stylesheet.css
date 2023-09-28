@@ -213,6 +213,12 @@
     .mypage-title{
         margin: 0 10px;
     }
+    .mypage-main{
+        display: flex;
+        justify-content: center;
+        margin: 0 0 20px 0;
+        flex-wrap: wrap;
+    }
 }
 
 @media (max-width: 499px) {
