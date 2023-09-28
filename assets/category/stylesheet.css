@@ -60,6 +60,7 @@
     object-fit: contain;
     background-color: #f8f8f8;
     cursor: pointer;
+    padding: 0 8px;
 }
 
 .main-info {

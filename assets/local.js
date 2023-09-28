@@ -76,6 +76,7 @@ $(function () {
     });
 
     $(".nav-belt__search-input").on("click", function () {
+        console.log("clicked")
         $(".nav-belt__search-background").fadeIn(100);
     });
     $(".nav-belt__search-background").on("click", function () {

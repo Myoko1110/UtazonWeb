@@ -48,8 +48,12 @@ class get_item:
             item_info["sale"] = sale
 
             # レビュー平均
-            item_info["review"] = json.loads(item_info["review"])
+            item_info["review"] = util.DatabaseHelper.get_review(item_info["item_id"])
             item_info["review_av"] = calc_review_average(item_info["review"])
+
+            item_info["review_av_format"] = None
+            if item_info["review_av"]:
+                item_info["review_av_format"] = f"{item_info['review_av']:,.1f}"
 
             item_list.append(item_info)
 
@@ -86,8 +90,12 @@ class get_item:
             item_info["sale"] = sale
 
             # レビュー平均
-            item_info["review"] = json.loads(item_info["review"])
+            item_info["review"] = util.DatabaseHelper.get_review(item_info["item_id"])
             item_info["review_av"] = calc_review_average(item_info["review"])
+
+            item_info["review_av_format"] = None
+            if item_info["review_av"]:
+                item_info["review_av_format"] = f"{item_info['review_av']:,.1f}"
 
             item_list.append(item_info)
 

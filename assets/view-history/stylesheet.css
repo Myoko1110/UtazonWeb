@@ -86,6 +86,7 @@
     background-color: #f8f8f8;
     cursor: pointer;
     display: block;
+    padding: 0 8px;
 }
 
 .main-info {
