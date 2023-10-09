@@ -1,59 +1,53 @@
-from _decimal import Decimal
 from apscheduler.schedulers.background import BackgroundScheduler
 
-import util
-from config import settings
+from util import *
 
 allocation_per = Decimal(str(settings.ALLOCATION_PER)) / Decimal(100)
 
 
 def deposit_revenues():
-    revenues = util.DatabaseHelper.get_revenues()
+    revenues = Revenues.get()
 
     revenues_list = {}
     for i in revenues:
-        amount = i["amount"]
-        sale_by = i["sale_by"]
-        item_id = i["item_id"]
-        item_price = i["item_price"]
-        qty = i["qty"]
 
-        if sale_by in revenues_list.keys():
-            array = revenues_list[sale_by]
-            array["amount"] += amount
-            if item_id in array["items"].keys():
-                array["items"][item_id]["qty"] += qty
+        # 既に販売者があったら
+        if i.seller in revenues_list.keys():
+            array = revenues_list[i.seller]
+            array["total"] += Decimal(str(i.total))
+
+            # 既に商品があったら
+            if i.item_id in array["items"].keys():
+                array["items"][i.item_id]["qty"] += i.qty
             else:
-                array["items"][item_id] = {}
-                array["items"][item_id]["item_price"] = item_price
-                array["items"][item_id]["qty"] = qty
-            revenues_list[sale_by] = array
+                array["items"][i.item_id] = {}
+                array["items"][i.item_id]["price"] = i.item_price
+                array["items"][i.item_id]["qty"] = i.qty
+            revenues_list[i.seller] = array
 
         else:
             array = {
-                "amount": amount,
+                "total": Decimal(str(i.total)),
                 "items": {
-                    item_id: {
-                        "item_price": item_price,
-                        "qty": qty,
+                    i.item_id: {
+                        "price": i.item_price,
+                        "qty": i.qty,
                     }
                 }
             }
-            revenues_list[sale_by] = array
+            revenues_list[i.seller] = array
 
-    for key, value in revenues_list.items():
-        sale_by = key
-        amount = float(Decimal(str(value["amount"])) * allocation_per)
+    for seller, value in revenues_list.items():
+        total = float(Decimal(str(value["total"])) * allocation_per)
 
         reason_list = []
         for i, j in value["items"].items():
-            total_amount = Decimal(str(j["item_price"])) * Decimal(str(j["qty"]))
-            reason_list.append(f"{i}({j['qty']}個:{total_amount})")
+            reason_list.append(f"{i}({j['qty']}個:{j['price']})")
 
-        reason = ", ".join(reason_list) + f"(入金額: {value['amount']}の{settings.ALLOCATION_PER}%)"
+        reason = ", ".join(reason_list) + f"(入金額: {value['total']}の{settings.ALLOCATION_PER}%)"
 
-        util.SocketHelper.deposit_player(sale_by, amount, "ウェブショップ『Utazon』からの売上入金", reason)
-        util.DatabaseHelper.delete_revenues()
+        if User.by_mc_uuid(seller).deposit(total, "ウェブショップ『Utazon』からの売上入金", reason):
+            Revenues.delete(seller)
 
 
 def start():

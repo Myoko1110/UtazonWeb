@@ -1,9 +1,10 @@
 {% load static %}
+{% load formatter %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>{{ item_name }} | Utazon.com</title>
+    <title>{{ item.name }} | Utazon.com</title>
     <link rel="stylesheet" href="{% static 'item/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
@@ -34,8 +35,8 @@
 	        	<div class="nav-mobile__top-cart">
 		        	<div class="nav-mobile__top-cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -50,11 +51,11 @@
                     <img src="{% static 'logo.svg' %}">
                 </a>
             </div>
-            {% if session.invalid %}
+            {% if session.is_invalid %}
             <a href="https://discord.gg/d9Knvc9JCr" class="nav-link">
             {% endif %}
             <div class="nav-belt__address">
-                {% if session.valid %}
+                {% if session.is_valid %}
                 <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
 	            <div class="nav-belt__address-dir">
 		            <div class="nav-belt__address-name">
@@ -75,14 +76,14 @@
 	            </div>
                 {% endif %}
             </div>
-            {% if session.invalid %}
+            {% if session.is_invalid %}
             </a>
             {% endif %}
             <div class="nav-belt__search">
 	            <form id="search">
 		            <select class="nav-belt__search-select">
 						<option value="all">すべて</option>
-						{% for jp, en in categories.items %}
+						{% for en, jp in CATEGORIES.items %}
 			            <option value="{{ en }}"{% if category == en %} selected{% endif %}>{{ jp }}</option>
 						{% endfor %}
 		            </select>
@@ -94,10 +95,10 @@
 	            </form>
                 <div class="nav-belt__search-background"></div>
             </div>
-						{% if session.valid %}
+						{% if session.is_valid %}
 			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				    <p>{{ info.mc_id }}さん</p>
+				    <p>{{ session.get_user.get_mc_id }}さん</p>
 		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
@@ -119,8 +120,8 @@
 	        	<div class="nav-belt__cart">
 		        	<div class="nav-belt__cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -134,15 +135,15 @@
 	    <div class="nav-main">
 			<div class="nav-main__category">
 				<a class="nav-main__point">Utazonポイント:
-                    {% if session.valid %}
-                    <span>{{ info.point }}</span>
+                    {% if session.is_valid %}
+                    <span>{{ session.get_user.get_point|digit_grouping }}</span>
                     {% else %}
                     <span>0</span>
                     {% endif %}
                 </a>
-				<a class="nav-main__category-child">ヘルプ</a>
-				<a class="nav-main__category-child">プライム</a>
-				{% for jp, en in categories.items %}
+				<!--<a class="nav-main__category-child">ヘルプ</a>
+				<a class="nav-main__category-child">プライム</a>-->
+				{% for en, jp in CATEGORIES.items %}
 				<a class="nav-main__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 				{% endfor %}
 				<a class="nav-main__category-child" href="/history">再度購入</a>
@@ -150,8 +151,8 @@
 	    </div>
 		<nav class="nav-mobile">
 			<div class="nav-mobile__account">
-				{% if session.valid %}
-				<p>{{ info.mc_id }}さん</p>
+				{% if session.is_valid %}
+				<p>{{ session.get_user.get_mc_id }}さん</p>
 				<a href="/mypage/">マイページ</a>
 				{% else %}
 				<p>ゲストさん</p>
@@ -170,7 +171,7 @@
 						<p class="nav-mobile__address-to">お届け先</p>
 					</div>
 					<div class="nav-mobile__address-number">
-						{% if session.valid %}
+						{% if session.is_valid %}
 						<h1>1-0001仮</h1>
 						{% else %}
 						<h1>ログイン</h1>
@@ -188,8 +189,8 @@
 	        	<div class="nav-mobile__cart">
 		        	<div class="nav-mobile__cart-ui">
 			        	<img src="{% static 'cart-black.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -201,8 +202,8 @@
 			</a>
 			<div>
                 <a class="nav-mobile__point">Utazonポイント:
-                {% if session.valid %}
-				<span>{{ info.point }}</span>
+                {% if session.is_valid %}
+				<span>{{ session.get_user.get_point|digit_grouping }}</span>
                 {% else %}
                 <span>0</span>
                 {% endif %}
@@ -212,7 +213,7 @@
 			<div class="nav-mobile__category">
 				<p>カテゴリー</p>
 				<div class="nav-mobile__list">
-					{% for jp, en in categories.items %}
+					{% for en, jp in CATEGORIES.items %}
 					<a class="nav-mobile__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 					{% endfor %}
 					<a class="nav-mobile__category-child" href="/history">再度購入</a>
@@ -225,25 +226,29 @@
 <div class="wrapper">
 	<div class="item">
 		<div class="item-category">
-			{% if item_category.parent %}
-			<a href="../category/?name={{ item_category.parent.en }}">{{ item_category.parent.jp }}</a>
-			<span>></span>
-			{% endif %}
-			<a href="../category/?name={{ item_category.en }}">{{ item_category.jp }}</a>
+            {% with item.get_category as category %}
+                {% if category.is_child %}
+                    {% with category.get_parent as parent %}
+                    <a href="../category/?name={{ parent.english }}">{{ parent.japanese }}</a>
+                    <span>></span>
+                    {% endwith %}
+                {% endif %}
+                <a href="../category/?name={{ category.english }}">{{ category.japanese }}</a>
+            {% endwith %}
 		</div>
-        <h1 class="item-about__mobile-title">{{ item_name }}</h1>
+        <h1 class="item-about__mobile-title">{{ item.name }}</h1>
 		<div class="item-about">
 			<div class="item-about__img">
 				<div class="item-about__img-list">
-					{% for child in item_images %}
+					{% for child in item.image %}
 					<img class="item-about__img-list-img" src="{{ child }}" data-src="{{ child }}">
 					{% endfor %}
 				</div>
 				<div class="item-about__img-index">
-					<img class="item-about__img-index-img" src="{{ item_images.0 }}">
+					<img class="item-about__img-index-img" src="{{ item.image.0 }}">
 				</div>
 				<div class="item-about__img-slider">
-					{% for child in item_images %}
+					{% for child in item.image %}
 				  	<div class="item-about__img-slide">
 						<div class="item-about__img-slide-content">
 							<img src="{{ child }}">
@@ -254,55 +259,59 @@
 			</div>
 			<div class="item-about__description">
 				<div class="item-about__description-above">
-					<h1>{{ item_name }}</h1>
+					<h1>{{ item.name }}</h1>
 					<!--<a>〇〇のストアを表示</a>-->
-					{% if item_review_av %}
-					<div class="item-about__star">
-						<span>{{ item_review_av_format }}</span>
-						{% if item_review_av >= 4.8 %}
-						<div class="item-about__star-img" style="background-position: -2px -2px;">
-						{% elif item_review_av >= 4.3  and item_review_av < 4.8 %}
-						<div class="item-about__star-img" style="background-position: -2px -42px;">
-						{% elif item_review_av >= 3.8  and item_review_av < 4.3 %}
-						<div class="item-about__star-img" style="background-position: -2px -22px;">
-						{% elif item_review_av >= 3.3  and item_review_av < 3.8 %}
-						<div class="item-about__star-img" style="background-position: -2px -82px;">
-						{% elif item_review_av >= 2.8  and item_review_av < 3.3 %}
-						<div class="item-about__star-img" style="background-position: -2px -62px;">
-						{% elif item_review_av >= 2.3  and item_review_av < 2.8 %}
-						<div class="item-about__star-img" style="background-position: -2px -122px;">
-						{% elif item_review_av >= 1.8  and item_review_av < 2.3 %}
-						<div class="item-about__star-img" style="background-position: -2px -102px;">
-						{% elif item_review_av >= 1.3  and item_review_av < 1.8 %}
-						<div class="item-about__star-img" style="background-position: -2px -162px;">
-						{% elif item_review_av >= 0.8  and item_review_av < 1.3 %}
-						<div class="item-about__star-img" style="background-position: -2px -142px;">
-						{% elif item_review_av >= 0.3  and item_review_av < 0.8 %}
-						<div class="item-about__star-img" style="background-position: -2px -202px;">
-						{% elif  item_review_av < 0.3 %}
-						<div class="item-about__star-img" style="background-position: -2px -182px;">
-						{% endif %}
-
-							<span style="opacity: 0;">5つ星のうち{{ item_review_av }}</span>
-						</div>
-						<a href="#review">{{ item_review_number }}個の評価</a>
-					</div>
-					{% endif %}
+                    {% with item.get_review as review %}
+                        {% with review.get_average as average %}
+                            {% if average %}
+                            <div class="item-about__star">
+                                <span>{{ average_format }}</span>
+                                {% if average >= 4.8 %}
+                                <div class="item-about__star-img" style="background-position: -2px -2px;">
+                                {% elif average >= 4.3  and average < 4.8 %}
+                                <div class="item-about__star-img" style="background-position: -2px -42px;">
+                                {% elif average >= 3.8  and average < 4.3 %}
+                                <div class="item-about__star-img" style="background-position: -2px -22px;">
+                                {% elif average >= 3.3  and average < 3.8 %}
+                                <div class="item-about__star-img" style="background-position: -2px -82px;">
+                                {% elif average >= 2.8  and average < 3.3 %}
+                                <div class="item-about__star-img" style="background-position: -2px -62px;">
+                                {% elif average >= 2.3  and average < 2.8 %}
+                                <div class="item-about__star-img" style="background-position: -2px -122px;">
+                                {% elif average >= 1.8  and average < 2.3 %}
+                                <div class="item-about__star-img" style="background-position: -2px -102px;">
+                                {% elif average >= 1.3  and average < 1.8 %}
+                                <div class="item-about__star-img" style="background-position: -2px -162px;">
+                                {% elif average >= 0.8  and average < 1.3 %}
+                                <div class="item-about__star-img" style="background-position: -2px -142px;">
+                                {% elif average >= 0.3  and average < 0.8 %}
+                                <div class="item-about__star-img" style="background-position: -2px -202px;">
+                                {% elif  average < 0.3 %}
+                                <div class="item-about__star-img" style="background-position: -2px -182px;">
+                                {% endif %}
+        
+                                    <span style="opacity: 0;">5つ星のうち{{ average }}</span>
+                                </div>
+                                <a href="#review">{{ review|length }}個の評価</a>
+                            </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endwith %}
 				</div>
 				<div class="item-about__description-below">
                     {% if status %}
-                    {% if sale.status %}
+                    {% if item.sale_status %}
                     <p class="item-about__description-below__sale">タイムセール</p>
                     <div>
-                        <h1 style="font-size: 26px;color: #CC0C39">-{{ sale.discount_rate }}%</h1><h1><span>{{ money_unit }}</span>{{ item_price }}</h1>
+                        <h1 style="font-size: 26px;color: #CC0C39">-{{ item.discount_rate }}%</h1><h1><span>{{ MONEY_UNIT }}</span>{{ item.price|format_price }}</h1>
                     </div>
-                    <small style="color: #565959">過去価格: <del>{{ money_unit }}{{ past_price }}</del></small>
+                    <small style="color: #565959">過去価格: <del>{{ MONEY_UNIT }}{{ item.price|format_price }}</del></small>
                     {% else %}
                     <div>
-                        <h1><span>{{ money_unit }}</span>{{ item_price }}</h1>
+                        <h1><span>{{ MONEY_UNIT }}</span>{{ item.price|format_price }}</h1>
                     </div>
                     {% endif %}
-                    <p>ポイント:<span>{{ item_point }}pt</span><span>({{ point_return }}%)</span><!--<a>詳細はこちら</a>--></p>
+                    <p>ポイント:<span>{{ item.get_discounted_point }}pt</span><span>({{ RETURN_PERCENT }}%)</span><!--<a>詳細はこちら</a>--></p>
                     {% endif %}
 				</div>
 				<div class="item-about__description-buy">
@@ -319,35 +328,37 @@
 						<p>〇〇 - 1-0001 にお届け</p>
 					</div>
                     {% endif %}
+                    {% with item.get_stock as stock %}
 					<div class="item-about__buy-stock">
 						<p>
                             {% if not status %}
                             <span class="item-about__buy-stock-in" style="color: #B12704;">この商品は現在お取扱いできません</span>
-							{% elif item_stock > 15 %}
+							{% elif stock > 15 %}
 							<span class="item-about__buy-stock-in">在庫あり。</span>
-							{% elif item_stock <= 15 and item_stock >= 1 %}
-							<span class="item-about__buy-stock-out">残り{{ item_stock }}点 ご注文はお早めに</span>
-                            {% elif not item_stock %}
+							{% elif stock <= 15 and stock >= 1 %}
+							<span class="item-about__buy-stock-out">残り{{ stock }}点 ご注文はお早めに</span>
+                            {% elif stock <= 0 %}
                             <span class="item-about__buy-stock-out">在庫なし</span>
 							{% endif %}
 							<!--<span><span class="item-about__buy-stock-status">在庫状況</span>について</span>-->
                         </p>
 					</div>
 					<div class="item-about__buy-order">
-						{% if item_stock != 0 and session and status %}
+						{% if stock > 0 and session and status %}
 						<form method="get" action="">
 							<div class="item-about__buy-order-number">
 								<p>数量:</p>
 								<input class="item-about__buy-order-number-input" type="number" value="1" id="card_add">
 							</div>
-							<a onclick="location.href=`../buy?item=[[{{ item_id }}, ${cart_number}]]`" class="item-about__buy-order-input">今すぐ買う</a>
-							<a onclick="location.href=`../cart/add/?id={{ item_id }}&n=${cart_number}`" class="item-about__buy-order-cart">カートに入れる</a>
+							<a onclick="location.href=`../buy?item=%7B%22{{ item.id }}%22%3A+${cartNumber}%7D`" class="item-about__buy-order-input">今すぐ買う</a>
+							<a onclick="location.href=`../cart/add/?id={{ item.id }}&qty=${cartNumber}`" class="item-about__buy-order-cart">カートに入れる</a>
 						</form>
-                        {% elif item_stock == 0 or not status %}
+                        {% elif stock <= 0 or not status %}
 						{% else %}
 						<a href="../login" class="item-about__buy-order-cart" type="submit">ログインして購入</a>
 						{% endif %}
 					</div>
+                    {% endwith %}
 				</div>
 				<div class="item-about__description-safe">
 					<div class="item-about__description-safe-child">
@@ -366,19 +377,19 @@
 				<!--
 				<div class="item-about__description-feature">
 					<table>
-						{% for head, value in item_about %}
+
 						<tr>
-							<td class="item-about__description-feature-head">{{ head }}</td>
-							<td>{{ value }}</td>
+							<td class="item-about__description-feature-head">{ head }</td>
+							<td>{ value }</td>
 						</tr>
-						{% endfor %}
+
 					</table>
 				</div>
 				-->
 				<div class="item-about__description-about">
 					<h1>商品について</h1>
 					<ul>
-						{% for child in item_kind %}
+						{% for child in item.kind %}
 						<li>{{ child }}</li>
 						{% endfor %}
 					</ul>
@@ -387,10 +398,10 @@
 			<div class="item-about__buy">
                 {% if status %}
 				<div class="item-about__buy-price">
-					<h1><span>{{ money_unit }}</span>{{ item_price }}</h1>
+					<h1><span>{{ MONEY_UNIT }}</span>{{ item.price|format_price }}</h1>
 				</div>
 				<div class="item-about__buy-point">
-					<p>ポイント:<span>{{ item_point }}pt</span><span>({{ point_return }}%)</span><!--<a>詳細はこちら</a>--></p>
+					<p>ポイント:<span>{{ item.get_discounted_point }}pt</span><span>({{ RETURN_PERCENT }}%)</span><!--<a>詳細はこちら</a>--></p>
 				</div>
 				<div class="item-about__buy-delivery">
 					<p class="item-about__buy-delivery-box">
@@ -404,84 +415,98 @@
 					<p>〇〇 - 1-0001 にお届け</p>
 				</div>
                 {% endif %}
+                {% with item.get_stock as stock %}
 				<div class="item-about__buy-stock">
 					<p>
                         {% if not status %}
                         <span class="item-about__buy-stock-in" style="color: #B12704;">この商品は現在お取扱いできません</span>
-						{% elif item_stock > 15 %}
+						{% elif stock > 15 %}
 						<span class="item-about__buy-stock-in">在庫あり。</span>
-						{% elif item_stock <= 15 and item_stock >= 1%}
-						<span class="item-about__buy-stock-out">残り{{ item_stock }}点 ご注文はお早めに</span>
-                        {% elif not item_stock %}
+						{% elif stock <= 15 and stock >= 1%}
+						<span class="item-about__buy-stock-out">残り{{ stock }}点 ご注文はお早めに</span>
+                        {% elif stock <= 0 %}
                         <span class="item-about__buy-stock-out">在庫なし</span>
 						{% endif %}
 						<!--<span><span class="item-about__buy-stock-status">在庫状況</span>について</span>-->
 				</div>
 				<div class="item-about__buy-order">
-					{% if item_stock != 0 and session and status %}
+					{% if stock > 0 and session and item.status %}
 					<form method="get" action="">
 						<div class="item-about__buy-order-number">
 							<p>数量:</p>
 							<input class="item-about__buy-order-number-input" type="number" value="1" id="card_add">
 						</div>
-						<a onclick="location.href=`../buy?item=[[{{ item_id }}, ${cart_number}]]`" class="item-about__buy-order-input">今すぐ買う</a>
-						<a onclick="location.href=`../cart/add/?id={{ item_id }}&n=${cart_number}`" class="item-about__buy-order-cart">カートに入れる</a>
+						<a
+                                onclick="location.href=`../buy?item=%7B%22{{ item.id }}%22%3A+${cartNumber}%7D`"
+                                class="item-about__buy-order-input">今すぐ買う</a>
+						<a onclick="location.href=`../cart/add/?id={{ item.id }}&qty=${cartNumber}`" class="item-about__buy-order-cart">カートに入れる</a>
 					</form>
-                    {% elif item_stock == 0 or not status %}
+                    {% elif stock <= 0 or not status %}
 					{% else %}
 					<a href="../login" class="item-about__buy-order-cart" type="submit">ログインして購入</a>
 					{% endif %}
 				</div>
+                {% endwith %}
 			</div>
 		</div>
 	</div>
+    {% with item.get_review as review %}
+    {% with review.get_average as average %}
 	<div class="review" id="review">
 		<div class="review-left">
 			<h2>カスタマーレビュー</h2>
-			{% if item_review_av %}
-			<div class="review-star__box">
-				{% if item_review_av >= 4.8 %}
-				<div class="review-star" style="background-position: -99px -366px;">
-				{% elif item_review_av >= 4.3  and item_review_av < 4.8 %}
-				<div class="review-star" style="background-position: -390px -462px;">
-				{% elif item_review_av >= 3.8  and item_review_av < 4.3 %}
-				<div class="review-star" style="background-position: -2px -342px;">
-				{% elif item_review_av >= 3.3  and item_review_av < 3.8 %}
-				<div class="review-star" style="background-position: -196px -414px;">
-				{% elif item_review_av >= 2.8  and item_review_av < 3.3 %}
-				<div class="review-star" style="background-position: -293px -438px;">
-				{% elif item_review_av >= 2.3  and item_review_av < 2.8 %}
-				<div class="review-star" style="background-position: -2px -366px;">
-				{% elif item_review_av >= 1.8  and item_review_av < 2.3 %}
-				<div class="review-star" style="background-position: -99px -390px;">
-				{% elif item_review_av >= 1.3  and item_review_av < 1.8 %}
-				<div class="review-star" style="background-position: -293px -462px;">
-				{% elif item_review_av >= 0.8  and item_review_av < 1.3 %}
-				<div class="review-star" style="background-position: -390px -486px;">
-				{% elif item_review_av >= 0.3  and item_review_av < 0.8 %}
-				<div class="review-star" style="background-position: -99px -415px;">
-				{% elif  item_review_av < 0.3 %}
-				<div class="review-star" style="background-position: -196px -438px;">
-				{% endif %}
-					<span style="opacity: 0">5つ星のうち{{ item_review_av }}</span>
-				</div>
-				<p>{{ item_review_av_format }}/5</p>
-			</div>
-			{% endif %}
-			{% if session.valid %}
+            {% if average %}
+                <div class="review-star__box">
+                {% if average >= 4.8 %}
+                    <div class="review-star" style="background-position: -99px -366px;">
+                {% elif average >= 4.3  and average < 4.8 %}
+                    <div class="review-star" style="background-position: -390px -462px;">
+                {% elif average >= 3.8  and average < 4.3 %}
+                    <div class="review-star" style="background-position: -2px -342px;">
+                {% elif average >= 3.3  and average < 3.8 %}
+                    <div class="review-star" style="background-position: -196px -414px;">
+                {% elif average >= 2.8  and average < 3.3 %}
+                    <div class="review-star" style="background-position: -293px -438px;">
+                {% elif average >= 2.3  and average < 2.8 %}
+                    <div class="review-star" style="background-position: -2px -366px;">
+                {% elif average >= 1.8  and average < 2.3 %}
+                    <div class="review-star" style="background-position: -99px -390px;">
+                {% elif average >= 1.3  and average < 1.8 %}
+                    <div class="review-star" style="background-position: -293px -462px;">
+                {% elif average >= 0.8  and average < 1.3 %}
+                    <div class="review-star" style="background-position: -390px -486px;">
+                {% elif average >= 0.3  and average < 0.8 %}
+                    <div class="review-star" style="background-position: -99px -415px;">
+                {% elif  average < 0.3 %}
+                    <div class="review-star" style="background-position: -196px -438px;">
+                {% endif %}
+            <span style="opacity: 0">5つ星のうち{{ average }}</span>
+            </div>
+            <p>5つのうち{{ average }}つ</p>
+            </div>
+            {% endif %}
+			{% if session.is_valid %}
 			<div class="review-write">
-				<a href="/review/?id={{ item_id }}">レビューを書く</a>
+                {% if has_review %}
+				<a href="/review/edit/?id={{ item.id }}">レビューを編集</a>
+                {% else %}
+                <a href="/review/?id={{ item.id }}">レビューを書く</a>
+                {% endif %}
 			</div>
 			{% endif %}
 		</div>
 		<div class="review-right">
-			{% if item_review_av %}
-			<h2 class="review-right-title">上位レビュー</h2>
-			{% else %}
-			<h2 class="review-right-title">まだカスタマーレビューはありません</h2>
+			{% if review.has_review %}
+			    <h2 class="review-right-title">上位レビュー</h2>
+			{% elif  review.has_rating %}
+                <h2 class="review-right-title">まだカスタマーレビューはありません</h2>
+                <p class="review-right-text">0件のカスタマーレビュー、および{{ review|length }}件のカスタマー評価があります</p>
+            {% else %}
+                <h2 class="review-right-title">まだカスタマーレビューはありません</h2>
 			{% endif %}
 			<ul class="review-list">
-				{% for child in item_review %}
+				{% for child in review %}
+                {% if child.title %}
 				<li class="review-list__child">
 					<div class="review-list__account">
 						<img class="review-list__account-img" src="https://crafatar.com/avatars/{{ child.mc_uuid }}?size=30">
@@ -516,24 +541,27 @@
 						<h2>{{ child.title }}</h2>
 					</div>
 					<div class="review-list__value">
-						<p class="review-list__value-date">{{ child.created_at.year }}年{{ child.created_at.month }}月{{ child.created_at.day }}日にレビュー済み</p>
+						<p class="review-list__value-date">{{ child.updated_at.year }}年{{ child.updated_at.month }}月{{ child.updated_at.day }}日にレビュー済み</p>
 						<p class="review-list__value-text">{{ child.value | linebreaksbr }}</p>
 						<div class="review-list__value-use">
 							{% if child.helpful != 0 %}
 							<p class="review-list__value-use-text">{{ child.helpful }}人のお客様がこれが役に立ったと考えています</p>
 							{% endif %}
 							<div class="review-list__value-use-btn">
-								<a class="review-list__value-use-btn-useful" data-href="/review/userful/?id={{ item_id }}&review_id={{ child.id }}">役に立った</a>
-								<p style="font-size: 14px;color: #067D62;margin: 0;display: none" data-href="/review/userful/?id={{ item_id }}&review_id={{ child.id }}">フィードバックをお寄せいただきありがとうございます。</p>
-								<a>レポート</a>
+								<a class="review-list__value-use-btn-useful" data-href="/review/helpful/?id={{ item.id }}&review_id={{ child.id }}">役に立った</a>
+								<p style="font-size: 14px;color: #067D62;margin: 0;display: none" data-href="/review/userful/?id={{ item.id }}&review_id={{ child.id }}">フィードバックをお寄せいただきありがとうございます。</p>
+								<!--<a>レポート</a>-->
 							</div>
 						</div>
 					</div>
 				</li>
+                {% endif %}
 				{% endfor %}
 			</ul>
 		</div>
 	</div>
+    {% endwith %}
+    {% endwith %}
 </div>
 <footer>
     <div class="footer__link">
@@ -564,10 +592,10 @@
     <a href="/">
         <img src="{% static 'logo.svg' %}">
     </a>
-    <p>当サイトはAmazon.com, Inc. とは一切関係ありません</p>
+    <p>当サイトはAmazonとは一切関係ありません</p>
     <p>&copy; 2023 UtakataNetwork</p>
 </footer>
-{% if session.expire %}
+{% if session.is_expire %}
 <div class="box" id="expires">
 	<div class="box__box">
 		<div class="box__close">

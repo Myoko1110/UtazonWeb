@@ -50,7 +50,7 @@ $(function () {
             $("#error2").css("display", "none");
             return;
         }
-        location.href = "confirm/?items=" + JSON.stringify(items) + "&buynow=" + buynow + "&point=" + point;
+        location.href = "confirm/?items=" + items + "&buynow=" + buynow + "&point=" + point;
     });
 
     // ポイント設定したときの処理

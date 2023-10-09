@@ -1,4 +1,5 @@
 {% load static %}
+{% load formatter %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -34,8 +35,8 @@
 	        	<div class="nav-mobile__top-cart">
 		        	<div class="nav-mobile__top-cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -50,11 +51,11 @@
                     <img src="{% static 'logo.svg' %}">
                 </a>
             </div>
-            {% if session.invalid %}
+            {% if session.is_invalid %}
             <a href="https://discord.gg/d9Knvc9JCr" class="nav-link">
             {% endif %}
             <div class="nav-belt__address">
-                {% if session.valid %}
+                {% if session.is_valid %}
                 <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
 	            <div class="nav-belt__address-dir">
 		            <div class="nav-belt__address-name">
@@ -75,14 +76,14 @@
 	            </div>
                 {% endif %}
             </div>
-            {% if session.invalid %}
+            {% if session.is_invalid %}
             </a>
             {% endif %}
             <div class="nav-belt__search">
 	            <form id="search">
 		            <select class="nav-belt__search-select">
 						<option value="all">すべて</option>
-						{% for jp, en in categories.items %}
+						{% for en, jp in CATEGORIES.items %}
 			            <option value="{{ en }}"{% if category == en %} selected{% endif %}>{{ jp }}</option>
 						{% endfor %}
 		            </select>
@@ -94,10 +95,10 @@
 	            </form>
                 <div class="nav-belt__search-background"></div>
             </div>
-						{% if session.valid %}
+						{% if session.is_valid %}
 			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				    <p>{{ info.mc_id }}さん</p>
+				    <p>{{ session.get_user.get_mc_id }}さん</p>
 		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
@@ -119,8 +120,8 @@
 	        	<div class="nav-belt__cart">
 		        	<div class="nav-belt__cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -134,15 +135,15 @@
 	    <div class="nav-main">
 			<div class="nav-main__category">
 				<a class="nav-main__point">Utazonポイント:
-                    {% if session.valid %}
-                    <span>{{ info.point }}</span>
+                    {% if session.is_valid %}
+                    <span>{{ session.get_user.get_point|digit_grouping }}</span>
                     {% else %}
                     <span>0</span>
                     {% endif %}
                 </a>
-				<a class="nav-main__category-child">ヘルプ</a>
-				<a class="nav-main__category-child">プライム</a>
-				{% for jp, en in categories.items %}
+				<!--<a class="nav-main__category-child">ヘルプ</a>
+				<a class="nav-main__category-child">プライム</a>-->
+				{% for en, jp in CATEGORIES.items %}
 				<a class="nav-main__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 				{% endfor %}
 				<a class="nav-main__category-child" href="/history">再度購入</a>
@@ -150,8 +151,8 @@
 	    </div>
 		<nav class="nav-mobile">
 			<div class="nav-mobile__account">
-				{% if session.valid %}
-				<p>{{ info.mc_id }}さん</p>
+				{% if session.is_valid %}
+				<p>{{ session.get_user.get_mc_id }}さん</p>
 				<a href="/mypage/">マイページ</a>
 				{% else %}
 				<p>ゲストさん</p>
@@ -170,7 +171,7 @@
 						<p class="nav-mobile__address-to">お届け先</p>
 					</div>
 					<div class="nav-mobile__address-number">
-						{% if session.valid %}
+						{% if session.is_valid %}
 						<h1>1-0001仮</h1>
 						{% else %}
 						<h1>ログイン</h1>
@@ -188,8 +189,8 @@
 	        	<div class="nav-mobile__cart">
 		        	<div class="nav-mobile__cart-ui">
 			        	<img src="{% static 'cart-black.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -201,8 +202,8 @@
 			</a>
 			<div>
                 <a class="nav-mobile__point">Utazonポイント:
-                {% if session.valid %}
-				<span>{{ info.point }}</span>
+                {% if session.is_valid %}
+				<span>{{ session.get_user.get_point|digit_grouping }}</span>
                 {% else %}
                 <span>0</span>
                 {% endif %}
@@ -212,7 +213,7 @@
 			<div class="nav-mobile__category">
 				<p>カテゴリー</p>
 				<div class="nav-mobile__list">
-					{% for jp, en in categories.items %}
+					{% for en, jp in CATEGORIES.items %}
 					<a class="nav-mobile__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 					{% endfor %}
 					<a class="nav-mobile__category-child" href="/history">再度購入</a>
@@ -226,7 +227,7 @@
 	<div class="subwrapper">
 		<div class="cart-parent">
 			<div class="cart">
-				{% if user_cart_number == 0 %}
+				{% if not cart %}
 				<div class="cart-notexist">
 					<h2>お客様のUtazonカートに商品はありません。</h2>
 					<p>商品をカートに追加してください。</p>
@@ -234,39 +235,43 @@
 				{% else %}
 				<div class="cart-exist">
 					<h2>ショッピングカート</h2>
-                    {% if session.expire %}
+                    {% if session.is_expire %}
 					<p>ログインしてください</p>
 					{% endif %}
 					<ul class="cart-list">
-						{% for child in user_cart %}
+						{% for item, qty in cart.items %}
 						<li class="cart-child">
-							<img src="{{ child.image.0 }}">
+							<img src="{{ item.image.0 }}">
 							<div class="cart-box">
 								<div class="cart-product">
-									<a class="cart-title" href="../item?id={{ child.item_id }}">{{ child.item_name }}</a>
-                                    {% if child.sale.status %}
-                                    <div class="cart-sale"><p>{{ child.sale.discount_rate }}%OFF</p><span>タイムセール</span></div>
+									<a class="cart-title" href="../item?id={{ item.id }}">{{ item.name }}</a>
+                                    {% if item.sale_status %}
+                                        <div class="cart-sale"><p>{{ item.discount_rate }}%OFF</p><span>タイムセール</span></div>
                                     {% endif %}
-									{% if child.stock > 15 %}
-									<p class="cart-product__y">在庫あり</p>
-									{% elif child.stock <= 15 %}
-									<p class="cart-product__n">残り{{ child.stock }}点 ご注文はお早めに</p>
+                                    {% if not item.status %}
+                                        <p class="cart-product__n">この商品は現在お取扱いできません</p>
+									{% elif item.get_stock > 15 %}
+									    <p class="cart-product__y">在庫あり</p>
+									{% elif item.get_stock <= 15 and item.get_stock > 0 %}
+									    <p class="cart-product__n">残り{{ item.get_stock }}点 ご注文はお早めに</p>
 									{% else %}
-									<p class="cart-product__n">在庫なし</p>
+									    <p class="cart-product__n">在庫なし</p>
 									{% endif %}
 								<div class="cart-product__number">
 									<p>数量:</p>
-									<input class="cart-product__number-input" type="number" value="{{ child.qty }}" data-id="{{ child.item_id }}">
-									<a href="delete/?id={{ child.item_id }}" style="border-left: #d7d7d7 1px solid;margin-left: 20px" class="product__remove">削除</a>
-									<a href="../cart-to-later/?id={{ child.item_id }}">あとで買う</a>
+									<input class="cart-product__number-input" type="number" value="{{ qty }}" data-id="{{ item.id }}">
+									<a href="delete/?id={{ item.id }}" style="border-left: #d7d7d7 1px solid;margin-left: 20px" class="product__remove">削除</a>
+									<a href="/cart-to-later/?id={{ item.id }}">あとで買う</a>
 								</div>
 							</div>
 							<div class="cart-price">
-								{% if child.stock != 0 %}
-								<h3>{{ money_unit }}{{ child.item_price_format }}</h3>
-								<p>ポイント：<span>{{ child.point }}pt ({{ point_return }}%)</span></p>
+                                {% if not item.status %}
+                                    <h3>取扱い無し</h3>
+								{% elif item.get_stock != 0 %}
+                                    <h3>{{ MONEY_UNIT }}{{ item.get_discounted_price|format_price }}</h3>
+                                    <p>ポイント：<span>{{ item.get_discounted_point|digit_grouping }}pt ({{ RETURN_PERCENT }}%)</span></p>
 								{% else %}
-								<h3 style="color: #b12704">在庫なし</h3>
+								    <h3 style="color: #b12704">在庫なし</h3>
 								{% endif %}
 							</div>
 							</div>
@@ -281,49 +286,52 @@
                     <i></i>
                     <p>通常配送無料</p>
                 </div>
-                <h2>小計 ({{ user_cart_number }} 個の商品) : <span>{{ money_unit }}{{ item_total }}</span></h2>
-                {% if user_cart_number != 0 %}
-                {% if buy_able %}
-                <input class="buy-continue" type="submit" value="レジに進む" onclick="location.href='/buy'">
-                {% else %}
-                <input class="buy-continue" type="submit" value="在庫なしを削除してください" style="background-color: #cccccc;cursor: not-allowed">
-                {% endif %}
+                <h2>小計 ({{ cart.get_amount }} 個の商品) : <span>{{ MONEY_UNIT }}{{ cart.get_total|format_price }}</span></h2>
+                {% if cart.get_amount != 0 %}
+                    {% if not cart.is_valid_items %}
+                        <input class="buy-continue" type="submit" value="無効な商品を削除してください" style="background-color: #cccccc;cursor: not-allowed">
+                    {% elif cart.is_in_stock %}
+                        <input class="buy-continue" type="submit" value="レジに進む" onclick="location.href='/buy'">
+                    {% else %}
+                        <input class="buy-continue" type="submit" value="在庫なしを削除してください" style="background-color: #cccccc;cursor: not-allowed">
+                    {% endif %}
                 {% endif %}
             </div>
-			{% if user_later_number != 0 %}
+			{% if later %}
 			<div class="later">
 				<div class="later-exist">
 					<h2>あとで買う</h2>
-                    {% if session.expire %}
+                    {% if session.is_expire %}
 					<p>ログインしてください</p>
 					{% endif %}
 					<ul class="later-list">
-						{% for child in user_later %}
+						{% for key in later.keys %}
 						<li class="later-child">
-							<img src="{{ child.image.0 }}">
+							<img src="{{ key.image.0 }}">
 							<div class="later-box">
 								<div class="later-product">
-									<a class="later-title" href="../item?id={{ child.item_id }}">{{ child.item_name }}</a>
-                                    {% if child.sale.status %}
-                                    <div class="cart-sale"><p>13%OFF</p><span>タイムセール</span></div>
+									<a class="later-title" href="../item?id={{ key.id }}">{{ key.name }}</a>
+                                    {% if key.sale.status %}
+                                        <div class="cart-sale"><p>{{ key.discount_rate }}%OFF</p><span>タイムセール</span></div>
                                     {% endif %}
-									{% if child.stock > 15 %}
-									<p class="later-product__y">在庫あり</p>
-									{% if child.stock <= 15 %}
-									<p class="later-product__n">残り{{ child.stock }}点 ご注文はお早めに</p>
-									{% endif %}
+                                    {% if not key.status %}
+                                        <p class="cart-product__n">この商品は現在お取扱いできません</p>
+									{% elif key.get_stock > 15 %}
+									    <p class="later-product__y">在庫あり</p>
+									{% elif key.get_stock <= 15 and key.get_stock > 0 %}
+									    <p class="later-product__n">残り{{ key.get_stock }}点 ご注文はお早めに</p>
 									{% else %}
-									<p class="later-product__n">在庫なし</p>
+									    <p class="later-product__n">在庫なし</p>
 									{% endif %}
 								<div class="later-product__number">
-									<a href="../later/delete/?id={{ child.item_id }}" class="product__remove">削除</a>
-									<a href="../later-to-cart/?id={{ child.item_id }}">カートに戻す</a>
+									<a href="../later/delete/?id={{ key.id }}" class="product__remove">削除</a>
+									<a href="../later-to-cart/?id={{ key.id }}">カートに戻す</a>
 								</div>
 							</div>
 							<div class="later-price">
-								{% if child.5 != 0 %}
-								<h3>{{ money_unit }}{{ child.10 }}</h3>
-								<p>ポイント：<span>{{ child.9 }}pt ({{ point_return }}%)</span></p>
+								{% if key.get_stock != 0 %}
+								<h3>{{ MONEY_UNIT }}{{ key.get_discounted_price|format_price }}</h3>
+								<p>ポイント：<span>{{ key.get_discounted_point|digit_grouping }}pt ({{ RETURN_PERCENT }}%)</span></p>
 								{% else %}
 								<h3 style="color: #b12704">在庫なし</h3>
 								{% endif %}
@@ -341,13 +349,15 @@
 				<i></i>
 				<p>通常配送無料</p>
 			</div>
-			<h2>小計 ({{ user_cart_number }} 個の商品) : <span>{{ money_unit }}{{ item_total }}</span></h2>
-			{% if user_cart_number != 0 %}
-			{% if buy_able %}
-			<input class="buy-continue" type="submit" value="レジに進む" onclick="location.href='/buy'">
-			{% else %}
-			<input class="buy-continue" type="submit" value="在庫なしを削除してください" style="background-color: #cccccc;cursor: not-allowed">
-			{% endif %}
+			<h2>小計 ({{ cart.get_amount }} 個の商品) : <span>{{ MONEY_UNIT }}{{ cart.get_total|format_price }}</span></h2>
+			{% if cart.get_amount != 0 %}
+                {% if not cart.is_valid_items %}
+                <input class="buy-continue" type="submit" value="無効な商品を削除してください" style="background-color: #cccccc;cursor: not-allowed">
+                {% elif cart.is_in_stock %}
+                <input class="buy-continue" type="submit" value="レジに進む" onclick="location.href='/buy'">
+                {% else %}
+                <input class="buy-continue" type="submit" value="在庫なしを削除してください" style="background-color: #cccccc;cursor: not-allowed">
+                {% endif %}
 			{% endif %}
 		</div>
 	</div>
@@ -381,10 +391,10 @@
     <a href="/">
         <img src="{% static 'logo.svg' %}">
     </a>
-    <p>当サイトはAmazon.com, Inc. とは一切関係ありません</p>
+    <p>当サイトはAmazonとは一切関係ありません</p>
     <p>&copy; 2023 UtakataNetwork</p>
 </footer>
-{% if session.expire %}
+{% if session.is_expire %}
 <div class="box" id="expires">
 	<div class="box__box">
 		<div class="box__close">

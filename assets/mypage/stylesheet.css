@@ -38,48 +38,60 @@
     display: block;
     color: #007185;
 }
-.mypage-info{
+
+.mypage-info {
     display: flex;
     padding: 20px 0;
 }
-@media(max-width: 799px){
-    .mypage-info{
+
+@media (max-width: 799px) {
+    .mypage-info {
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 }
-.mypage-info img{
+
+.mypage-info img {
     border-radius: 1000px;
     width: 200px;
     height: 200px;
 }
-.mypage-info__text{
+
+.mypage-info__text {
     padding: 20px;
 }
-.mypage-info__text span{
+
+.mypage-info__text span {
     font-weight: 700;
 }
-.mypage-info__text div{
+
+.mypage-info__text div {
     margin: 0 0 20px;
 }
-.mypage-info__text p{
+
+.mypage-info__text p {
     margin: 0;
 }
+
 .mypage-main {
     margin-top: 10px;
-    display: block;
+    display: flex;
 }
 
 .mypage-main__link {
-    background-color: #14adff;
     padding: 5px 10px;
     font-size: 20px;
-    border-radius: 4px;
     display: block;
     margin: 5px;
-    width: fit-content;
+    width: 150px;
+    text-align: center;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px 0 rgba(213, 217, 217, .5);
+    border: #D5D9D9 solid 1px;
     cursor: pointer;
+    vertical-align: middle;
 }
 
 .main {
@@ -121,14 +133,6 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
-}
-
-.main-info a {
-    font-weight: 400;
-    font-size: 18px;
-    margin: 0;
-    color: #000000;
-    text-decoration: none;
 }
 
 .main-info a:hover {
@@ -205,16 +209,24 @@
     .main-info {
         width: calc(.58333 * (100vw - 8px));
     }
-    .mypage{
+
+    .mypage {
         padding: 0;
     }
-    .mypage-main h3{
+
+    .mypage-main h3 {
         padding: 0 10px;
     }
-    .mypage-title{
+
+    .mypage-item h3 {
+        padding: 0 10px;
+    }
+
+    .mypage-title {
         margin: 0 10px;
     }
-    .mypage-main{
+
+    .mypage-main {
         display: flex;
         justify-content: center;
         margin: 0 0 20px 0;
@@ -242,12 +254,46 @@
 
 .mypage-account {
 }
-.main-tool{
+
+.main-tool {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
-.main-tool a{
+
+.main-tool a {
     margin: 4px;
+}
+
+.main-tool__btn {
+    text-align: center;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px 0 rgba(213, 217, 217, .5);
+    border: #D5D9D9 solid 1px;
+    cursor: pointer;
+    vertical-align: middle;
+    padding: 5px 18px !important;
+    font-size: 15px;
+    width: 115px;
+}
+
+.main-tool__btn-red {
+    text-align: center;
+    border-radius: 8px;
+    background-color: #b12704;
+    box-shadow: 0 2px 5px 0 rgba(213, 217, 217, .5);
+    border: #D5D9D9 solid 1px;
+    cursor: pointer;
+    vertical-align: middle;
+    padding: 5px 18px !important;
+    font-size: 15px;
+    color: #ffffff;
+    width: 115px;
+}
+
+.main-tool__btn-red:hover {
+    color: #e8e8e8 !important;
 }
 
 @media (max-width: 799px) {

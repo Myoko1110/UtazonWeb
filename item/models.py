@@ -14,7 +14,7 @@ class Banner(models.Model):
         return f"{self.view_type} {self.id} {self.banner_img}"
 
 
-class SpecialFeature(models.Model):
+class Featured(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
     title = models.CharField(max_length=32)
     value = models.JSONField(default=list)

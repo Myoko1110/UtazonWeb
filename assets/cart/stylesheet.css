@@ -67,7 +67,7 @@
 @media (min-width: 900px) {
     .cart-box {
         display: flex;
-        width: calc(100% - 178px);
+        width: calc(100% - 180px);
     }
 
     .cart-product {
@@ -240,10 +240,11 @@
 @media (min-width: 900px) {
     .later-box {
         display: flex;
+        width: calc(100% - 180px);
     }
 
     .later-product {
-        width: calc(100% - 100px);
+        width: calc(100% - 140px)!important;
     }
 }
 

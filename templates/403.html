@@ -1,4 +1,5 @@
 {% load static %}
+{% load formatter %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -49,10 +50,10 @@
     <a href="/">
         <img src="{% static 'logo.svg' %}">
     </a>
-    <p>当サイトはAmazon.com, Inc. とは一切関係ありません</p>
+    <p>当サイトはAmazonとは一切関係ありません</p>
     <p>&copy; 2023 UtakataNetwork</p>
 </footer>
-{% if session.expire %}
+{% if session.is_expire %}
 <div class="box" id="expires">
 	<div class="box__box">
 		<div class="box__close">

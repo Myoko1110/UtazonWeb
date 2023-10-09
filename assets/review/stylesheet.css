@@ -29,6 +29,7 @@
 .review-title__item {
     display: flex;
     align-items: center;
+    margin-top: 10px;
 }
 
 .review-title__item img {
@@ -55,6 +56,12 @@
 
 .review-value__star img {
     cursor: pointer;
+}
+.review-value__star p{
+    margin: 0;
+    font-size: 14px;
+    color: #007600;
+    display: none;
 }
 
 .review-value__title input {

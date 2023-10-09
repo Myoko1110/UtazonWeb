@@ -26,11 +26,10 @@ $(document).ready(function () {
     }
 
 
-    const image = $(".review-value__image").data("img");
+    const image = JSON.parse(decodeURIComponent($(".review-value__image").data("img")));
     const item_id = $(".review-title__item p").data("id");
     let update_image = image;
     const trash_svg = $(".review__about-value-1").data("svg");
-    const category = $(".review-value__category").data("category");
 
     let imageElement = "";
     for (let i in image) {
@@ -190,7 +189,7 @@ $(document).ready(function () {
 
         let selectedCategory = selectedElements.data("en");
 
-        let hostUrl = location.protocol + '//' + location.host + "/mypage/on_sale/edit/post/";
+        let hostUrl = location.protocol + '//' + location.host + "/mypage/available/edit/post/";
 
         let params = {
             title: title,

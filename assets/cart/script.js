@@ -7,7 +7,7 @@ $(function () {
         let item_id = $(this).data("id");
         let value = $(this).val();
 
-        let url = `http://${location.host}/cart/update/?id=${item_id}&n=${value}`;
+        let url = `http://${location.host}/cart/update/?id=${item_id}&qty=${value}`;
 
         xhr.open("GET", url, true);
         xhr.send();

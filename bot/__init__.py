@@ -25,14 +25,14 @@ async def on_ready():
     await setup()
 
 
-async def send_order_confirm(discord_id, order_id, order_item_obj, delivery_time):
+async def send_order_confirm(discord_id, order_id, item, delivers_at):
     """
     注文が確定されたことをDMで送信します
 
     :param discord_id: DiscordID
     :param order_id: オーダーID
-    :param order_item_obj: アイテムリスト
-    :param delivery_time: 配達時間
+    :param item: アイテムリスト
+    :param delivers_at: 配達時間
     """
 
     global delivery_status_url
@@ -47,28 +47,28 @@ async def send_order_confirm(discord_id, order_id, order_item_obj, delivery_time
     embed.set_footer(text="またのご利用をお待ちしております。")
 
     order_item = ""
-    for i in order_item_obj:
-        if len(i['item_name']) > 33:
-            order_item += f"・{i['item_name'][:33]}...\n"
+    for i in item.keys():
+        if len(i.name) > 33:
+            order_item += f"・{i.name[:33]}...\n"
         else:
-            order_item += f"・{i['item_name']}\n"
+            order_item += f"・{i.name}\n"
 
     embed.add_field(name="注文品", value=order_item, inline=False)
     embed.add_field(name="お届け予定",
-                    value=f"{delivery_time.year}年{delivery_time.month}月{delivery_time.day}日"
-                          + f" {delivery_time.hour}時頃",
+                    value=f"{delivers_at.year}年{delivers_at.month}月{delivers_at.day}日"
+                          + f" {delivers_at.hour}時頃",
                     inline=False)
     embed.add_field(name="注文番号", value=order_id, inline=False)
     await author.send(embed=embed)
 
 
-async def send_order_cancel(discord_id, order_id, order_item_obj):
+async def send_order_cancel(discord_id, order_id, item):
     """
     オーダーがキャンセルされたことをDMに送信します
 
     :param discord_id: DiscordID
     :param order_id: オーダーID
-    :param order_item_obj: アイテムリスト
+    :param item: アイテムリスト
     """
 
     global order_history_url
@@ -83,11 +83,11 @@ async def send_order_cancel(discord_id, order_id, order_item_obj):
     )
     embed.set_footer(text="またのご利用をお待ちしております。")
     order_item = ""
-    for i in order_item_obj:
-        if len(i['item_name']) > 33:
-            order_item += f"・{i['item_name'][:33]}...\n"
+    for i in item:
+        if len(i.name) > 33:
+            order_item += f"・{i.name[:33]}...\n"
         else:
-            order_item += f"・{i['item_name']}\n"
+            order_item += f"・{i.name}\n"
 
     embed.add_field(name="注文品", value=order_item, inline=False)
     embed.add_field(name="注文番号", value=order_id, inline=False)
@@ -196,9 +196,9 @@ async def send_stock(discord_id, item):
         title="出品中の商品の在庫が少なくなっています",
         color=discord.Colour.orange(),
         description="お客様が販売中の商品の在庫の残りが15個以下になりましたことをお知らせいたします。"
-                    + f"つきましては、[こちら]({add_stock_url}{item['item_id']})より在庫の追加をお願いいたします。"
+                    + f"つきましては、[こちら]({add_stock_url}{item.id})より在庫の追加をお願いいたします。"
     )
-    embed.add_field(name="該当の商品", value=item["item_name"][:34], inline=False)
+    embed.add_field(name="該当の商品", value=item.name[:34], inline=False)
     embed.set_footer(text="またのご利用をお待ちしております。")
     await author.send(embed=embed)
 
@@ -271,6 +271,26 @@ async def send_complete_returnstock(discord_id):
         title="在庫返却の配達が完了しました",
         color=discord.Colour.blue(),
         description="お客様の商品の在庫返却の配達が完了しましたことをお知らせいたします。"
+    )
+    embed.set_footer(text="またのご利用をお待ちしております。")
+
+    await author.send(embed=embed)
+
+
+async def send_returnstock_confirm(discord_id):
+    """
+    在庫返却を承ったことをDMに送信します
+
+    :param discord_id: DiscordID
+    """
+
+    global order_history_url
+
+    author = await client.fetch_user(discord_id)
+    embed = discord.Embed(
+        title="在庫返却を承りました",
+        color=discord.Colour.blue(),
+        description="お客様の商品の在庫返却を承りましたをお知らせいたします。"
     )
     embed.set_footer(text="またのご利用をお待ちしております。")
 

@@ -1,4 +1,5 @@
 {% load static %}
+{% load formatter %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -34,8 +35,8 @@
 	        	<div class="nav-mobile__top-cart">
 		        	<div class="nav-mobile__top-cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -50,11 +51,11 @@
                     <img src="{% static 'logo.svg' %}">
                 </a>
             </div>
-            {% if session.invalid %}
+            {% if session.is_invalid %}
             <a href="https://discord.gg/d9Knvc9JCr" class="nav-link">
             {% endif %}
             <div class="nav-belt__address">
-                {% if session.valid %}
+                {% if session.is_valid %}
                 <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
 	            <div class="nav-belt__address-dir">
 		            <div class="nav-belt__address-name">
@@ -75,14 +76,14 @@
 	            </div>
                 {% endif %}
             </div>
-            {% if session.invalid %}
+            {% if session.is_invalid %}
             </a>
             {% endif %}
             <div class="nav-belt__search">
 	            <form id="search">
 		            <select class="nav-belt__search-select">
 						<option value="all">すべて</option>
-						{% for jp, en in categories.items %}
+						{% for en, jp in CATEGORIES.items %}
 			            <option value="{{ en }}"{% if category == en %} selected{% endif %}>{{ jp }}</option>
 						{% endfor %}
 		            </select>
@@ -94,10 +95,10 @@
 	            </form>
                 <div class="nav-belt__search-background"></div>
             </div>
-						{% if session.valid %}
+						{% if session.is_valid %}
 			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				    <p>{{ info.mc_id }}さん</p>
+				    <p>{{ session.get_user.get_mc_id }}さん</p>
 		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
@@ -119,8 +120,8 @@
 	        	<div class="nav-belt__cart">
 		        	<div class="nav-belt__cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -134,15 +135,15 @@
 	    <div class="nav-main">
 			<div class="nav-main__category">
 				<a class="nav-main__point">Utazonポイント:
-                    {% if session.valid %}
-                    <span>{{ info.point }}</span>
+                    {% if session.is_valid %}
+                    <span>{{ session.get_user.get_point|digit_grouping }}</span>
                     {% else %}
                     <span>0</span>
                     {% endif %}
                 </a>
-				<a class="nav-main__category-child">ヘルプ</a>
-				<a class="nav-main__category-child">プライム</a>
-				{% for jp, en in categories.items %}
+				<!--<a class="nav-main__category-child">ヘルプ</a>
+				<a class="nav-main__category-child">プライム</a>-->
+				{% for en, jp in CATEGORIES.items %}
 				<a class="nav-main__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 				{% endfor %}
 				<a class="nav-main__category-child" href="/history">再度購入</a>
@@ -150,8 +151,8 @@
 	    </div>
 		<nav class="nav-mobile">
 			<div class="nav-mobile__account">
-				{% if session.valid %}
-				<p>{{ info.mc_id }}さん</p>
+				{% if session.is_valid %}
+				<p>{{ session.get_user.get_mc_id }}さん</p>
 				<a href="/mypage/">マイページ</a>
 				{% else %}
 				<p>ゲストさん</p>
@@ -170,7 +171,7 @@
 						<p class="nav-mobile__address-to">お届け先</p>
 					</div>
 					<div class="nav-mobile__address-number">
-						{% if session.valid %}
+						{% if session.is_valid %}
 						<h1>1-0001仮</h1>
 						{% else %}
 						<h1>ログイン</h1>
@@ -188,8 +189,8 @@
 	        	<div class="nav-mobile__cart">
 		        	<div class="nav-mobile__cart-ui">
 			        	<img src="{% static 'cart-black.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -201,8 +202,8 @@
 			</a>
 			<div>
                 <a class="nav-mobile__point">Utazonポイント:
-                {% if session.valid %}
-				<span>{{ info.point }}</span>
+                {% if session.is_valid %}
+				<span>{{ session.get_user.get_point|digit_grouping }}</span>
                 {% else %}
                 <span>0</span>
                 {% endif %}
@@ -212,7 +213,7 @@
 			<div class="nav-mobile__category">
 				<p>カテゴリー</p>
 				<div class="nav-mobile__list">
-					{% for jp, en in categories.items %}
+					{% for en, jp in CATEGORIES.items %}
 					<a class="nav-mobile__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 					{% endfor %}
 					<a class="nav-mobile__category-child" href="/history">再度購入</a>
@@ -230,29 +231,29 @@
 		</a>
 		<div class="status-title">
 			<div>
-				<p data-status="{{ order_status }}">配送状況：</p>
-                {% if order_obj.error %}
-                    {% if order_obj.error == "MailboxFull" %}
+				<p data-status="{{ order.status }}">配送状況：</p>
+                {% if order.error %}
+                    {% if order.error == "MailboxFull" %}
                         <h1>配達できませんでした<span style="font-weight: 400;font-style: italic;font-size: 22px">: 商品を入れるスペースがありません</span></h1>
-                    {% elif order_obj.error == "MailboxNotFound" %}
+                    {% elif order.error == "MailboxNotFound" %}
                         <h1>配達できませんでした<span style="font-weight: 400;font-style: italic;font-size: 22px">: ポストが見つかりません</span></h1>
                     {% endif %}
-				{% elif status_per == 100 and not order_status %}
+				{% elif order.get_delivery_progress == 100 and not order.status %}
 				<h1>配達済み</h1>
-				{% elif arrive_today %}
+				{% elif order.will_arrive_today %}
 				<h1>本日到着予定</h1>
 				{% else %}
-				<h1>{{ order_obj.delivery_at.year }}年{{ order_obj.delivery_at.month }}日{{ order_obj.delivery_at.day }}日 {{ order_obj.delivery_at.hour }}時に配達予定</h1>
+				<h1>{{ order.delivers_at.year }}年{{ order_obj.delivers_at.month }}日{{ order_obj.delivers_at.day }}日 {{ order_obj.delivers_at.hour }}時に配達予定</h1>
 				{% endif %}
 			</div>
 			<div>
-				<p>注文番号：{{ order_obj.order_id }}</p>
-				<p>発注日：{{ order_obj.order_at.year }}年{{ order_obj.order_at.month }}日{{ order_obj.order_at.day }}日</p>
+				<p>注文番号：{{ order.order_id }}</p>
+				<p>発注日：{{ order.ordered_at.year }}年{{ order.ordered_at.month }}日{{ order.ordered_at.day }}日</p>
 			</div>
 		</div>
 		<div class="status-container">
 		<div class="progress-container">
-    		<div class="progress-bar" id="progress" data-percent="{{ status_per }}"></div>
+    		<div class="progress-bar" id="progress" data-percent="{{ order.get_delivery_progress }}"></div>
 			<div class="milestone" style="left: 0;" id="order1">
 				<div class="milestone-box isActive">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
@@ -309,7 +310,7 @@
     <a href="/">
         <img src="{% static 'logo.svg' %}">
     </a>
-    <p>当サイトはAmazon.com, Inc. とは一切関係ありません</p>
+    <p>当サイトはAmazonとは一切関係ありません</p>
     <p>&copy; 2023 UtakataNetwork</p>
 </footer>
 </body>

@@ -155,10 +155,16 @@
     background-color: #14adff;
     padding: 10px 20px;
     border-radius: 10px;
+    width: 120px;
 }
 
 .buy-confirm__btn a:hover {
     background-color: #118bcc;
+}
+
+.buy-confirm__description {
+    width: calc(100% - 145px);
+
 }
 
 .buy-confirm__description h3 {
@@ -168,7 +174,7 @@
 
 .buy-confirm__description p {
     color: #565959;
-    font-size: 12px;
+    font-size: 13px;
     margin: 10px 0;
 }
 

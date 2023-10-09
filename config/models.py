@@ -7,14 +7,14 @@ class Item(models.Model):
     item_name = models.CharField(max_length=256)
     price = models.FloatField()
     image = models.JSONField(null=True, blank=True)
-    review = models.JSONField(null=True, blank=True)
-    stock = models.BigIntegerField(null=True, blank=True),
     kind = models.JSONField(null=True, blank=True),
     category = models.CharField(max_length=64),
     purchases_number = models.BigIntegerField(default=0, null=True, blank=True)
-    mc_uuid = models.CharField(max_length=36)
+    mc_uuid = models.CharField(max_length=36, null=True, blank=True)
     search_keyword = models.JSONField()
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(null=False, blank=False)
+    updated_at = models.DateTimeField(null=False, blank=False)
+    status = models.BooleanField()
 
     class Meta:
         db_table = 'utazon_item'

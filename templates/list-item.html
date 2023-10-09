@@ -1,4 +1,5 @@
 {% load static %}
+{% load formatter %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -34,8 +35,8 @@
 	        	<div class="nav-mobile__top-cart">
 		        	<div class="nav-mobile__top-cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -50,11 +51,11 @@
                     <img src="{% static 'logo.svg' %}">
                 </a>
             </div>
-            {% if session.invalid %}
+            {% if session.is_invalid %}
             <a href="https://discord.gg/d9Knvc9JCr" class="nav-link">
             {% endif %}
             <div class="nav-belt__address">
-                {% if session.valid %}
+                {% if session.is_valid %}
                 <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
 	            <div class="nav-belt__address-dir">
 		            <div class="nav-belt__address-name">
@@ -75,14 +76,14 @@
 	            </div>
                 {% endif %}
             </div>
-            {% if session.invalid %}
+            {% if session.is_invalid %}
             </a>
             {% endif %}
             <div class="nav-belt__search">
 	            <form id="search">
 		            <select class="nav-belt__search-select">
 						<option value="all">すべて</option>
-						{% for jp, en in categories.items %}
+						{% for en, jp in CATEGORIES.items %}
 			            <option value="{{ en }}"{% if category == en %} selected{% endif %}>{{ jp }}</option>
 						{% endfor %}
 		            </select>
@@ -94,10 +95,10 @@
 	            </form>
                 <div class="nav-belt__search-background"></div>
             </div>
-						{% if session.valid %}
+						{% if session.is_valid %}
 			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				    <p>{{ info.mc_id }}さん</p>
+				    <p>{{ session.get_user.get_mc_id }}さん</p>
 		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
@@ -119,8 +120,8 @@
 	        	<div class="nav-belt__cart">
 		        	<div class="nav-belt__cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -134,15 +135,15 @@
 	    <div class="nav-main">
 			<div class="nav-main__category">
 				<a class="nav-main__point">Utazonポイント:
-                    {% if session.valid %}
-                    <span>{{ info.point }}</span>
+                    {% if session.is_valid %}
+                    <span>{{ session.get_user.get_point|digit_grouping }}</span>
                     {% else %}
                     <span>0</span>
                     {% endif %}
                 </a>
-				<a class="nav-main__category-child">ヘルプ</a>
-				<a class="nav-main__category-child">プライム</a>
-				{% for jp, en in categories.items %}
+				<!--<a class="nav-main__category-child">ヘルプ</a>
+				<a class="nav-main__category-child">プライム</a>-->
+				{% for en, jp in CATEGORIES.items %}
 				<a class="nav-main__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 				{% endfor %}
 				<a class="nav-main__category-child" href="/history">再度購入</a>
@@ -150,8 +151,8 @@
 	    </div>
 		<nav class="nav-mobile">
 			<div class="nav-mobile__account">
-				{% if session.valid %}
-				<p>{{ info.mc_id }}さん</p>
+				{% if session.is_valid %}
+				<p>{{ session.get_user.get_mc_id }}さん</p>
 				<a href="/mypage/">マイページ</a>
 				{% else %}
 				<p>ゲストさん</p>
@@ -170,7 +171,7 @@
 						<p class="nav-mobile__address-to">お届け先</p>
 					</div>
 					<div class="nav-mobile__address-number">
-						{% if session.valid %}
+						{% if session.is_valid %}
 						<h1>1-0001仮</h1>
 						{% else %}
 						<h1>ログイン</h1>
@@ -188,8 +189,8 @@
 	        	<div class="nav-mobile__cart">
 		        	<div class="nav-mobile__cart-ui">
 			        	<img src="{% static 'cart-black.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -201,8 +202,8 @@
 			</a>
 			<div>
                 <a class="nav-mobile__point">Utazonポイント:
-                {% if session.valid %}
-				<span>{{ info.point }}</span>
+                {% if session.is_valid %}
+				<span>{{ session.get_user.get_point|digit_grouping }}</span>
                 {% else %}
                 <span>0</span>
                 {% endif %}
@@ -212,7 +213,7 @@
 			<div class="nav-mobile__category">
 				<p>カテゴリー</p>
 				<div class="nav-mobile__list">
-					{% for jp, en in categories.items %}
+					{% for en, jp in CATEGORIES.items %}
 					<a class="nav-mobile__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 					{% endfor %}
 					<a class="nav-mobile__category-child" href="/history">再度購入</a>
@@ -245,8 +246,8 @@
 
                     </div>
                     <div class="review-value__text">
-                        <h3><span class="review-required">*</span>価格<span class="required" id="text_required">価格は{{ money_unit }}0.01 以上にしてください</span></h3>
-                        <span>{{ money_unit }}</span><input name="price" id="text" type="number" step="0.01" value="0">
+                        <h3><span class="review-required">*</span>価格<span class="required" id="text_required">価格は{{ MONEY_UNIT }}0.01 以上にしてください</span></h3>
+                        <span>{{ MONEY_UNIT }}</span><input name="price" id="text" type="number" step="0.01" value="0" min="0.01">
                     </div>
                     <div class="review-value__image" style="display: none" data-img="{{ item.image }}">
                         <h3 style="margin-top: 0"><span class="review-required">*</span>画像（5つまで）<span class="required" id="image_required">必須項目です</span><span class="required" id="image_over">画像は5つまでです</span><span class="required" id="image_size">ファイルサイズが2MBを超えています</span></h3>
@@ -315,8 +316,8 @@
                                             {% if i %}
                                             {% with texture_path="textures/item/" ext=".png" %}
                                             <div data-index="{{ forloop.counter0 }}">
-                                                <img src="{% static texture_path|add:i.item_material|add:ext %}">
-                                                {% if i.amount != 1 %}<p>{{ i.amount }}</p>{% endif %}
+                                                <img src="{% static texture_path|add:i.material|add:ext %}">
+                                                {% if i.stack_size != 1 %}<p>{{ i.stack_size }}</p>{% endif %}
                                             </div>
                                             {% endwith %}
                                             {% endif %}
@@ -345,7 +346,7 @@
             <div class="caution" style="display: none;">
                 <h2>出品にあたって</h2>
                 <ul>
-                    <li>売上金は売上額の{{ allocation_per }}%が商品購入後の３日後に振り込まれます。</li>
+                    <li>売上金は売上額の{{ ALLOCATION_PER }}%が商品購入後の３日後に振り込まれます。</li>
                     <li>ふざけた出品はおやめ下さい。削除します。</li>
                     <li>出品をしたらすぐに販売が開始されます。</li>
                 </ul>
@@ -386,7 +387,7 @@
     <a href="/">
         <img src="{% static 'logo.svg' %}">
     </a>
-    <p>当サイトはAmazon.com, Inc. とは一切関係ありません</p>
+    <p>当サイトはAmazonとは一切関係ありません</p>
     <p>&copy; 2023 UtakataNetwork</p>
 </footer>
 </body>

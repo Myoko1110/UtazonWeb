@@ -1,4 +1,5 @@
 {% load static %}
+{% load formatter %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -38,8 +39,8 @@
 	        	<div class="nav-mobile__top-cart">
 		        	<div class="nav-mobile__top-cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -54,11 +55,11 @@
                     <img src="{% static 'logo.svg' %}">
                 </a>
             </div>
-            {% if session.invalid %}
+            {% if session.is_invalid %}
             <a href="https://discord.gg/d9Knvc9JCr" class="nav-link">
             {% endif %}
             <div class="nav-belt__address">
-                {% if session.valid %}
+                {% if session.is_valid %}
                 <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
 	            <div class="nav-belt__address-dir">
 		            <div class="nav-belt__address-name">
@@ -79,14 +80,14 @@
 	            </div>
                 {% endif %}
             </div>
-            {% if session.invalid %}
+            {% if session.is_invalid %}
             </a>
             {% endif %}
             <div class="nav-belt__search">
 	            <form id="search">
 		            <select class="nav-belt__search-select">
 						<option value="all">すべて</option>
-						{% for jp, en in categories.items %}
+						{% for en, jp in CATEGORIES.items %}
 			            <option value="{{ en }}"{% if category == en %} selected{% endif %}>{{ jp }}</option>
 						{% endfor %}
 		            </select>
@@ -98,10 +99,10 @@
 	            </form>
                 <div class="nav-belt__search-background"></div>
             </div>
-			{% if session.valid %}
+			{% if session.is_valid %}
 			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				    <p>{{ info.mc_id }}さん</p>
+				    <p>{{ session.get_user.get_mc_id }}さん</p>
 		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
@@ -123,8 +124,8 @@
 	        	<div class="nav-belt__cart">
 		        	<div class="nav-belt__cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -138,15 +139,15 @@
 	    <div class="nav-main">
 			<div class="nav-main__category">
 				<a class="nav-main__point">Utazonポイント:
-                    {% if session.valid %}
-                    <span>{{ info.point }}</span>
+                    {% if session.is_valid %}
+                    <span>{{ session.get_user.get_point|digit_grouping }}</span>
                     {% else %}
                     <span>0</span>
                     {% endif %}
                 </a>
-				<a class="nav-main__category-child">ヘルプ</a>
-				<a class="nav-main__category-child">プライム</a>
-				{% for jp, en in categories.items %}
+				<!--<a class="nav-main__category-child">ヘルプ</a>
+				<a class="nav-main__category-child">プライム</a>-->
+				{% for en, jp in CATEGORIES.items %}
 				<a class="nav-main__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 				{% endfor %}
 				<a class="nav-main__category-child" href="/history">再度購入</a>
@@ -154,8 +155,8 @@
 	    </div>
 		<nav class="nav-mobile">
 			<div class="nav-mobile__account">
-				{% if session.valid %}
-				<p>{{ info.mc_id }}さん</p>
+				{% if session.is_valid %}
+				<p>{{ session.get_user.get_mc_id }}さん</p>
 				<a href="/mypage/">マイページ</a>
 				{% else %}
 				<p>ゲストさん</p>
@@ -174,7 +175,7 @@
 						<p class="nav-mobile__address-to">お届け先</p>
 					</div>
 					<div class="nav-mobile__address-number">
-						{% if session.valid %}
+						{% if session.is_valid %}
 						<h1>1-0001仮</h1>
 						{% else %}
 						<h1>ログイン</h1>
@@ -192,8 +193,8 @@
 	        	<div class="nav-mobile__cart">
 		        	<div class="nav-mobile__cart-ui">
 			        	<img src="{% static 'cart-black.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -205,8 +206,8 @@
 			</a>
 			<div>
                 <a class="nav-mobile__point">Utazonポイント:
-                {% if session.valid %}
-				<span>{{ info.point }}</span>
+                {% if session.is_valid %}
+				<span>{{ session.get_user.get_point|digit_grouping }}</span>
                 {% else %}
                 <span>0</span>
                 {% endif %}
@@ -216,7 +217,7 @@
 			<div class="nav-mobile__category">
 				<p>カテゴリー</p>
 				<div class="nav-mobile__list">
-					{% for jp, en in categories.items %}
+					{% for en, jp in CATEGORIES.items %}
 					<a class="nav-mobile__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 					{% endfor %}
 					<a class="nav-mobile__category-child" href="/history">再度購入</a>
@@ -236,18 +237,18 @@
 					<li><a href="/browsing-history">閲覧履歴</a></li>
 				</ul>
 			</div>
-			{% if order_history %}
+			{% if paging.result %}
 			<ul>
-				{% for child in order_history %}
+				{% for child in paging.result %}
 				<li class="history-list" id="{{ child.order_id }}">
 					<div class="history-list__info">
 						<div class="history-list__info-child">
 							<span>注文日</span>
-							<p>{{ child.order_at.year }}年{{ child.order_at.month }}月{{ child.order_at.day }}日</p>
+							<p>{{ child.ordered_at.year }}年{{ child.ordered_at.month }}月{{ child.ordered_at.day }}日</p>
 						</div>
 						<div class="history-list__info-child">
 							<span>合計</span>
-							<p>{{ money_unit }}{{ child.amount }}</p>
+							<p>{{ MONEY_UNIT }}{{ child.amount }}</p>
 						</div>
 						{% if child.used_point %}
 						<div class="history-list__info-child">
@@ -270,26 +271,27 @@
                             <h2>配達できませんでした<span style="font-weight: 400;font-style: italic;font-size: 18px">: ポストが見つかりません</span></h2>
                             {% endif %}
 						{% elif child.status %}
-						<h2>{{ child.delivery_at.year }}年{{ child.delivery_at.month }}月{{ child.delivery_at.day }}日 {{ child.delivery_at.hour }}時に配達予定です</h2>
+						<h2>{{ child.delivers_at.year }}年{{ child.delivers_at.month }}月{{ child.delivers_at.day }}日 {{ child.delivery_at.hour }}時に配達予定です</h2>
 						{% else %}
-						<h2>{{ child.delivery_at.year }}年{{ child.delivery_at.month }}月{{ child.delivery_at.day }}日に配達しました</h2>
+						<h2>{{ child.delivers_at.year }}年{{ child.delivers_at.month }}月{{ child.delivers_at.day }}日に配達しました</h2>
                         {% endif %}
-						{% for item in child.order_item %}
+
+						{% for item, qty in child.order_item.cart.items %}
 						<div class="history-list__value-product">
 							<div class="history-list__value-product-box">
 								<img src="{{ item.image.0 }}">
 								<div class="history-list__value-product-middle">
-									<a class="history-list__value-product-name" href="../item/?id={{ item.item_id }}">{{ item.item_name }}</a>
+									<a class="history-list__value-product-name" href="../item/?id={{ item.id }}">{{ item.name }}</a>
                                 <!--
 									{% if child.status %}
 									<span>返品期間：2023/04/06まで</span>
 									{% endif %}
 								-->
 									<div style="display: flex; margin-top: 5px;align-items: center">
-										<p style="margin: 0 10px 0 0;font-size: 14px">個数：{{ item.qty }}</p>
+										<p style="margin: 0 10px 0 0;font-size: 14px">個数：{{ qty }}</p>
 										<div>
-											<a class="history-list__value-product-rebuy" href="../buy/?item=[[{{ item.item_id }}, 1]]">再度購入</a>
-											<a class="history-list__value-product-view" href="../item/?id={{ item.item_id }}">商品を表示</a>
+											<a class="history-list__value-product-rebuy" onclick="location.href=`../buy/?item={&quot;{{ item.id }}&quot;: 1}`">再度購入</a>
+											<a class="history-list__value-product-view" href="../item/?id={{ item.id }}">商品を表示</a>
 										</div>
 									</div>
 								</div>
@@ -304,11 +306,11 @@
                                     {% if forloop.counter == 1 %}
                                     <a class="history-list__value-product-review" href="status/?id={{ child.order_id }}">配送状況</a>
                                     {% endif %}
-								<a class="history-list__value-product-return" href="../review/?id={{ item.item_id }}">商品をレビューする</a>
+								<a class="history-list__value-product-return" href="../review/?id={{ item.id }}">商品をレビューする</a>
 								{% elif not child.canceled %}
                                     {% if forloop.counter == 1 %}
 								    <a class="history-list__value-product-review" data-id="{{ child.order_id }}" onclick="order_cancel(this)">注文をキャンセルする</a>
-								    <a class="history-list__value-product-return" href="status/?id={{ child.order_id }}">配送状況</a>
+								    <a class="history-list__value-product-return" href="status/?id={{ child.id }}">配送状況</a>
                                     {% endif %}
 								{% endif %}
 							</div>
@@ -320,11 +322,11 @@
 			</ul>
             <div style="display: flex;justify-content: center">
                 <div class="main-page" style="width: fit-content">
-                    <a {% if not revable %}class="isInvalid"{% else %}href="?page={{ prev_page }}"{% endif %}>前へ</a>
-                    {% for i in result_range %}
-                    <a {% if i == page %}style="font-weight: 700;border: 1px #000 solid"{% else %}href="?page={{ i }}" class="isActive"{% endif %}>{{ i }}</a>
+                    <a {% if not paging.has_prev %}class="isInvalid"{% else %}href="?page={{ paging.get_prev }}"{% endif %}>前へ</a>
+                    {% for i in paging.page_list %}
+                    <a {% if i == paging.page %}style="font-weight: 700;border: 1px #000 solid"{% else %}href="?page={{ i }}" class="isActive"{% endif %}>{{ i }}</a>
                     {% endfor %}
-                    <a {% if not nextable %}class="isInvalid"{% else %}href="?page={{ next_page }}"{% endif %}>次へ</a>
+                    <a {% if not paging.has_next %}class="isInvalid"{% else %}href="?page={{ paging.get_next }}"{% endif %}>次へ</a>
                 </div>
             </div>
 			{% else %}
@@ -363,10 +365,10 @@
     <a href="/">
         <img src="{% static 'logo.svg' %}">
     </a>
-    <p>当サイトはAmazon.com, Inc. とは一切関係ありません</p>
+    <p>当サイトはAmazonとは一切関係ありません</p>
     <p>&copy; 2023 UtakataNetwork</p>
 </footer>
-{% if session.expire %}
+{% if session.is_expire %}
 <div class="box" id="expires">
 	<div class="box__box">
 		<div class="box__close">
@@ -399,7 +401,7 @@
 		<h1>確認</h1>
 		<p style="margin-bottom: 0;">本当に注文をキャンセルしますか？<br>キャンセルされる場合は以下のことにご留意ください。</p>
 		<ul>
-			<li><span style="font-weight: 700;border-bottom: 2px dashed #000;">購入額{{ cancellation_fee }}%分のキャンセル料</span>がかかります。</li>
+			<li><span style="font-weight: 700;border-bottom: 2px dashed #000;">購入額{{ CANCELLATION_FEE }}%分のキャンセル料</span>がかかります。</li>
 			<li>購入時にご利用いただいたポイントは返還されません。</li>
 		</ul>
 		<a href="" style="background-color: #ad0000">注文をキャンセル</a>

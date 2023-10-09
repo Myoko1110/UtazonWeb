@@ -1,8 +1,14 @@
 const xhr = new XMLHttpRequest();
-const host = `http://${location.host}`;
-let cart_number = 1;
+const id = new URL(location.href).searchParams.get("id")
+let cartNumber = 1;
+
+let startTime;
+let targetPosition;
+let once = false;
 
 $(function () {
+    targetPosition = $('.item-about__description-about').offset().top;
+    initialize()
 
     // アイテムの写真を切り替える
     $(".item-about__img-list-img").on("mouseenter", function () {
@@ -13,17 +19,18 @@ $(function () {
     // 役に立ったを送信する
     $(".review-list__value-use-btn-useful").on("click", function (e) {
         e.preventDefault();
-        let link = $(this).data("href");
-
-        xhr.open("GET", host + $(this).data("href"), true);
+        xhr.open("GET", $(this).data("href"), true);
         xhr.send();
 
-        $(`a[data-href="${link}"]`).css("display", "none");
-        $(`p[data-href="${link}"]`).css("display", "block");
+        $(this).parent().find("p").css("display", "block");
     });
 
     $('#card_add').on("input", function () {
-        cart_number = $(this).val();
+        cartNumber = $(this).val();
+    });
+
+    $(window).scroll(function () {
+        initialize();
     });
 
     // カルーセル
@@ -52,7 +59,7 @@ $(function () {
                 dot.classList.add("isActive");
             }
             dots.append(dot);
-            dot.addEventListener("click", (e) => {
+            dot.addEventListener("click", () => {
                 slideIndex = cont_slide + 1;
                 slides.forEach((slide, cont_slide) => {
                     slide.style = "left: -" + (slideIndex - 1) * 100 + "%;";
@@ -64,7 +71,7 @@ $(function () {
             });
         });
 
-        next.addEventListener("click", (e) => {
+        next.addEventListener("click", () => {
             slideIndex == slides.length ? (slideIndex = 1) : slideIndex++;
             slides.forEach((slide, cont_slide) => {
                 slide.style = "left: -" + (slideIndex - 1) * 100 + "%;";
@@ -76,7 +83,7 @@ $(function () {
 
         });
 
-        prev.addEventListener("click", (e) => {
+        prev.addEventListener("click", () => {
             slideIndex == 1 ? (slideIndex = slides.length) : slideIndex--;
             slides.forEach((slide, cont_slide) => {
                 slide.style = "left: -" + (slideIndex - 1) * 100 + "%;";
@@ -128,4 +135,29 @@ $(function () {
             distX = null;
         });
     });
+
+    window.addEventListener('beforeunload', (e) => {
+        close();
+    });
+    window.addEventListener('popstate', () => {
+        close();
+    });
 });
+
+function close() {
+    if (once) {
+        const duration = new Date(Date.now() - startTime);
+        xhr.open("GET", "/update_browsing_history/?item_id=" + id + "&duration=" + duration.getSeconds(), true);
+        xhr.send();
+    }
+}
+
+function initialize() {
+    if (targetPosition - $(window).height() < $(window).scrollTop() && !once) {
+        once = true;
+        startTime = Date.now();
+
+        xhr.open("GET", "/initialize_browsing_history/?item_id=" + id, true);
+        xhr.send();
+    }
+}

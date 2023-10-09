@@ -1,342 +1,212 @@
-import datetime
-import json
-import random
-from decimal import Decimal, getcontext
+from decimal import getcontext
 
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 
-import util
-from config import settings
+import account.deposit_scheduler
+from util import *
 
 getcontext().prec = 10
-point_return = Decimal(settings.POINT_RETURN)
+point_return = Decimal(settings.RETURN_RATE)
 
 
 def index_view(request):
     # バナーを取得
-    banner_obj = util.get_banners()
+    banner = get_banners()
 
     # 人気アイテムなど取得
-    item_index = util.ItemHelper.get_index_item()
+    pi = Item.get_popular()
+    li = Item.get_latest()
+    fi = Item.get_featured()
 
     # セッションを取得
-    is_session = util.SessionHelper.is_session(request)
+    account.deposit_scheduler.deposit_revenues()
+    s = Session.by_request(request)
     context = {
-        "popular_item": item_index.popular_item,
-        "latest_item": item_index.latest_item,
-        "special_feature": item_index.special_feature_list,
-        "categories": util.ItemHelper.get_category.all(),
-        "banner_obj": banner_obj,
-        "session": is_session,
+        "popular_item": pi,
+        "latest_item": li,
+        "featured_item": fi,
+        "banner": banner,
+        "session": s,
     }
 
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-        context["info"] = info
-
+    if s.is_valid:
         # 閲覧履歴取得
-        user_view_history = util.UserHelper.get_view_history(info.mc_uuid)
-        context["view_history_obj"] = user_view_history
+        browsing_history = s.get_user().get_browsing_history_recently()
+        context["browsing_history"] = browsing_history
 
         # 既ログイン処理
         return render(request, "index.html", context=context)
 
-    elif is_session.expire:
-        return util.SessionHelper.delete_cookie(request, "index.html", context=context)
+    elif s.is_expire:
+        return Session.delete_cookie(request, "index.html", context=context)
 
     else:
         return render(request, "index.html", context=context)
 
 
 def item(request):
-    item_id = request.GET.get("id")
+    item_id = int(request.GET.get("id"))
 
-    # item_idのレコードを取得
-    result = util.DatabaseHelper.get_item(item_id)
+    i = Item.by_id(item_id)
 
-    if not result:
+    if not i:
         raise Http404
 
-    # レビューにデータを追加
-    item_review = util.ItemHelper.add_review_data(util.DatabaseHelper.get_review(item_id))
-
-    # レビューの平均を計算
-    item_review_av = util.ItemHelper.calc_review_average(item_review)
-    if item_review:
-        item_review_av_format = f"{item_review_av:.1f}"
-    else:
-        item_review_av_format = None
-
-    # カテゴリーを取得
-    item_category = util.ItemHelper.get_category.info.from_id(result["category"])
-
-    # セールを取得
-    sale = util.ItemHelper.get_sale(result["sale_id"], result["price"])
-    item_price = sale.item_price
-
     # お届け日取得
-    rand_time = util.ItemHelper.calc_delivery_time()
+    rand_time = Order.calc_expected_delivery_time
 
-    # ポイント計算
-    point = util.ItemHelper.calc_point(item_price)
-
-    # 在庫取得
-    stock = util.DatabaseHelper.get_item_stock(item_id)
-
-    is_session = util.SessionHelper.is_session(request)
+    s = Session.by_request(request)
     context = {
-        "item_id": result["item_id"],
-        "item_name": result["item_name"],
-        "item_price": sale.item_price_format,
-        "past_price": sale.past_price,
-        "item_point": point,
-        "item_images": json.loads(result["image"]),
-        "item_stock": stock,
-        "item_kind": json.loads(result["kind"]),
-        "item_review": reversed(item_review),
-        "item_review_number": len(item_review),
-        "item_review_av": item_review_av,
-        "item_review_av_format": item_review_av_format,
-        "item_category": item_category,
-        "status": result["status"],
+        "item": i,
+        "has_review": s.get_user().has_review(item_id),
+        "status": i.status,
         "rand_time": rand_time,
-        "point_return": util.ItemHelper.point_return_percent,
-        "categories": util.ItemHelper.get_category.all(),
-        "money_unit": settings.MONEY_UNIT,
-        "sale": sale,
-        "session": is_session,
+        "session": s,
     }
 
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-        context["info"] = info
-
-        # 閲覧履歴に追加
-        util.DatabaseHelper.add_user_view_history(info.mc_uuid, item_id)
-
-        # 既ログイン処理
+    if s.is_valid:
+        s.get_user().initialize_browsing_history(item_id)
         return render(request, "item.html", context=context)
 
-    elif is_session.expire:
-        return util.SessionHelper.delete_cookie(request, "item.html", context)
+    elif s.is_expire:
+        return Session.delete_cookie(request, "item.html", context)
 
     else:
         return render(request, "item.html", context=context)
+
+
+def initialize_browsing_history(request):
+    item_id = request.GET.get("item_id")
+    if not item_id:
+        raise Http404
+
+    s = Session.by_request(request)
+    if s.is_valid:
+        s.get_user().initialize_browsing_history(item_id)
+        return HttpResponse("Success")
+
+
+def update_browsing_history(request):
+    item_id = int(request.GET.get("item_id"))
+    duration = int(request.GET.get("duration"))
+    if not item_id or not duration:
+        raise Http404
+
+    s = Session.by_request(request)
+    if s.is_valid:
+        s.get_user().update_browsing_history(item_id, duration)
+        return HttpResponse("Success")
 
 
 def cart(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
+    s = Session.by_request(request)
+    if s.is_valid:
 
-        # カート取得
-        user_cart_id = util.DatabaseHelper.get_user_cart(info.mc_uuid)
-
-        # アイテム情報取得
-        items_info = util.ItemHelper.get_item.cart_list(user_cart_id)
-        user_cart = items_info.item_list
-
-        # トータル金額
-        item_total = items_info.total_amount
-
-        # アイテム数
-        user_cart_number = items_info.total_qty
-
-        # 後で買うを取得し、アイテム情報を取得
-        user_later_id = util.DatabaseHelper.get_user_later(info.mc_uuid)
-        user_later = util.ItemHelper.get_item.id_list(user_later_id)
-
-        # 在庫確認し、買えるか確認
-        if 0 not in [i["stock"] for i in user_cart]:
-            buy_able = True
-        else:
-            buy_able = False
+        c = s.get_user().get_cart()
+        l = s.get_user().get_later()
 
         context = {
-            "session": is_session,
-            "user_cart": user_cart,
-            "user_cart_number": user_cart_number,
-            "user_later": user_later,
-            "user_later_number": len(user_later),
-            "item_total": f"{item_total:,.2f}",
-            "buy_able": buy_able,
-            "info": info,
-            "point_return": util.ItemHelper.point_return_percent,
-            "categories": util.ItemHelper.get_category.all(),
-            "money_unit": settings.MONEY_UNIT,
+            "session": s,
+            "cart": c,
+            "later": l,
         }
         return render(request, "cart.html", context=context)
 
-    elif is_session.expire:
+    elif s.is_expire:
         context = {
-            "session": is_session,
-            "categories": util.ItemHelper.get_category.all()
+            "session": s,
         }
-        return util.SessionHelper.delete_cookie(request, "cart.html", context)
+        return Session.delete_cookie(request, "cart.html", context)
 
     else:
         return redirect("/login/")
 
 
 def cart_delete(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
+    s = Session.by_request(request)
+    if s.is_valid:
 
         # アイテムIDを指定
         item_id = int(request.GET.get("id"))
-
         if not item_id:
             raise Http404
 
-        # UUIDからユーザーのカートを取得
-        mc_uuid = util.UserHelper.get_info.from_session(request).mc_uuid
-        user_cart_id = util.DatabaseHelper.get_user_cart(mc_uuid)
-
-        for i in range(len(user_cart_id)):
-            child = user_cart_id[i]
-
-            # 該当のものだったら
-            if item_id in child and child[0] == item_id:
-                # 削除してアップデート
-                user_cart_id.remove(child)
-                util.DatabaseHelper.update_user_cart(user_cart_id, mc_uuid)
+        Cart.delete(s.mc_uuid, item_id)
 
     return redirect("/cart/")
 
 
 def cart_add(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
+    s = Session.by_request(request)
+    if s.is_valid:
 
         # アイテムIDと数量を指定
         item_id = int(request.GET.get("id"))
-        number = int(request.GET.get("n"))
-
-        if not item_id or not number:
+        qty = int(request.GET.get("qty"))
+        if not item_id or not qty:
             raise Http404
 
-        # UUIDからユーザーのカートを取得
-        mc_uuid = util.UserHelper.get_info.from_session(request).mc_uuid
-        user_cart_id = list(util.DatabaseHelper.get_user_cart(mc_uuid))
-
-        # 既に該当のアイテムがあったら元の数に足す
-        for i in range(len(user_cart_id)):
-            if user_cart_id[i][0] == item_id:
-                user_cart_id[i][1] += number
-                break
-        else:
-            # カートに追加
-            user_cart_id.append([item_id, number])
-
-        # カートをアップデート
-        util.DatabaseHelper.update_user_cart(user_cart_id, mc_uuid)
+        Cart.add(s.mc_uuid, item_id, qty)
 
     return redirect("/cart/")
 
 
 def cart_update(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
+    s = Session.by_request(request)
+    if s.is_valid:
 
         item_id = int(request.GET.get("id"))
-        number = int(request.GET.get("n"))
-
-        if not item_id or not number:
+        qty = int(request.GET.get("qty"))
+        if not item_id or not qty:
             raise Http404
 
-        mc_uuid = util.UserHelper.get_info.from_session(request).mc_uuid
-
-        user_cart_id = list(util.DatabaseHelper.get_user_cart(mc_uuid))
-
-        if item_id and number:
-
-            # すでに該当のアイテムがあったら元の数に足す
-            for i in range(len(user_cart_id)):
-                if user_cart_id[i][0] == item_id:
-                    user_cart_id[i][1] = number
-
-                    util.DatabaseHelper.update_user_cart(user_cart_id, mc_uuid)
+        Cart.update_qty(s.mc_uuid, item_id, qty)
 
     return redirect("/cart/")
 
 
 def later_delete(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
+    s = Session.by_request(request)
+    if s.is_valid:
 
         item_id = int(request.GET.get("id"))
-
         if not item_id:
             raise Http404
 
-        mc_uuid = util.UserHelper.get_info.from_session(request).mc_uuid
-        user_later_id = util.DatabaseHelper.get_user_later(mc_uuid)
-
-        if item_id:
-            user_later_id.remove(item_id)
-            util.DatabaseHelper.update_user_later(user_later_id, mc_uuid)
+        Later.delete(s.mc_uuid, item_id)
 
     return redirect("/cart/")
 
 
 def later_to_cart(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
+    s = Session.by_request(request)
+    if s.is_valid:
 
         item_id = int(request.GET.get("id"))
-
         if not item_id:
             raise Http404
 
-        mc_uuid = util.UserHelper.get_info.from_session(request).mc_uuid
+        qty = s.get_user().get_later().get_qty(item_id)
 
-        user_later_id = util.DatabaseHelper.get_user_later(mc_uuid)
-        user_cart_id = list(util.DatabaseHelper.get_user_cart(mc_uuid))
-
-        if item_id:
-            user_later_id.remove(item_id)
-            util.DatabaseHelper.update_user_later(user_later_id, mc_uuid)
-
-            # すでに該当のアイテムがあったら元の数に足す
-            for i in range(len(user_cart_id)):
-                if user_cart_id[i][0] == item_id:
-                    user_cart_id[i][1] += 1
-                    break
-            else:
-                user_cart_id.append([item_id, 1])
-
-            util.DatabaseHelper.update_user_cart(user_cart_id, mc_uuid)
+        Later.delete(s.mc_uuid, item_id)
+        Cart.add(s.mc_uuid, item_id, qty)
 
     return redirect("/cart/")
 
 
 def cart_to_later(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
+    s = Session.by_request(request)
+    if s.is_valid:
 
         item_id = int(request.GET.get("id"))
-
         if not item_id:
             raise Http404
 
-        mc_uuid = util.UserHelper.get_info.from_session(request).mc_uuid
-        user_cart_id = util.DatabaseHelper.get_user_cart(mc_uuid)
+        qty = s.get_user().get_cart().get_qty(item_id)
 
-        if item_id:
-            for i in range(len(user_cart_id)):
-                child = user_cart_id[i]
-
-                if item_id in child and child[0] == item_id:
-                    user_cart_id.remove(child)
-
-                    util.DatabaseHelper.update_user_cart(user_cart_id, mc_uuid)
-
-        user_later_id = util.DatabaseHelper.get_user_later(mc_uuid)
-
-        if item_id and item_id not in user_later_id:
-            user_later_id.append(item_id)
-            util.DatabaseHelper.update_user_later(user_later_id, mc_uuid)
+        Cart.delete(s.mc_uuid, item_id)
+        Later.add(s.mc_uuid, item_id, qty)
 
     return redirect("/cart/")
 
@@ -348,69 +218,46 @@ def search(request):
 
     # カテゴリーを指定
     category_en = request.GET.get("category")
-    page = request.GET.get("page")
-    if page:
-        page = int(page)
-    else:
-        page = 1
+    page = request.GET.get("page", 1)
 
     # 結果を取得し、アイテム情報を取得
-    result = util.DatabaseHelper.search_item(query, category_en)
-    paging = util.ItemHelper.paging(result, page, 25)
+    r = Item.search(query, Category.by_english(category_en))
+    p = Paging(r, page, 10)
 
-    result = util.ItemHelper.get_item.obj_list(paging[0])
-
-    is_session = util.SessionHelper.is_session(request)
+    s = Session.by_request(request)
     context = {
-        "result": result,
-        "result_length": paging[1],
-        "result_range": paging[5],
-        "revable": paging[3],
-        "nextable": paging[4],
-        "result_displayed": (paging[6], paging[7]),
+        "result": r,
+        "paging": p,
         "query": query,
         "category_en": category_en,
-        "page": page,
-        "next_page": page + 1,
-        "prev_page": page - 1,
-        "category": category,
-        "point_return": util.ItemHelper.point_return_percent,
-        "categories": util.ItemHelper.get_category.all(),
-        "money_unit": settings.MONEY_UNIT,
-        "session": is_session,
+        "session": s,
     }
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-        context["info"] = info
+    if s.is_valid:
         return render(request, "search.html", context=context)
 
-    elif is_session.expire:
-        return util.SessionHelper.delete_cookie(request, "search.html", context=context)
+    elif s.is_expire:
+        return Session.delete_cookie(request, "search.html", context=context)
 
     else:
         return render(request, "search.html", context=context)
 
 
 def review(request):
+    s = Session.by_request(request)
     item_id = request.GET.get("id")
     if not item_id:
         raise Http404
 
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
-        # アイテム情報を取得
-        result = util.DatabaseHelper.get_item(item_id)
-        item_name = result["item_name"]
-        item_image = json.loads(result["image"])[0]
+    if s.is_valid:
+        i = Item.by_id(item_id)
+        has_review = s.get_user().has_review(item_id)
+        r = s.get_user().get_review(item_id)
 
         context = {
-            "item_name": item_name,
-            "item_image": item_image,
-            "session": is_session,
-            "info": info,
-            "categories": util.ItemHelper.get_category.all(),
+            "item": i,
+            "has_review": has_review,
+            "review": r,
+            "session": s,
         }
 
         return render(request, "review.html", context=context)
@@ -423,185 +270,151 @@ def review_post(request):
     if not item_id:
         raise Http404
 
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
+    s = Session.by_request(request)
+    if s.is_valid:
 
-        # UUIDを取得
-        mc_uuid = util.UserHelper.get_info.from_session(request).mc_uuid
+        star = request.GET.get("star")
+        title = request.GET.get("title")
+        text = request.GET.get("text")
 
-        review_star = request.GET.get("star")
-        review_title = request.GET.get("title")
-        review_text = request.GET.get("text")
-
-        util.DatabaseHelper.add_item_review(item_id, int(review_star), review_title, review_text, mc_uuid)
+        Review.add_review(s.mc_uuid, item_id, int(star), title, text)
 
         return redirect(f"/item/?id={item_id}")
     else:
         return redirect(f"/item/?id={item_id}")
 
 
-def review_userful(request):
-    item_id = request.GET.get("id")
-    review_id = request.GET.get("review_id")
+def review_star(request):
+    item_id = int(request.GET.get("id"))
+    if not item_id:
+        raise Http404
+
+    s = Session.by_request(request)
+    if s.is_valid:
+
+        star = request.GET.get("star")
+        Review.add_rating(s.mc_uuid, item_id, int(star))
+
+        return HttpResponse("Success")
+    else:
+        return HttpResponse("User Invalid")
+
+
+def review_edit(request):
+    item_id = int(request.GET.get("id"))
+    if not item_id:
+        raise Http404
+
+    s = Session.by_request(request)
+    if s.is_valid:
+        i = Item.by_id(item_id)
+        r = Review.by_mc_uuid(s.mc_uuid, item_id)
+
+        context = {
+            "item": i,
+            "review": r,
+            "session": s,
+        }
+
+        return render(request, "review-edit.html", context=context)
+    else:
+        return redirect(f"/item/?id={item_id}")
+
+
+def review_edit_post(request):
+    item_id = int(request.GET.get("id"))
+    if not item_id:
+        raise Http404
+
+    s = Session.by_request(request)
+    if s.is_valid:
+        star = int(request.GET.get("star"))
+        title = request.GET.get("title")
+        text = request.GET.get("text")
+
+        Review.update(s.mc_uuid, item_id, star, title, text)
+
+        return redirect(f"/item/?id={item_id}")
+    else:
+        return redirect(f"/item/?id={item_id}")
+
+
+def helpful(request):
+    item_id = int(request.GET.get("id"))
+    review_id = int(request.GET.get("review_id"))
 
     if not item_id or not review_id:
         raise Http404
 
-    # レビューを取得
-    util.DatabaseHelper.useful_item_review(item_id, review_id)
+    Review.helpful(item_id, review_id)
 
-    return redirect(f"/item/?id={item_id}")
+    return HttpResponse("Success")
 
 
 def category(request):
     cat_id = request.GET.get("name")
 
-    # カテゴリーのアイテムを取得
-    result = util.DatabaseHelper.get_item_from_category(cat_id)
-    if not result:
-        # 親カテゴリを参照
-        if cat_id in settings.CATEGORIES.keys():
+    c = Category.by_english(cat_id)
+    r = c.get_item()
 
-            try:
-                result = []
-                for i in settings.CATEGORIES[cat_id]["category"].keys():
+    page = request.GET.get("page", 1)
+    p = Paging(r, page, 10)
 
-                    # カテゴリずつ追加
-                    child_category = util.DatabaseHelper.get_item_from_category(i)
-
-                    # カテゴリにアイテムがなかったらスキップ
-                    if child_category:
-                        for child in child_category:
-                            result.append(child)
-            except AttributeError:
-                result = util.DatabaseHelper.get_item_from_category(cat_id)
-
-        else:
-            raise Http404
-
-    if result:
-        # 結果に情報を追加
-        result = util.ItemHelper.get_item.obj_list(result)
-
-    # カテゴリーを取得
-    category_obj = util.ItemHelper.get_category.info.from_id(cat_id)
-
-    page = request.GET.get("page")
-    if page:
-        page = int(page)
-    else:
-        page = 1
-    paging = util.ItemHelper.paging(result, page, 25)
-    result = paging[0]
-
-    is_session = util.SessionHelper.is_session(request)
+    s = Session.by_request(request)
     context = {
-        "result_length": paging[1],
-        "result_range": paging[5],
-        "revable": paging[3],
-        "nextable": paging[4],
-        "page": page,
-        "next_page": page + 1,
-        "prev_page": page - 1,
-        "result": result,
-        "category": category_obj,
-        "categories": util.ItemHelper.get_category.all(),
-        "money_unit": settings.MONEY_UNIT,
-        "point_return": util.ItemHelper.point_return_percent,
-        "session": is_session,
+        "paging": p,
+        "category": c,
+        "session": s,
     }
 
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-        context["info"] = info
-
+    if s.is_valid:
         return render(request, "category.html", context=context)
 
-    elif is_session.expire:
-        return util.SessionHelper.delete_cookie(request, "category.html", context)
+    elif s.is_expire:
+        return Session.delete_cookie(request, "category.html", context)
 
     else:
         return render(request, "category.html", context=context)
 
 
 def history(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
+    s = Session.by_request(request)
+    if s.is_valid:
+        page = int(request.GET.get("page", 1))
 
-        page = request.GET.get("page")
-        if page:
-            page = int(page)
-        else:
-            page = 1
-
-        # 注文履歴を取得
-        order_history = util.UserHelper.get_history(info.mc_uuid)
-        paging = util.ItemHelper.paging(order_history, page, 10)
-        order_history = paging[0]
+        p = Paging(s.get_user().get_order(), page, 10)
 
         context = {
-            "result_length": paging[1],
-            "result_range": paging[5],
-            "revable": paging[3],
-            "nextable": paging[4],
-            "page": page,
-            "next_page": page + 1,
-            "prev_page": page - 1,
-            "order_history": order_history,
-            "session": is_session,
-            "info": info,
-            "categories": util.ItemHelper.get_category.all(),
-            "money_unit": settings.MONEY_UNIT,
-            "cancellation_fee": settings.CANCELLATION_FEE,
+            "paging": p,
+            "session": s,
             "error": request.GET.get("error"),
         }
         return render(request, "history.html", context=context)
 
-    elif is_session.expire:
+    elif s.is_expire:
         context = {
-            "session": is_session,
-            "categories": util.ItemHelper.get_category.all()
+            "session": s,
         }
-        return util.SessionHelper.delete_cookie(request, "history.html", context=context)
+        return Session.delete_cookie(request, "history.html", context=context)
 
     else:
         return redirect("/login/")
 
 
 def browsing_history(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
-        page = request.GET.get("page")
-        if page:
-            page = int(page)
-        else:
-            page = 1
+    s = Session.by_request(request)
+    if s.is_valid:
+        page = int(request.GET.get("page", 1))
 
         # 閲覧履歴を取得し、アイテム情報を取得
-        browsing_history_obj = [i[0] for i in
-                                util.DatabaseHelper.get_user_view_history(info.mc_uuid)]
-        paging = util.ItemHelper.paging(browsing_history_obj, page, 25)
-        browsing_history_obj = paging[0]
+        r = s.get_user().get_browsing_history()
+        p = Paging(r, page, 10)
 
-        result = util.ItemHelper.get_item.id_list(browsing_history_obj)
+        p.result = Item.by_id_list(p.result)
 
         context = {
-            "result": result,
-            "result_length": paging[1],
-            "result_range": paging[5],
-            "revable": paging[3],
-            "nextable": paging[4],
-            "page": page,
-            "next_page": page + 1,
-            "prev_page": page - 1,
-            "info": info,
-            "session": is_session,
-            "categories": util.ItemHelper.get_category.all(),
-            "point_return": util.ItemHelper.point_return_percent,
-            "money_unit": settings.MONEY_UNIT,
+            "paging": p,
+            "session": s,
         }
         return render(request, "browsing-history.html", context=context)
 
@@ -610,35 +423,15 @@ def browsing_history(request):
 
 
 def status(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
+    s = Session.by_request(request)
+    if s.is_valid:
         # orderを取得
         order_id = request.GET.get("id")
-        order_obj = util.DatabaseHelper.get_order(order_id)
-
-        # 時関系
-        order_time = order_obj["order_at"]
-        order_delivery = order_obj["delivery_at"]
-
-        # 進捗%を取得
-        status_per = util.calc_time_percentage(order_time, order_delivery)
-        status_per = round(status_per)
-
-        # 今日届くか
-        arrive_today = order_delivery.date() == datetime.datetime.now().date()
-
-        order_status = util.DatabaseHelper.get_order(order_id)["status"]
+        o = Order.by_id(order_id)
 
         context = {
-            "order_obj": order_obj,
-            "status_per": status_per,
-            "arrive_today": arrive_today,
-            "order_status": order_status,
-            "info": info,
-            "session": is_session,
-            "categories": util.ItemHelper.get_category.all(),
+            "order": o,
+            "session": s,
         }
         return render(request, "order-status.html", context=context)
 

@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import json
 import os
@@ -8,23 +9,19 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
-import util.SessionHelper
-from config import settings
+import bot
+from util import *
 
 
-def mypage(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
-        onsale_items = util.DatabaseHelper.get_item_from_user(info.mc_uuid)
-        onsale_item_length = len(onsale_items)
+async def mypage(request):
+    s = Session.by_request(request)
+    if s.is_valid:
+        u = s.get_user()
 
         context = {
-            "categories": util.ItemHelper.get_category.all(),
-            "onsale_item_length": onsale_item_length,
-            "session": is_session,
-            "info": info,
+            "user": u,
+            "categories": Category.all(),
+            "session": s,
         }
 
         return render(request, "mypage.html", context=context)
@@ -34,24 +31,17 @@ def mypage(request):
 
 
 def list_item(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
-        waiting_stock = util.DatabaseHelper.get_waiting_stock(info.mc_uuid)
-        waiting_stock = json.loads(waiting_stock)
-
+    s = Session.by_request(request)
+    if s.is_valid:
+        waiting_stock = s.get_user().get_waiting_stock()
         error = request.GET.get("error")
 
         context = {
             "waiting_stock": waiting_stock,
             "error": error,
             "category": settings.CATEGORIES,
-            "categories": util.ItemHelper.get_category.all(),
-            "money_unit": settings.MONEY_UNIT,
-            "allocation_per": settings.ALLOCATION_PER,
-            "session": is_session,
-            "info": info,
+            "ALLOCATION_PER": settings.ALLOCATION_PER,
+            "session": s,
         }
 
         return render(request, "list-item.html", context=context)
@@ -65,10 +55,8 @@ def list_item_post(request):
     if request.method != "POST":
         raise Http404
 
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
+    s = Session.by_request(request)
+    if s.is_valid:
         item_name = request.POST.get("title")
         if not item_name:
             raise ValueError("item_name is empty")
@@ -98,31 +86,18 @@ def list_item_post(request):
             raise ValueError("new_image is empty")
 
         category = request.POST.get('category')
-
-        category_valid = False
         if not category:
             raise ValueError("category is empty")
-        for i, j in settings.CATEGORIES.items():
-            if i == category:
-                category_valid = True
-                break
-            try:
-                for key, value in j.items():
-                    if key == "JAPANESE":
-                        continue
-                    if key == category:
-                        category_valid = True
-                        break
-            except AttributeError:
-                pass
-        if not category_valid:
+
+        c = Category.by_english(category)
+        if not c:
             raise ValueError("category is invalid")
 
-        items = request.POST.get("items")
-        if not items:
+        items_json = request.POST.get("items")
+        if not items_json:
             raise ValueError("items is empty")
         try:
-            items = json.loads(items)
+            items: list[int] = json.loads(items_json)
             if type(items) != list:
                 raise ValueError("item is not list of json")
         except json.JSONDecodeError:
@@ -137,26 +112,28 @@ def list_item_post(request):
         else:
             keyword = "[]"
 
-        waiting_stock = json.loads(util.DatabaseHelper.get_waiting_stock(info.mc_uuid))
+        waiting_stock = s.get_user().get_waiting_stock()
 
-        item_amount = waiting_stock[items[0]]["amount"]
-        item_material = waiting_stock[items[0]]["item_material"]
-        item_display_name = waiting_stock[items[0]]["item_display_name"]
-        item_enchantment = waiting_stock[items[0]]["item_enchantments"]
-        item_damage = waiting_stock[items[0]]["item_damage"]
+        first_item = waiting_stock[items[0]]
+
+        item_amount = first_item.stack_size
+        item_material = first_item.material
+        item_display_name = first_item.display_name
+        item_enchantment = first_item.enchantments
+        item_damage = first_item.damage
 
         error = False
         for i in items:
             item_stack = waiting_stock[i]
-            if item_amount != item_stack["amount"]:
+            if item_amount != item_stack.stack_size:
                 error = True
-            elif item_material != item_stack["item_material"]:
+            elif item_material != item_stack.material:
                 error = True
-            elif item_display_name != item_stack["item_display_name"]:
+            elif item_display_name != item_stack.display_name:
                 error = True
-            elif item_enchantment != item_stack["item_enchantments"]:
+            elif item_enchantment != item_stack.enchantments:
                 error = True
-            elif item_damage != item_stack["item_damage"]:
+            elif item_damage != item_stack.damage:
                 error = True
         stock = len(items)
 
@@ -166,12 +143,7 @@ def list_item_post(request):
         for i in items:
             waiting_stock[i] = None
 
-        while True:
-            item_id = secrets.randbelow(100000)
-
-            item = util.DatabaseHelper.get_item(item_id)
-            if not item:
-                break
+        item_id = Item.create_id()
 
         image_path = []
         fs = settings.MEDIA_ROOT / 'item' / str(item_id)
@@ -202,67 +174,50 @@ def list_item_post(request):
                     image_path.append(db)
                     break
 
-        image_path = json.dumps(image_path)
+        Item.create(item_id, item_name, item_price, image_path, about, c, keyword, s.mc_uuid)
+        Item.create_stack(item_id, first_item, stock)
 
-        util.DatabaseHelper.add_item(
-            item_id, item_name, item_price, image_path, about, category, keyword, info.mc_uuid)
-
-        util.DatabaseHelper.add_item_stack(
-            item_id, item_display_name, item_material, item_enchantment, item_damage, item_amount,
-            stock)
-
-        util.DatabaseHelper.update_waiting_stock(
-            info.mc_uuid, json.dumps(waiting_stock)
-        )
-
+        s.get_user().update_waiting_stock(waiting_stock)
         return redirect(f"/item/?id={item_id}")
 
 
-def on_sale(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
-        onsale_items = util.DatabaseHelper.get_item_from_user(info.mc_uuid)
+def available(request):
+    s = Session.by_request(request)
+    if s.is_valid:
+        available_items = s.get_user().get_available_items()
 
         error = request.GET.get("error")
 
         context = {
-            "onsale": onsale_items,
+            "item": available_items,
             "error": error,
-            "categories": util.ItemHelper.get_category.all(),
-            "money_unit": settings.MONEY_UNIT,
-            "session": is_session,
-            "info": info,
+            "categories": Category.all(),
+            "session": s,
         }
 
-        return render(request, "onsale.html", context=context)
+        return render(request, "available_items.html", context=context)
 
     else:
         return redirect("/login/")
 
 
 def item_edit(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
+    s = Session.by_request(request)
+    if s.is_valid:
         item_id = request.GET.get("id")
-        item = util.DatabaseHelper.get_item(item_id)
-
-        if not item or item["mc_uuid"] != info.mc_uuid:
+        if not item_id:
             raise Http404
+        item_id = int(item_id)
+        item = Item.by_id(item_id)
 
-        item["images"] = json.loads(item["image"])
-        item["kind"] = json.loads(item["kind"])
+        if not item or item.mc_uuid != s.mc_uuid or not item.status:
+            raise Http404
 
         context = {
             "item": item,
             "category": settings.CATEGORIES,
-            "categories": util.ItemHelper.get_category.all(),
-            "money_unit": settings.MONEY_UNIT,
-            "session": is_session,
-            "info": info,
+            "categories": Category.all(),
+            "session": s,
         }
         return render(request, "edit-item.html", context=context)
 
@@ -275,14 +230,14 @@ def item_edit_post(request):
     if request.method != "POST":
         raise Http404
 
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
+    s = Session.by_request(request)
+    if s.is_valid:
         item_id = request.POST.get("item_id")
+        if not item_id:
+            raise Http404
 
-        db_mc_uuid = util.DatabaseHelper.get_item(item_id)["mc_uuid"]
-        if db_mc_uuid != info.mc_uuid:
+        item = Item.by_id(item_id)
+        if item.mc_uuid != s.mc_uuid or not item.status:
             raise Http404
 
         item_name = request.POST.get("title")
@@ -303,32 +258,18 @@ def item_edit_post(request):
         if not about:
             raise ValueError("about is empty")
         try:
-            about_decode = json.loads(about)
-            if type(about_decode) != list:
+            about = json.loads(about)
+            if isinstance(about, list):
                 raise ValueError("about is not list of json")
         except json.JSONDecodeError:
             raise ValueError("about is not json")
 
         category = request.POST.get('category')
-
-        category_valid = False
         if not category:
             raise ValueError("category is empty")
-        for i, j in settings.CATEGORIES.items():
-            if i == category:
-                category_valid = True
-                break
-            try:
-                for key, value in j["category"].items():
-                    if key == category:
-                        category_valid = True
-                        break
-            except AttributeError:
-                pass
-            except TypeError:
-                pass
 
-        if not category_valid:
+        c = Category.by_english(category)
+        if not c:
             raise ValueError("category is invalid")
 
         image = request.POST.get("update_image")
@@ -336,32 +277,31 @@ def item_edit_post(request):
             raise ValueError("image is empty")
         try:
             image = json.loads(image)
-            if type(image) != list:
+            if isinstance(image, list):
                 raise ValueError("image is not list of json")
         except json.JSONDecodeError:
             raise ValueError("image is not json")
 
         new_image = request.POST.getlist('new_image')
-
+        fs = settings.MEDIA_ROOT / 'item' / str(item_id)
         for i in new_image:
             db = ""
             while True:
                 try:
                     file_ext = re.match(r"data:image/(.*);base64,", i).groups()[0]
-
                     i = re.sub(r"data:image/.*;base64,", "", i)
-
                     file_name = f"{secrets.token_urlsafe(4)}.{file_ext}"
 
-                    fs = settings.MEDIA_ROOT / 'item' / item_id / file_name
                     db = f'/media/item/{item_id}/{file_name}'
                     binary_data = base64.b64decode(i)
 
                     if len(binary_data) > 1024 * 1024 * 2:
                         raise ValueError("size of new_image is over 2MB")
 
+                    os.makedirs(fs, exist_ok=True)
+
                     # ファイルを保存
-                    with open(fs, 'wb') as f:
+                    with open(fs / file_name, 'wb') as f:
                         f.write(binary_data)
 
                 except FileExistsError:
@@ -370,30 +310,27 @@ def item_edit_post(request):
                     image.append(db)
                     break
 
-        image = json.dumps(image)
-        util.DatabaseHelper.update_item(item_id, item_name, item_price, image, about, category)
-
+        item.update(item_name, item_price, image, about, c)
         return redirect(f"/item/?id={item_id}")
 
 
 def item_stock(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
-        waiting_stock = util.DatabaseHelper.get_waiting_stock(info.mc_uuid)
-        waiting_stock = json.loads(waiting_stock)
-
-        info = util.UserHelper.get_info.from_session(request)
+    s = Session.by_request(request)
+    if s.is_valid:
+        waiting_stock = s.get_user().get_waiting_stock()
 
         item_id = request.GET.get("id")
-        item = util.DatabaseHelper.get_item(item_id)
-        stack = util.DatabaseHelper.get_item_stack(item_id)
-
-        if not item or item["mc_uuid"] != info.mc_uuid:
+        if not item_id:
             raise Http404
 
-        item["images"] = json.loads(item["image"])
+        item = Item.by_id(item_id)
+        if item.mc_uuid != s.mc_uuid or not item.status:
+            raise Http404
+
+        stack = item.get_item_stack()
+
+        if not item or item.mc_uuid != s.mc_uuid:
+            raise Http404
 
         error = request.GET.get("error")
 
@@ -402,10 +339,7 @@ def item_stock(request):
             "stack": stack,
             "error": error,
             "waiting_stock": waiting_stock,
-            "categories": util.ItemHelper.get_category.all(),
-            "money_unit": settings.MONEY_UNIT,
-            "session": is_session,
-            "info": info,
+            "session": s,
         }
 
         return render(request, "add-stock.html", context=context)
@@ -419,106 +353,86 @@ def item_stock_post(request):
     if request.method != "POST":
         raise Http404
 
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
+    s = Session.by_request(request)
+    if s.is_valid:
         item_id = request.POST.get("item_id")
         if not item_id:
             raise Http404
+        item = Item.by_id(item_id)
+        if item.mc_uuid != s.mc_uuid or not item.status:
+            raise Http404
 
-        items = request.POST.get("items")
-        if not items:
+        index = request.POST.get("items")
+        if not index:
             raise ValueError("items is empty")
-        try:
-            items = json.loads(items)
-            if type(items) != list:
-                raise ValueError("item is not list of json")
-        except json.JSONDecodeError:
-            raise ValueError("items is not json")
 
-        waiting_stock = json.loads(util.DatabaseHelper.get_waiting_stock(info.mc_uuid))
-        item_stack = util.DatabaseHelper.get_item_stack(item_id)
+        index = json.loads(index)
+        u = s.get_user()
 
-        item_amount = item_stack["stack_size"]
-        item_material = item_stack["item_material"]
-        item_name = item_stack["item_display_name"]
-        item_enchantment = item_stack["item_enchantments"]
+        waiting_stock = u.get_waiting_stock()
+        item_stack = item.get_item_stack()
+
+        item_amount = item_stack.stack_size
+        item_material = item_stack.material
+        item_name = item_stack.display_name
+        item_enchantment = item_stack.enchantments
 
         error1 = False
-        for i in items:
+        for i in index:
             j = waiting_stock[i]
-            if item_amount != j["amount"]:
+            if item_amount != j.stack_size:
                 error1 = True
-            elif item_material != j["item_material"]:
+            elif item_material != j.material:
                 error1 = True
-            elif item_name != j["item_display_name"]:
+            elif item_name != j.display_name:
                 error1 = True
-            elif item_enchantment != j["item_enchantments"]:
+            elif item_enchantment != j.enchantments:
                 error1 = True
 
         if error1:
-            return redirect(f"/mypage/on_sale/stock/?id={item_id}&error=1")
+            return redirect(f"/mypage/available/stock/?id={item_id}&error=1")
 
-        stock = len(items)
+        stock = len(index)
 
-        if item_stack["stock"] + stock > 5000:
-            return redirect(f"/mypage/on_sale/stock/?id={item_id}&error=2")
+        if item_stack.stock + stock > 5000:
+            return redirect(f"/mypage/available/stock/?id={item_id}&error=2")
 
-        for i in items:
+        for i in index:
             waiting_stock[i] = None
 
-        util.DatabaseHelper.increase_stock(item_id, stock)
-
-        util.DatabaseHelper.update_waiting_stock(
-            info.mc_uuid, json.dumps(waiting_stock)
-        )
+        item.increase_stock(stock)
+        u.update_waiting_stock(waiting_stock)
 
         return redirect(f"/item/?id={item_id}")
 
 
 def item_delete(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
+    s = Session.by_request(request)
+    if s.is_valid:
         item_id = request.GET.get("id")
         if not item_id:
             raise Http404
 
-        item = util.DatabaseHelper.get_item(item_id)
-        if info.mc_uuid != item["mc_uuid"]:
+        i = Item.by_id(item_id)
+        if s.mc_uuid != i.mc_uuid or not i.status:
             raise Http404
 
-        stock = util.DatabaseHelper.get_item_stock(item_id)
+        i.delete()
+        return redirect("/mypage/available/")
 
-        if stock != 0:
-            util.DatabaseHelper.add_return_stock(info.mc_uuid, item_id, stock)
-        util.DatabaseHelper.delete_item(item_id)
-        return redirect("/mypage/on_sale/")
 
-        
 def item_return(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
+    s = Session.by_request(request)
+    if s.is_valid:
         item_id = request.GET.get("id")
-        item = util.DatabaseHelper.get_item(item_id)
-        item["image"] = json.loads(item["image"])
-        stock = util.DatabaseHelper.get_item_stock(item_id)
-
+        i = Item.by_id(item_id)
         error = request.GET.get("error")
 
         context = {
-            "item_stock": stock,
-            "item": item,
+            "item": i,
             "error": error,
             "category": settings.CATEGORIES,
-            "categories": util.ItemHelper.get_category.all(),
-            "money_unit": settings.MONEY_UNIT,
-            "session": is_session,
-            "info": info,
+            "session": s,
         }
 
         return render(request, "return-stock.html", context=context)
@@ -528,15 +442,22 @@ def item_return(request):
 
 
 def item_return_post(request):
-    is_session = util.SessionHelper.is_session(request)
-    if is_session.valid:
-        info = util.UserHelper.get_info.from_session(request)
-
+    s = Session.by_request(request)
+    if s.is_valid:
         item_id = request.GET.get("id")
+        if not item_id:
+            raise Http404
         amount = int(request.GET.get("amount"))
 
-        if util.DatabaseHelper.get_item(item_id)["mc_uuid"] != info.mc_uuid:
+        i = Item.by_id(int(item_id))
+        if i.mc_uuid != s.mc_uuid or not i.status:
             raise Http404
 
-        util.DatabaseHelper.add_return_stock(info.mc_uuid, item_id, amount)
-        return redirect("/mypage/on_sale/")
+        if i.get_stock() < amount:
+            raise ValueError("返却するには在庫が不足しています")
+
+        i.return_stock(amount)
+        asyncio.run_coroutine_threadsafe(
+            bot.send_returnstock_confirm(s.get_user().get_discord_id()),
+            bot.client.loop)
+        return redirect("/mypage/available/")

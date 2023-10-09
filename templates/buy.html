@@ -1,4 +1,5 @@
 {% load static %}
+{% load formatter %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -35,8 +36,8 @@
 	        	<div class="nav-mobile__top-cart">
 		        	<div class="nav-mobile__top-cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -51,11 +52,11 @@
                     <img src="{% static 'logo.svg' %}">
                 </a>
             </div>
-            {% if session.invalid %}
+            {% if session.is_invalid %}
             <a href="https://discord.gg/d9Knvc9JCr" class="nav-link">
             {% endif %}
             <div class="nav-belt__address">
-                {% if session.valid %}
+                {% if session.is_valid %}
                 <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
 	            <div class="nav-belt__address-dir">
 		            <div class="nav-belt__address-name">
@@ -76,14 +77,14 @@
 	            </div>
                 {% endif %}
             </div>
-            {% if session.invalid %}
+            {% if session.is_invalid %}
             </a>
             {% endif %}
             <div class="nav-belt__search">
 	            <form id="search">
 		            <select class="nav-belt__search-select">
 						<option value="all">すべて</option>
-						{% for jp, en in categories.items %}
+						{% for en, jp in CATEGORIES.items %}
 			            <option value="{{ en }}"{% if category == en %} selected{% endif %}>{{ jp }}</option>
 						{% endfor %}
 		            </select>
@@ -95,10 +96,10 @@
 	            </form>
                 <div class="nav-belt__search-background"></div>
             </div>
-						{% if session.valid %}
+						{% if session.is_valid %}
 			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				    <p>{{ info.mc_id }}さん</p>
+				    <p>{{ session.get_user.get_mc_id }}さん</p>
 		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
@@ -120,8 +121,8 @@
 	        	<div class="nav-belt__cart">
 		        	<div class="nav-belt__cart-ui">
 			        	<img src="{% static 'cart.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -135,15 +136,15 @@
 	    <div class="nav-main">
 			<div class="nav-main__category">
 				<a class="nav-main__point">Utazonポイント:
-                    {% if session.valid %}
-                    <span>{{ info.point }}</span>
+                    {% if session.is_valid %}
+                    <span>{{ session.get_user.get_point|digit_grouping }}</span>
                     {% else %}
                     <span>0</span>
                     {% endif %}
                 </a>
-				<a class="nav-main__category-child">ヘルプ</a>
-				<a class="nav-main__category-child">プライム</a>
-				{% for jp, en in categories.items %}
+				<!--<a class="nav-main__category-child">ヘルプ</a>
+				<a class="nav-main__category-child">プライム</a>-->
+				{% for en, jp in CATEGORIES.items %}
 				<a class="nav-main__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 				{% endfor %}
 				<a class="nav-main__category-child" href="/history">再度購入</a>
@@ -151,8 +152,8 @@
 	    </div>
 		<nav class="nav-mobile">
 			<div class="nav-mobile__account">
-				{% if session.valid %}
-				<p>{{ info.mc_id }}さん</p>
+				{% if session.is_valid %}
+				<p>{{ session.get_user.get_mc_id }}さん</p>
 				<a href="/mypage/">マイページ</a>
 				{% else %}
 				<p>ゲストさん</p>
@@ -171,7 +172,7 @@
 						<p class="nav-mobile__address-to">お届け先</p>
 					</div>
 					<div class="nav-mobile__address-number">
-						{% if session.valid %}
+						{% if session.is_valid %}
 						<h1>1-0001仮</h1>
 						{% else %}
 						<h1>ログイン</h1>
@@ -189,8 +190,8 @@
 	        	<div class="nav-mobile__cart">
 		        	<div class="nav-mobile__cart-ui">
 			        	<img src="{% static 'cart-black.png' %}">
-						{% if session.valid %}
-			        	<p>{{ info.user_cart }}</p>
+						{% if session.is_valid %}
+			        	<p>{{ session.get_user.get_cart_length }}</p>
 						{% else %}
 						<p>0</p>
 						{% endif %}
@@ -202,8 +203,8 @@
 			</a>
 			<div>
                 <a class="nav-mobile__point">Utazonポイント:
-                {% if session.valid %}
-				<span>{{ info.point }}</span>
+                {% if session.is_valid %}
+				<span>{{ session.get_user.get_point|digit_grouping }}</span>
                 {% else %}
                 <span>0</span>
                 {% endif %}
@@ -213,7 +214,7 @@
 			<div class="nav-mobile__category">
 				<p>カテゴリー</p>
 				<div class="nav-mobile__list">
-					{% for jp, en in categories.items %}
+					{% for en, jp in CATEGORIES.items %}
 					<a class="nav-mobile__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
 					{% endfor %}
 					<a class="nav-mobile__category-child" href="/history">再度購入</a>
@@ -226,16 +227,16 @@
 <div class="wrapper">
 	<div class="subwrapper">
 		<div class="buy">
-            {% if not invalid_item %}
+            {% if cart.is_valid_items or cart|length %}
 			<div class="buy-title">
 				<h2>レジ</h2>
 				{% if buy_now %}
-				<a>{{ user_cart_number }}点の商品</a>
+				<a>{{ cart.get_amount }}点の商品</a>
 				{% else %}
-				<a href="/cart">{{ user_cart_number }}点の商品</a>
+				<a href="/cart">{{ cart|length }}点の商品</a>
 				{% endif %}
 			</div>
-			{% if user_cart_number %}
+			{% if cart.get_amount %}
 			<div class="buy-receive buy-list">
 				<div class="buy-left">
 					<h3 class="buy-subtitle">
@@ -244,7 +245,7 @@
 					</h3>
 				</div>
 				<div class="buy-right">
-					<p>{{ info.mc_id }}</p>
+					<p>{{ session.get_user.get_mc_id }}</p>
 					<p>1-0001</p>
 					<p>〇〇県 〇〇市〇〇丁目</p>
 					<p>1-1-1</p>
@@ -257,31 +258,31 @@
 						<span>残高</span>
 					</h3>
 				</div>
-				{% if not player_balance_float %}
+				{% if not balance %}
 				<div class="buy-right" style="display: flex">
 					<p>
 						<span class="buy-balance__money">サーバーへの接続に失敗しました</span>
                         <span style="font-size: 14px;display: block;margin-left: 10px;">時間をおいてから再度お試しください。問題が続くようであれば、運営にお問い合わせ下さい。</span>
 					</p>
-				{% elif buy_able %}
+				{% elif balance >= cart.get_total %}
 				<div class="buy-right" style="display: flex;align-items: center;">
 					<p>
 						<span>購入後の残高</span>
 					</p>
 					<div class="buy-right__box">
 						<p>
-							<span class="buy-balance__money">{{ money_unit }}<span id="player_balance" data-float="{{ player_balance_float }}">{{ player_balance }}</span></span>
+							<span class="buy-balance__money">{{ MONEY_UNIT }}<span id="player_balance" data-float="{{ balance }}">{{ balance|format_price }}</span></span>
 						</p>
 						<p style="margin: 0 0 0 20px">
 							<span>→</span>
-							<span class="buy-balance__money">{{ money_unit }}<span id="after_balance">{{ after_balance }}</span></span>
+							<span class="buy-balance__money">{{ MONEY_UNIT }}<span id="after_balance">{{ after_balance|format_price }}</span></span>
 						</p>
 					</div>
 				{% else %}
 				<div class="buy-right">
 					<p>
 						<span>残高</span>
-						<span class="buy-balance__money">{{ money_unit }}{{ player_balance }}</span>
+						<span class="buy-balance__money">{{ MONEY_UNIT }}{{ player_balance }}</span>
 					</p>
 					<p style="color: #b12704;font-weight: 700">残高不足です</p>
 				{% endif %}
@@ -296,15 +297,15 @@
 				</div>
 				<div class="buy-right">
 					<h3 class="buy-schedule__date">：{{ rand_time.year }}年{{ rand_time.month }}月{{ rand_time.day }}日にお届け</h3>
-					<div class="buy-items" data-items="{{ user_cart_id }}">
+					<div class="buy-items" data-items="{{ cart.encode_to_percent_encoding }}">
 						<ul>
-							{% for child in user_cart %}
+							{% for item, qty in cart.items %}
 							<li class="buy-items__list">
-								<img src="{{ child.image.0 }}">
+								<img src="{{ item.image.0 }}">
 								<div class="buy-items__box">
-									<h3>{{ child.item_name }}</h3>
-									<p>{{ money_unit }}{{ child.item_price }}</p>
-									<p style="font-weight: 400;font-size: 14px;margin: 0;">個数: {{ child.qty }}</p>
+									<h3>{{ item.name }}</h3>
+									<p>{{ MONEY_UNIT }}{{ item.price }}</p>
+									<p style="font-weight: 400;font-size: 14px;margin: 0;">個数: {{ qty }}</p>
 								</div>
 							</li>
 							{% endfor %}
@@ -318,11 +319,11 @@
 						<span>4</span>
 						<span>ポイント</span>
 					</h3>
-					<p>※1ptあたり{{ money_unit }}{{ per_point }}</p>
+					<p>※1ptあたり{{ MONEY_UNIT }}{{ POINT_PER }}</p>
 				</div>
 				<div class="buy-right">
-					<p>Utazonポイント：<span class="point" data-perpoint="{{ per_point }}" data-return="{{ point_return }}">{{ info.point }}</span></p>
-					<span>ポイントを使用：</span><input class="buy-point__input" type="number" value="0" id="card_add" min="0" max="{{ info.point }}">
+					<p>Utazonポイント：<span class="point" data-perpoint="{{ POINT_PER }}" data-return="{{ RETURN_PERCENT }}">{{ session.get_user.get_point|digit_grouping }}</span></p>
+					<span>ポイントを使用：</span><input class="buy-point__input" type="number" value="0" id="card_add" min="0" max="{{ session.get_user.get_point|digit_grouping }}">
 					<p style="font-size: 12px;color: #ad0000;display: none" id="error1">請求額を超えています</p>
 					<p style="font-size: 12px;color: #ad0000;display: none" id="error2">使用できるポイントを超えています</p>
 					<p style="font-size: 12px;color: #ad0000;display: none" id="error3">ポイントは整数値しか使用できません</p>
@@ -330,20 +331,19 @@
 			</div>
 			<div class="buy-confirm">
                 <div class="buy-confirm__btn">
-                {% if not player_balance_float %}
-                                        <a id="order_confirm" style="cursor: not-allowed;background-color: #f3f3f3;color: #d5d5d5;display: block;" data-buynow="couldn't access">注文を確定</a>
+                {% if not balance %}
+                    <a id="order_confirm" style="cursor: not-allowed;background-color: #f3f3f3;color: #d5d5d5;display: block;" data-buynow="fail to connect">注文を確定</a>
                     <span style="font-size: 14px;display: block;margin-left: 10px;">サーバーへの接続に失敗しました</span>
-				{% elif buy_able %}
+				{% elif balance >= cart.get_total %}
 					<a id="order_confirm" style="cursor: pointer" data-buynow="{{ buy_now }}">注文を確定</a>
                 {% else %}
                     <a id="order_confirm" style="cursor: not-allowed;background-color: #f3f3f3;color: #d5d5d5;display: block;" data-buynow="{{ buy_now }}">注文を確定</a>
 				{% endif %}
                 </div>
 				<div class="buy-confirm__description">
-					<h3>ご請求額： {{ money_unit }}<span data-total="{{ item_total }}">{{ item_total_format }}</span></h3>
-					<a>獲得ポイント：<span id="get_point" data-point="{{ total_point }}">{{ total_point_format }}</span>pt</a>
-					<p>「注文を確定する」ボタンを押してご注文いただくことで、請求がされます。<br>
-					また、本サイトで現金を請求するようなことは一切ありません！！</p>
+					<h3>ご請求額： {{ MONEY_UNIT }}<span data-total="{{ cart.get_total }}">{{ cart.get_total|format_price }}</span></h3>
+					<a>獲得ポイント：<span id="get_point" data-point="{{ cart.get_point }}">{{ cart.get_point|digit_grouping }}</span>pt</a>
+					<p>「注文を確定する」ボタンをクリックすると、注文を受けたことを通知するメッセージがDiscordのダイレクトメッセージに送信されます。商品の購入契約は、商品の発送を通知するメッセージを送信したときに成立します。価格については必ず商品ページおよびこちらをご確認ください。商品の分量の詳細については、商品詳細ページをご確認ください。</p>
 				</div>
 			</div>
 			{% else %}
@@ -384,10 +384,10 @@
     <a href="/">
         <img src="{% static 'logo.svg' %}">
     </a>
-    <p>当サイトはAmazon.com, Inc. とは一切関係ありません</p>
+    <p>当サイトはAmazonとは一切関係ありません</p>
     <p>&copy; 2023 UtakataNetwork</p>
 </footer>
-{% if session.expire %}
+{% if session.is_expire %}
 <div class="box" id="expires">
 	<div class="box__box">
 		<div class="box__close">

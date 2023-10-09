@@ -1,5 +1,6 @@
 import json
 import socket
+import traceback
 from decimal import Decimal, ROUND_UP
 
 from config import settings
@@ -9,13 +10,6 @@ socket_host = settings.SOCKET_HOST
 
 
 def get_balance(uuid: str):
-    """
-    ユーザーの残高を取得します
-
-    :param uuid: プレイヤーのUUID
-    :return: プレイヤーの残高
-    """
-
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((socket_host, int(socket_port)))
@@ -25,14 +19,15 @@ def get_balance(uuid: str):
             received_data = s.recv(1024).decode()
 
             if received_data == "Invalid UUID":
-                return False
+                return None
 
             player_balance = Decimal(received_data).quantize(Decimal(".01"), rounding=ROUND_UP)
 
             return player_balance
 
     except ConnectionRefusedError:
-        return False
+        traceback.format_exc()
+        return None
 
 
 def withdraw_player(uuid: str, amount: float, action: str, reason: str):
@@ -61,6 +56,7 @@ def withdraw_player(uuid: str, amount: float, action: str, reason: str):
                 return False
 
     except ConnectionRefusedError:
+        traceback.format_exc()
         return False
 
 
@@ -90,5 +86,6 @@ def deposit_player(uuid: str, amount: float, action: str, reason: str):
                 return False
 
     except ConnectionRefusedError:
+        traceback.format_exc()
         return False
 

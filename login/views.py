@@ -1,12 +1,11 @@
-import datetime
 import logging
-import secrets
 
 import requests
 from django.shortcuts import redirect, render
 
 import util
 from config import settings
+from util import Session, User
 
 
 def login(request):
@@ -87,9 +86,9 @@ def login(request):
                 discord_id = identify.json()["id"]
 
                 # DiscordConnectでリンクしてるか確認
-                mc_uuid = util.DatabaseHelper.get_mc_uuid(discord_id)
+                u = User.by_discord_id(discord_id)
 
-                if not mc_uuid:
+                if not u:
                     # エラーを表示
                     context = {
                         "err": True,
@@ -97,14 +96,6 @@ def login(request):
                         "url": settings.DISCORD_CLIENT["URL"],
                     }
                     return render(request, "login.html", context=context)
-
-                # セッションを作成
-                session_id = f"_Secure-{secrets.token_urlsafe(32)}"
-                session_value = f"{secrets.token_urlsafe(128)}"
-
-                # 現在時間と1ヶ月後を取得
-                now = datetime.datetime.now().replace(microsecond=0)
-                expires = now + datetime.timedelta(days=int(settings.SESSION_EXPIRES))
 
                 # クライアントのIPを取得
                 forwarded_addresses = request.META.get("HTTP_X_FORWARDED_FOR")
@@ -114,38 +105,12 @@ def login(request):
                 else:
                     # "HTTP_X_FORWARDED_FOR"ヘッダがない場合: 直接接続なので"REMOTE_ADDR"ヘッダを参照する。
                     client_addr = request.META.get("REMOTE_ADDR")
-                """
-                sessions = util.DatabaseHelper.get_session_from_mc_uuid(mc_uuid)
-                print(sessions)
-                print(mc_uuid)
-                if sessions:
-                    for i in sessions:
-                        print(i)
-                        if i == client_addr:
-                            break
-                    else:
-                        asyncio.run_coroutine_threadsafe(
-                            bot.send_security(discord_id), bot.client.loop
-                        )
-                else:
-                    asyncio.run_coroutine_threadsafe(bot.send_security(discord_id), bot.client.loop)
-                """
-                while True:
-                    save_session = util.DatabaseHelper.save_session(
-                        session_id, session_value, mc_uuid, access_token, now, expires, client_addr
-                    )
 
-                    if save_session is True:
-                        break
-                    elif save_session.errno == 1062:
-                        continue
-
-                # userテーブルになかったら作成
-                util.DatabaseHelper.create_user_info(mc_uuid)
+                s = Session.save(u.mc_uuid, access_token, client_addr)
 
                 # 問題がなかったらcookie付与しリダイレクト
                 response = redirect("/")
-                response.set_cookie(session_id, session_value, expires=expires)
+                response.set_cookie(s.id, s.value, expires=s.expires_at)
                 response.set_cookie("LOGIN_STATUS", True, max_age=315360000)
                 return response
 
@@ -159,8 +124,8 @@ def login(request):
             return render(request, "login.html", context=context)
 
     else:
-        is_session = util.SessionHelper.is_session(request)
-        if is_session.valid:
+        s = Session.by_request(request)
+        if s.is_valid:
             # 既ログイン処理
             return redirect("/")
         else:

@@ -55,24 +55,22 @@ def table_create():
                                                     item_name VARCHAR(256),
                                                     price DOUBLE,
                                                     image JSON,
-                                                    review JSON,
                                                     kind JSON,
                                                     category VARCHAR(64),
                                                     purchases_number BIGINT,
                                                     mc_uuid VARCHAR(36),
                                                     search_keyword JSON,
                                                     created_at DATETIME,
+                                                    updated_at DATETIME,
                                                     status BOOLEAN,
                                                     FULLTEXT (item_name) WITH PARSER ngram
                                                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"""
             cursor.execute(sql)
 
-            sql = """CREATE TABLE IF NOT EXISTS `utazon_user` (
-                                                    mc_uuid VARCHAR(36) UNIQUE,
-                                                    cart JSON,
-                                                    later JSON,
+            sql = """CREATE TABLE IF NOT EXISTS `utazon_point` (
+                                                    mc_uuid VARCHAR(36),
                                                     point INT,
-                                                    view_history JSON
+                                                    created_at DATETIME
                                                     )"""
             cursor.execute(sql)
 
@@ -80,9 +78,12 @@ def table_create():
                                                     order_id VARCHAR(18) UNIQUE,
                                                     mc_uuid VARCHAR(36),
                                                     order_item JSON,
-                                                    delivery_at DATETIME,
-                                                    order_at DATETIME,
+                                                    delivers_at DATETIME,
+                                                    ordered_at DATETIME,
                                                     amount DOUBLE,
+                                                    used_point INT,
+                                                    canceled BOOLEAN,
+                                                    error VARCHAR(64),
                                                     status BOOLEAN
                                                     )"""
             cursor.execute(sql)
@@ -100,7 +101,10 @@ def table_create():
             sql = """CREATE TABLE IF NOT EXISTS `utazon_browsinghistory` (
                                                     mc_uuid VARCHAR(36),
                                                     item_id BIGINT,
-                                                    browsed_at DATETIME
+                                                    browsed_at DATETIME,
+                                                    browse_count INT,
+                                                    browse_duration INT,
+                                                    UNIQUE KEY uq_history (mc_uuid, item_id)
                                                     )"""
             cursor.execute(sql)
 
@@ -153,7 +157,26 @@ def table_create():
                                                     title VARCHAR(64),
                                                     value VARCHAR(1024),
                                                     helpful INT,
-                                                    mc_uuid VARCHAR(36)
+                                                    mc_uuid VARCHAR(36),
+                                                    UNIQUE KEY uq_review (mc_uuid, item_id)
+                                                    )"""
+            cursor.execute(sql)
+
+            sql = """CREATE TABLE IF NOT EXISTS `utazon_cart` (
+                                                    mc_uuid VARCHAR(36),
+                                                    item_id BIGINT,
+                                                    quantity INT,
+                                                    created_at DATETIME,
+                                                    UNIQUE KEY uq_item (mc_uuid, item_id)
+                                                    )"""
+            cursor.execute(sql)
+
+            sql = """CREATE TABLE IF NOT EXISTS `utazon_later` (
+                                                    mc_uuid VARCHAR(36),
+                                                    item_id BIGINT,
+                                                    quantity INT,
+                                                    created_at DATETIME,
+                                                    UNIQUE KEY uq_item (mc_uuid, item_id)
                                                     )"""
             cursor.execute(sql)
 
