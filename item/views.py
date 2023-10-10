@@ -247,15 +247,14 @@ def review(request):
     item_id = request.GET.get("id")
     if not item_id:
         raise Http404
+    item_id = int(item_id)
 
     if s.is_valid:
         i = Item.by_id(item_id)
-        has_review = s.get_user().has_review(item_id)
-        r = s.get_user().get_review(item_id)
+        r = Review.by_mc_uuid(s.mc_uuid, item_id)
 
         context = {
             "item": i,
-            "has_review": has_review,
             "review": r,
             "session": s,
         }

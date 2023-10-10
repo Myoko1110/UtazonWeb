@@ -233,7 +233,7 @@
 					<p>{{ item.name }}</p>
 				</div>
 			</div>
-            {% if not has_review %}
+            {% if not review or review.type != "REVIEW" %}
 			<div class="review-value">
 				<div class="review-value__star">
 					<h3>総合評価</h3>

@@ -400,7 +400,7 @@ def check_review(mc_uuid, item_id):
     with cnx:
         with cnx.cursor() as cursor:
             sql = """SELECT EXISTS(SELECT NULL FROM utazon_review
-                     WHERE mc_uuid=%s AND item_id=%s AND title IS NOT NULL)"""
+                     WHERE mc_uuid=%s AND item_id=%s AND type='REVIEW')"""
             cursor.execute(sql, (mc_uuid, item_id))
 
             result = cursor.fetchone()
@@ -412,7 +412,7 @@ def check_rating(mc_uuid, item_id):
     with cnx:
         with cnx.cursor() as cursor:
             sql = """SELECT EXISTS(SELECT NULL FROM utazon_review
-                     WHERE mc_uuid=%s AND item_id=%s AND title IS NULL)"""
+                     WHERE mc_uuid=%s AND item_id=%s AND type='RATING')"""
             cursor.execute(sql, (mc_uuid, item_id))
 
             result = cursor.fetchone()

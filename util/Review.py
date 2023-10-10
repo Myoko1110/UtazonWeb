@@ -159,10 +159,13 @@ class Review:
         :return: Review型
         """
 
+        r = None
         if isinstance(item, int):
             r = util.DatabaseHelper.get_review_by_mc_uuid(mc_uuid, item)
         elif isinstance(item, util.Item):
             r = util.DatabaseHelper.get_review_by_mc_uuid(mc_uuid, item.id)
+        else:
+            TypeError(f"'{type(item)}'は使用できません")
 
         if not r:
             return None

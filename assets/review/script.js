@@ -69,8 +69,7 @@ $(function () {
             return false;
         }
 
-        var newURL = `/review/post/?id=${params.get('id')}&star=${review}&title=${title}&text=` + encodeURIComponent(text)
-        location.href = newURL
+        location.href = `/review/post/?id=${params.get('id')}&star=${review}&title=${title}&text=` + encodeURIComponent(text)
     });
 
     review = $("img.isActive").data("star");
