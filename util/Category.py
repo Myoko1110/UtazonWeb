@@ -1,6 +1,5 @@
 from typing import Union
 
-import data
 import util
 from config import settings
 

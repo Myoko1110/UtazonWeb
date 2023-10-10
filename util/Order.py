@@ -5,7 +5,6 @@ import secrets
 from decimal import Decimal
 from typing import Union
 
-import data
 import util
 
 

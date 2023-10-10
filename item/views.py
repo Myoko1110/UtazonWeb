@@ -33,7 +33,7 @@ def index_view(request):
     if s.is_valid:
         # 閲覧履歴取得
         browsing_history = s.get_user().get_browsing_history_recently()
-        context["browsing_history"] = browsing_history
+        context["browsing_history"] = browsing_history[:4]
 
         # 既ログイン処理
         return render(request, "index.html", context=context)

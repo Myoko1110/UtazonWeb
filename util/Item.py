@@ -7,7 +7,6 @@ from decimal import Decimal
 from typing import Union
 
 import bot
-import data
 import util
 
 
@@ -341,7 +340,12 @@ class Item:
         :return: アイテム型のリスト(アイテムが見つからなければNoneを挿入)
         """
 
-        return [Item.by_id(i) for i in id_list]
+        r = util.DatabaseHelper.get_item_by_list(id_list)
+
+        if not r:
+            return None
+
+        return [Item.by_db(i) for i in r]
 
     @staticmethod
     def by_db(r: dict) -> 'Item':

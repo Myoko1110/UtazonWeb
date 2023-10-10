@@ -4,7 +4,6 @@ from typing import Union
 
 import mysql.connector
 
-import data
 from config import settings
 from item.models import Featured
 
@@ -193,6 +192,29 @@ def get_item(item_id):
 
             # item_idのレコードを取得
             result = cursor.fetchone()
+    return result
+
+
+def get_item_by_list(id_list):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            l = ", ".join(str(i) for i in id_list)
+
+            sql = f"""SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.category,
+                            utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
+                            utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
+                            utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
+                            utazon_sale.sale_end FROM utazon_item
+                         LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
+                         WHERE utazon_item.item_id IN ({l})
+                         ORDER BY FIELD(utazon_item.item_id, {l})"""
+            print(sql)
+            cursor.execute(sql)
+
+            # item_idのレコードを取得
+            result = cursor.fetchall()
     return result
 
 

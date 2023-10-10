@@ -5,7 +5,6 @@ from typing import Union
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render
 
-import data
 import util
 from config import settings
 

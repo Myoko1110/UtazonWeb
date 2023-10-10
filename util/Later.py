@@ -1,8 +1,7 @@
 from decimal import Decimal
 from typing import Union
 
-import util.DatabaseHelper
-import data
+import util
 
 
 class Later:

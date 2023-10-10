@@ -1,7 +1,6 @@
 from statistics import mean
 from typing import Union
 
-import data
 import util
 
 

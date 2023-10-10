@@ -3,8 +3,7 @@ import urllib.parse
 from decimal import Decimal
 from typing import Union
 
-import data
-import util.DatabaseHelper
+import util
 from config import settings
 
 per_point = Decimal(settings.POINT_PER)

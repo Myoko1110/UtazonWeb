@@ -4,8 +4,7 @@ from typing import Union
 
 import requests
 
-import data
-import util.DatabaseHelper
+import util
 
 
 class User:
