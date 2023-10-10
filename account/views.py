@@ -201,6 +201,23 @@ def available(request):
         return redirect("/login/")
 
 
+def unavailable(request):
+    s = Session.by_request(request)
+    if s.is_valid:
+        available_items = s.get_user().get_unavailable_items()
+
+        context = {
+            "item": available_items,
+            "categories": Category.all(),
+            "session": s,
+        }
+
+        return render(request, "unavailable_items.html", context=context)
+
+    else:
+        return redirect("/login/")
+
+
 def item_edit(request):
     s = Session.by_request(request)
     if s.is_valid:

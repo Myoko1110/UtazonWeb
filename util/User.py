@@ -233,6 +233,19 @@ class User:
 
         return [util.Item.by_db(i) for i in r]
 
+    def get_unavailable_items(self) -> Union[list[Union['util.Item', None]], None]:
+        """
+        販売中のアイテムを取得します
+
+        :return: Item型のリスト
+        """
+
+        r = util.DatabaseHelper.get_unavailable_item(self.mc_uuid)
+        if not r:
+            return None
+
+        return [util.Item.by_db(i) for i in r]
+
     def get_available_items_length(self) -> int:
         """
         販売中のアイテムの数を取得します

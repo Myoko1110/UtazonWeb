@@ -271,7 +271,7 @@
                             <h2>配達できませんでした<span style="font-weight: 400;font-style: italic;font-size: 18px">: ポストが見つかりません</span></h2>
                             {% endif %}
 						{% elif child.status %}
-						<h2>{{ child.delivers_at.year }}年{{ child.delivers_at.month }}月{{ child.delivers_at.day }}日 {{ child.delivery_at.hour }}時に配達予定です</h2>
+						<h2>{{ child.delivers_at.year }}年{{ child.delivers_at.month }}月{{ child.delivers_at.day }}日 {{ child.delivers_at.hour }}時に配達予定です</h2>
 						{% else %}
 						<h2>{{ child.delivers_at.year }}年{{ child.delivers_at.month }}月{{ child.delivers_at.day }}日に配達しました</h2>
                         {% endif %}
@@ -290,7 +290,7 @@
 									<div style="display: flex; margin-top: 5px;align-items: center">
 										<p style="margin: 0 10px 0 0;font-size: 14px">個数：{{ qty }}</p>
 										<div>
-											<a class="history-list__value-product-rebuy" onclick="location.href=`../buy/?item={&quot;{{ item.id }}&quot;: 1}`">再度購入</a>
+											<a class="history-list__value-product-rebuy" onclick="location.href=`../buy/?item=%7B%22{{ item.id }}%22%3A+1%7D`">再度購入</a>
 											<a class="history-list__value-product-view" href="../item/?id={{ item.id }}">商品を表示</a>
 										</div>
 									</div>

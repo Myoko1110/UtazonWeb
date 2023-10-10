@@ -25,8 +25,7 @@ $(function () {
     // 購入確定ボタンを押したときの処理
     submit_button.on("click", function (e) {
         e.preventDefault();
-        console.log(buynow)
-        if (buynow === "couldn't access") {
+        if (buynow === "fail to connect") {
             return;
         }
 

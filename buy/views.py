@@ -18,9 +18,9 @@ deposit_rate = Decimal("100") - Decimal(str(settings.CANCELLATION_FEE))
 def buy(request):
     s = Session.by_request(request)
     if s.is_valid:
-        item_id = request.GET.get("item")
-        if item_id:
-            c = Cart.by_id_dict(json.loads(item_id))
+        item = request.GET.get("item")
+        if item:
+            c = Cart.by_id_dict(json.loads(item))
             buy_now = True
         else:
             c = s.get_user().get_cart()
@@ -28,7 +28,11 @@ def buy(request):
 
         delivery_time = Order.calc_expected_delivery_time
         b = s.get_user().get_balance()
-        after_balance = Decimal(str(b)) - Decimal(str(c.get_total()))
+
+        if b:
+            after_balance = Decimal(str(b)) - Decimal(str(c.get_total()))
+        else:
+            after_balance = 0
 
         context = {
             "cart": c,

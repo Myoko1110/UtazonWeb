@@ -236,6 +236,23 @@ def get_available_item(mc_uuid):
     return result
 
 
+def get_unavailable_item(mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = """SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.category,
+                            utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
+                            utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
+                            utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
+                            utazon_sale.sale_end FROM utazon_item
+                         LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
+                         WHERE utazon_item.mc_uuid=%s AND utazon_item.status=FALSE"""
+            cursor.execute(sql, (mc_uuid,))
+
+            result = cursor.fetchall()
+    return result
+
 def update_item(item_id, item_name, price, image, about, category):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
