@@ -99,7 +99,11 @@
 						{% if session.is_valid %}
 			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				    <p>{{ session.get_user.get_mc_id }}さん</p>
+                    {% with session.get_user.get_mc_id as mcid %}
+                    {% if mcid %}
+                    <p>{{ session.get_user.get_mc_id }}さん</p>
+                    {% endif %}
+                    {% endwith %}
 		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
@@ -258,7 +262,7 @@
 						<span>残高</span>
 					</h3>
 				</div>
-				{% if not balance %}
+				{% if balance is None %}
 				<div class="buy-right" style="display: flex">
 					<p>
 						<span class="buy-balance__money">サーバーへの接続に失敗しました</span>
@@ -282,7 +286,7 @@
 				<div class="buy-right">
 					<p>
 						<span>残高</span>
-						<span class="buy-balance__money">{{ MONEY_UNIT }}{{ player_balance }}</span>
+						<span class="buy-balance__money">{{ MONEY_UNIT }}{{ balance|format_price }}</span>
 					</p>
 					<p style="color: #b12704;font-weight: 700">残高不足です</p>
 				{% endif %}
@@ -331,7 +335,7 @@
 			</div>
 			<div class="buy-confirm">
                 <div class="buy-confirm__btn">
-                {% if not balance %}
+                {% if balance is None %}
                     <a id="order_confirm" style="cursor: not-allowed;background-color: #f3f3f3;color: #d5d5d5;display: block;" data-buynow="fail to connect">注文を確定</a>
                     <span style="font-size: 14px;display: block;margin-left: 10px;">サーバーへの接続に失敗しました</span>
 				{% elif balance >= cart.get_total %}

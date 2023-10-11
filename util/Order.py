@@ -65,7 +65,7 @@ class Order:
         """
 
         now = datetime.datetime.now()
-        return self.ordered_at.year == now.year and self.ordered_at.month == now.month and self.ordered_at.day == now.day
+        return self.delivers_at.year == now.year and self.delivers_at.month == now.month and self.delivers_at.day == now.day
 
     def cancel(self) -> bool:
         """

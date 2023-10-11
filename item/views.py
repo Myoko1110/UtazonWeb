@@ -2,6 +2,7 @@ from decimal import getcontext
 
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.csrf import csrf_exempt
 
 import account.deposit_scheduler
 from util import *
@@ -29,7 +30,6 @@ def index_view(request):
         "banner": banner,
         "session": s,
     }
-
     if s.is_valid:
         # 閲覧履歴取得
         browsing_history = s.get_user().get_browsing_history_recently()
@@ -87,7 +87,11 @@ def initialize_browsing_history(request):
         return HttpResponse("Success")
 
 
+@csrf_exempt
 def update_browsing_history(request):
+    if request.method != "POST":
+        raise Http404
+
     item_id = int(request.GET.get("item_id"))
     duration = int(request.GET.get("duration"))
     if not item_id or not duration:
@@ -97,14 +101,15 @@ def update_browsing_history(request):
     if s.is_valid:
         s.get_user().update_browsing_history(item_id, duration)
         return HttpResponse("Success")
+    return HttpResponse("Verify failed")
 
 
 def cart(request):
     s = Session.by_request(request)
     if s.is_valid:
-
-        c = s.get_user().get_cart()
-        l = s.get_user().get_later()
+        u = s.get_user()
+        c = u.get_cart()
+        l = u.get_later()
 
         context = {
             "session": s,
@@ -268,6 +273,7 @@ def review_post(request):
     item_id = request.GET.get("id")
     if not item_id:
         raise Http404
+    item_id = int(item_id)
 
     s = Session.by_request(request)
     if s.is_valid:

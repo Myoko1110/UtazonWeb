@@ -2,8 +2,10 @@ import json
 from decimal import Decimal
 from typing import Union
 
+import discord
 import requests
 
+import bot
 import util
 
 
@@ -14,6 +16,7 @@ class User:
     __cached_mc_id: Union[str, None] = None
     __cached_discord_id: Union[int, None] = None
     __cached_balance: float = 0
+    __cached_discord_user: discord.User = None
 
     def __init__(self, mc_uuid: str):
         self.mc_uuid = mc_uuid
@@ -29,13 +32,30 @@ class User:
             return self.__cached_mc_id
 
         profile = requests.get(
-            f"https://sessionserver.mojang.com/session/minecraft/profile/{self.mc_uuid}").json()
+            f"https://sessionserver.mojang.com/session/minecraft/profile/{self.mc_uuid}")
+        if profile.status_code != 200:
+            return None
+        profile = profile.json()
         if "name" in profile:
 
             self.__cached_mc_id = profile["name"]
             return profile["name"]
         else:
             return None
+
+    def get_discord(self) -> Union['discord.User', None]:
+        """
+        ユーザーのdiscord.Userを取得します
+
+        :return: discord.User
+        """
+
+        if not self.get_discord_id():
+            return None
+
+        if not self.__cached_discord_user:
+            self.__cached_discord_user = bot.client.get_user(self.__cached_discord_id)
+        return self.__cached_discord_user
 
     def get_discord_id(self) -> Union[int, None]:
         """
@@ -48,6 +68,28 @@ class User:
             self.__cached_discord_id = util.DatabaseHelper.get_discord_id(self.mc_uuid)[0]
         return self.__cached_discord_id
 
+    def get_discord_name(self) -> Union[str, None]:
+        """
+        Discordのユーザー名を取得します
+
+        :return: Discordのユーザー名
+        """
+
+        if not self.get_discord():
+            return None
+        return self.__cached_discord_user.name
+
+    def get_discord_display_name(self) -> Union[str, None]:
+        """
+        Discordの表示名を取得します
+
+        :return: Discordの表示名
+        """
+
+        if not self.get_discord():
+            return None
+        return self.__cached_discord_user.display_name
+
     def get_point(self) -> float:
         """
         Utazonポイントを取得します
@@ -59,7 +101,7 @@ class User:
         if not r:
             return 0
 
-        return r
+        return r[0]
 
     def deduct_points(self, amount: int) -> bool:
         """
@@ -331,7 +373,7 @@ class User:
         :return: User型(見つからなかった場合はNoneを返却)
         """
 
-        r = util.DatabaseHelper.get_mc_uuid(discord_id)
+        r = util.DatabaseHelper.get_mc_uuid(discord_id)[0]
         if not r:
             return None
 

@@ -79,7 +79,7 @@ class ReviewList:
         elif isinstance(item, util.Item):
             result = util.DatabaseHelper.get_review(item.id)
         else:
-            return None
+            TypeError(f"'{type(item)}'は使用できません")
 
         if not result:
             return None

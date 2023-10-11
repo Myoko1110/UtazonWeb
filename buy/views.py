@@ -29,7 +29,7 @@ def buy(request):
         delivery_time = Order.calc_expected_delivery_time
         b = s.get_user().get_balance()
 
-        if b:
+        if b is not None:
             after_balance = Decimal(str(b)) - Decimal(str(c.get_total()))
         else:
             after_balance = 0

@@ -276,7 +276,7 @@ def item_edit_post(request):
             raise ValueError("about is empty")
         try:
             about = json.loads(about)
-            if isinstance(about, list):
+            if not isinstance(about, list):
                 raise ValueError("about is not list of json")
         except json.JSONDecodeError:
             raise ValueError("about is not json")
@@ -294,7 +294,7 @@ def item_edit_post(request):
             raise ValueError("image is empty")
         try:
             image = json.loads(image)
-            if isinstance(image, list):
+            if not isinstance(image, list):
                 raise ValueError("image is not list of json")
         except json.JSONDecodeError:
             raise ValueError("image is not json")

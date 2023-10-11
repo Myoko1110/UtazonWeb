@@ -98,7 +98,11 @@
 						{% if session.is_valid %}
 			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				    <p>{{ session.get_user.get_mc_id }}さん</p>
+                    {% with session.get_user.get_mc_id as mcid %}
+                    {% if mcid %}
+                    <p>{{ session.get_user.get_mc_id }}さん</p>
+                    {% endif %}
+                    {% endwith %}
 		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
@@ -231,7 +235,7 @@
 		</a>
 		<div class="status-title">
 			<div>
-				<p data-status="{{ order.status }}">配送状況：</p>
+				<p data-status="{{ order.status }}">配送状況</p>
                 {% if order.error %}
                     {% if order.error == "MailboxFull" %}
                         <h1>配達できませんでした<span style="font-weight: 400;font-style: italic;font-size: 22px">: 商品を入れるスペースがありません</span></h1>
@@ -243,7 +247,7 @@
 				{% elif order.will_arrive_today %}
 				<h1>本日到着予定</h1>
 				{% else %}
-				<h1>{{ order.delivers_at.year }}年{{ order_obj.delivers_at.month }}日{{ order_obj.delivers_at.day }}日 {{ order_obj.delivers_at.hour }}時に配達予定</h1>
+				<h1>{{ order.delivers_at.year }}年{{ order.delivers_at.month }}日{{ order.delivers_at.day }}日 {{ order.delivers_at.hour }}時に配達予定</h1>
 				{% endif %}
 			</div>
 			<div>

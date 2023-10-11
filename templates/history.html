@@ -102,7 +102,11 @@
 			{% if session.is_valid %}
 			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				    <p>{{ session.get_user.get_mc_id }}さん</p>
+                    {% with session.get_user.get_mc_id as mcid %}
+                    {% if mcid %}
+                    <p>{{ session.get_user.get_mc_id }}さん</p>
+                    {% endif %}
+                    {% endwith %}
 		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
@@ -310,7 +314,7 @@
 								{% elif not child.canceled %}
                                     {% if forloop.counter == 1 %}
 								    <a class="history-list__value-product-review" data-id="{{ child.order_id }}" onclick="order_cancel(this)">注文をキャンセルする</a>
-								    <a class="history-list__value-product-return" href="status/?id={{ child.id }}">配送状況</a>
+								    <a class="history-list__value-product-return" href="status/?id={{ child.order_id }}">配送状況</a>
                                     {% endif %}
 								{% endif %}
 							</div>

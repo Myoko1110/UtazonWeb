@@ -11,19 +11,6 @@ from util import User, DatabaseHelper
 
 
 @csrf_exempt
-def order_list(request):
-    if not auth_password(request):
-        raise Http404
-
-    order_list = json.dumps(DatabaseHelper.get_order(), indent=4)
-
-    response = HttpResponse(order_list)
-    response["Content-Disposition"] = "application/json"
-
-    return response
-
-
-@csrf_exempt
 def mailbox_full(request):
     if not auth_password(request):
         raise Http404

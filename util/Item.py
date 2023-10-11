@@ -228,7 +228,7 @@ class Item:
         :return:
         """
 
-        util.DatabaseHelper.update_item(self.id, name, price, image, about, category.english)
+        util.DatabaseHelper.update_item(self.id, name, float(price), json.dumps(image), json.dumps(about), category.english)
 
     @staticmethod
     def search(query: str, category: Union['util.Category', None] = None) -> list['util.Item']:

@@ -1,5 +1,4 @@
 import datetime
-import json
 from typing import Union
 
 import mysql.connector
@@ -210,7 +209,6 @@ def get_item_by_list(id_list):
                          LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
                          WHERE utazon_item.item_id IN ({l})
                          ORDER BY FIELD(utazon_item.item_id, {l})"""
-            print(sql)
             cursor.execute(sql)
 
             # item_idのレコードを取得
@@ -252,6 +250,7 @@ def get_unavailable_item(mc_uuid):
 
             result = cursor.fetchall()
     return result
+
 
 def update_item(item_id, item_name, price, image, about, category):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
@@ -351,8 +350,7 @@ def add_review(mc_uuid, item_id, star, title, value, type):
                          (item_id, created_at, updated_at, rating, title, value, helpful_votes, mc_uuid, type)
                      VALUES (%s, %s, %s, %s, %s, %s, 0, %s, %s)
                      ON DUPLICATE KEY UPDATE
-                         rating=VALUES(rating), title=VALUES(title), value=VALUES(value), type=VALUES(type)"""
-
+                         rating=VALUES(rating), title=VALUES(title), value=VALUES(value), type=VALUES(type), updated_at=VALUES(updated_at)"""
             cursor.execute(sql, (item_id, now, now, star, title, value, mc_uuid, type))
             affected_rows = cursor.rowcount
             cnx.commit()
@@ -469,7 +467,7 @@ def get_point(mc_uuid):
             sql = "SELECT point FROM utazon_point WHERE mc_uuid=%s ORDER BY created_at DESC LIMIT 1"
             cursor.execute(sql, (mc_uuid,))
 
-            result = cursor.fetchone()[0]
+            result = cursor.fetchone()
     return result
 
 
@@ -605,6 +603,7 @@ def get_mc_uuid(discord_id):
             result = cursor.fetchone()
     return result
 
+
 def get_stock(item_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
@@ -665,7 +664,7 @@ def delete_revenues(seller):
     with cnx:
         with cnx.cursor() as cursor:
             three_days_ago = datetime.datetime.now().replace(minute=0, second=0,
-                                                           microsecond=0) - datetime.timedelta(
+                                                             microsecond=0) - datetime.timedelta(
                 days=3)
 
             sql = "DELETE FROM utazon_revenues WHERE bought_at < %s AND seller_uuid=%s"
@@ -734,36 +733,15 @@ def add_order(mc_uuid, items, delivery_time, order_id, amount, used_point):
     return False
 
 
-def get_order(order_id=None):
+def get_order(order_id):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
-        if not order_id:
-            with cnx.cursor(dictionary=True) as cursor:
-                sql = "SELECT * FROM `utazon_order`"
-                cursor.execute(sql)
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = "SELECT * FROM `utazon_order` WHERE order_id=%s"
+            cursor.execute(sql, (order_id,))
 
-                result = cursor.fetchall()
-
-                for i in range(len(result)):
-                    result[i]["delivery_time"] = result[i]["delivery_time"].strftime(
-                        "%Y-%m-%d %H:%M:%S")
-                    result[i]["order_time"] = result[i]["order_time"].strftime("%Y-%m-%d %H:%M:%S")
-                    order_item_load = json.loads(result[i]["order_item"])
-
-                    order_item = []
-                    for ii in range(len(order_item_load)):
-                        create_list = {"id": order_item_load[ii][0], "qty": order_item_load[ii][1]}
-                        order_item.append(create_list)
-                    result[i]["order_item"] = order_item
-
-                return result
-        else:
-            with cnx.cursor(dictionary=True) as cursor:
-                sql = "SELECT * FROM `utazon_order` WHERE order_id=%s"
-                cursor.execute(sql, (order_id,))
-
-                result = cursor.fetchone()
-                return result
+            result = cursor.fetchone()
+            return result
 
 
 def cancel_order(order_id):

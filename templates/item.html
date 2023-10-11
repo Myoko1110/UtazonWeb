@@ -98,7 +98,11 @@
 						{% if session.is_valid %}
 			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				    <p>{{ session.get_user.get_mc_id }}さん</p>
+                    {% with session.get_user.get_mc_id as mcid %}
+                    {% if mcid %}
+                    <p>{{ session.get_user.get_mc_id }}さん</p>
+                    {% endif %}
+                    {% endwith %}
 		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
@@ -510,7 +514,13 @@
 				<li class="review-list__child">
 					<div class="review-list__account">
 						<img class="review-list__account-img" src="https://crafatar.com/avatars/{{ child.mc_uuid }}?size=30">
+                        {% with child.mc_id as mcid %}
+                        {% if mcid %}
 						<p>{{ child.mc_id }}</p>
+                        {% else %}
+                        <p>不明なユーザー</p>
+                        {% endif %}
+                        {% endwith %}
 					</div>
 					<div class="review-list__title">
 						{% if child.star >= 4.8 %}

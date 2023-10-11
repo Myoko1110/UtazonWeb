@@ -4,7 +4,10 @@ import discord
 
 from config import settings
 
-client = discord.Client(intents=discord.Intents.default())
+intents = discord.Intents.default()
+intents.members = True
+client = discord.Client(intents=intents)
+
 delivery_status_url = ""
 order_history_url = ""
 add_stock_url = ""

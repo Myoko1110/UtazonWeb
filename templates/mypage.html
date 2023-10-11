@@ -97,7 +97,11 @@
 						{% if session.is_valid %}
 			<a href="/mypage" class="nav-link">
                 <div class="nav-belt__account">
-				    <p>{{ session.get_user.get_mc_id }}さん</p>
+                    {% with session.get_user.get_mc_id as mcid %}
+                    {% if mcid %}
+                    <p>{{ session.get_user.get_mc_id }}さん</p>
+                    {% endif %}
+                    {% endwith %}
 		        	<h1>マイページ</h1>
 	        	</div>
 			</a>
@@ -233,12 +237,19 @@
                 <div class="mypage-info__text">
                     <div>
                         <span>ユーザー名</span>
+                        {% with user.get_mc_id as mcid %}
+                        {% if mcid %}
                         <p>{{ user.get_mc_id }}</p>
-                        <p style="font-size: 11px;color: #8c8c8c">{{ info.mc_uuid }}</p>
+                        {% else %}
+                        <p>不明なユーザー</p>
+                        {% endif %}
+                        {% endwith %}
+                        <p style="font-size: 11px;color: #8c8c8c">{{ user.mc_uuid }}</p>
                     </div>
                     <div>
-                        <span>DiscordID</span>
-                        <p>{{ user.get_discord_id }}</p>
+                        <span>Discord</span>
+                        <p>{{ user.get_discord_display_name }}</p>
+                        <p style="font-size: 11px;color: #8c8c8c">{{ user.get_discord_name }}</p>
                     </div>
                     <div>
                         <span>出品している商品数</span>

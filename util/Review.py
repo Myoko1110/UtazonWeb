@@ -69,6 +69,8 @@ class Review:
             return util.DatabaseHelper.add_review(mc_uuid, item, star, title, value, "REVIEW")
         elif isinstance(item, util.Item):
             return util.DatabaseHelper.add_review(mc_uuid, item.id, star, title, value, "REVIEW")
+        else:
+            TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
     def add_rating(mc_uuid: str, item: Union[int, 'util.Item'], star: int) -> bool:
@@ -85,6 +87,8 @@ class Review:
             return util.DatabaseHelper.add_review(mc_uuid, item, star, None, None, "RATING")
         elif isinstance(item, util.Item):
             return util.DatabaseHelper.add_review(mc_uuid, item.id, star, None, None, "RATING")
+        else:
+            TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
     def update(mc_uuid: str, item: Union[int, 'util.Item'], star: int, title: str, value: str) -> bool:
@@ -103,6 +107,8 @@ class Review:
             return util.DatabaseHelper.update_review(mc_uuid, item, star, title, value)
         elif isinstance(item, util.Item):
             return util.DatabaseHelper.update_review(mc_uuid, item.id, star, title, value)
+        else:
+            TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
     def helpful(item: Union[int, 'util.Item'], review_id: int) -> bool:
@@ -118,6 +124,8 @@ class Review:
             return util.DatabaseHelper.helpful_review(item, review_id)
         elif isinstance(item, util.Item):
             return util.DatabaseHelper.helpful_review(item.id, review_id)
+        else:
+            TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
     def has_review(mc_uuid: str, item: int) -> bool:
@@ -133,6 +141,8 @@ class Review:
             return bool(util.DatabaseHelper.check_review(mc_uuid, item)[0])
         elif isinstance(item, util.Item):
             return bool(util.DatabaseHelper.check_review(mc_uuid, item.id)[0])
+        else:
+            TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
     def has_rating(mc_uuid: str, item: Union[int, 'util.Item']) -> bool:
@@ -148,6 +158,8 @@ class Review:
             return bool(util.DatabaseHelper.check_rating(mc_uuid, item)[0])
         elif isinstance(item, util.Item):
             return bool(util.DatabaseHelper.check_rating(mc_uuid, item.id)[0])
+        else:
+            TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
     def by_mc_uuid(mc_uuid: str, item: Union[int, 'util.Item']) -> Union['Review', None]:

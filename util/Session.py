@@ -96,7 +96,8 @@ class Session:
             )
 
             if save_session:
-                return Session(session_id, session_value, mc_uuid, access_token, now, expires, client_addr, valid=True)
+                return Session(session_id, session_value, mc_uuid, access_token, now, expires,
+                               client_addr, valid=True)
             elif save_session.errno == 1062:
                 continue
         return False
@@ -118,7 +119,6 @@ class Session:
                 result = util.DatabaseHelper.get_session(child, session[child])
 
                 if not result:
-                    # 未ログイン処理
                     continue
                 else:
                     # 有効期限の確認
@@ -133,10 +133,8 @@ class Session:
                                    result["mc_uuid"], result["access_token"],
                                    result["login_at"], result["expires_at"], result["logged_IP"],
                                    valid=True)
-        else:
-            if "LOGIN_STATUS" in session and session["LOGIN_STATUS"]:
-                # 期限切れの処理
-                return Session(expire=True)
 
-            # 未ログイン処理
+        if "LOGIN_STATUS" in session and session["LOGIN_STATUS"]:
             return Session(expire=True)
+        else:
+            return Session(invalid=True)

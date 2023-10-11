@@ -6,9 +6,10 @@ let startTime;
 let targetPosition;
 let once = false;
 
+const cookie = getCookieArray()
+
 $(function () {
     targetPosition = $('.item-about__description-about').offset().top;
-    initialize()
 
     // アイテムの写真を切り替える
     $(".item-about__img-list-img").on("mouseenter", function () {
@@ -136,19 +137,15 @@ $(function () {
         });
     });
 
-    window.addEventListener('beforeunload', (e) => {
-        close();
-    });
-    window.addEventListener('popstate', () => {
-        close();
-    });
 });
+$(window).on("beforeunload", update);
+$(window).on("popstate", update);
 
-function close() {
+function update() {
     if (once) {
         const duration = new Date(Date.now() - startTime);
-        xhr.open("GET", "/update_browsing_history/?item_id=" + id + "&duration=" + duration.getSeconds(), true);
-        xhr.send();
+        const blob = new Blob(cookie, {type: 'application/json'})
+        navigator.sendBeacon("/update_browsing_history/?item_id=" + id + "&duration=" + duration.getSeconds(), blob);
     }
 }
 
@@ -160,4 +157,19 @@ function initialize() {
         xhr.open("GET", "/initialize_browsing_history/?item_id=" + id, true);
         xhr.send();
     }
+}
+
+function getCookieArray(){
+    let arr = [];
+    if(document.cookie !== ''){
+        let tmp = document.cookie.split('; ');
+        for(let i=0;i<tmp.length;i++){
+            let data = tmp[i].split('=');
+            if (data[0].startsWith("_Secure-")) {
+                arr[data[0]] = decodeURIComponent(data[1]);
+                break;
+            }
+        }
+    }
+    return arr;
 }
