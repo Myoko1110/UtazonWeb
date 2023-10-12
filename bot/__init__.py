@@ -162,6 +162,29 @@ async def send_complete_order(discord_id, order_id):
     await author.send(embed=embed)
 
 
+async def send_complete_ship(discord_id, order_id):
+    """
+    発送が完了したことをDMに送信します
+
+    :param discord_id: DiscordID
+    :param order_id: オーダーID
+    """
+
+    global order_history_url
+
+    author = await client.fetch_user(discord_id)
+    embed = discord.Embed(
+        title="商品が発送されました",
+        color=0x1abc9c,
+        description="お客様の注文の商品が発送し、ご注文が完了したことをお知らせいたします。"
+                    + f"配送状況などの詳細は[こちら]({order_history_url}#{order_id})からご確認ください。"
+    )
+    embed.set_footer(text="またのご利用をお待ちしております。")
+
+    embed.add_field(name="注文番号", value=order_id, inline=False)
+    await author.send(embed=embed)
+
+
 async def send_redelivery(discord_id, order_id):
     """
     再発送を承ったことをDMに送信します。

@@ -78,13 +78,15 @@ def table_create():
                                                     order_id VARCHAR(18) UNIQUE,
                                                     mc_uuid VARCHAR(36),
                                                     order_item JSON,
-                                                    delivers_at DATETIME,
                                                     ordered_at DATETIME,
+                                                    ships_at DATETIME,
+                                                    delivers_at DATETIME,
                                                     amount DOUBLE,
                                                     used_point INT,
                                                     canceled BOOLEAN,
                                                     error VARCHAR(64),
-                                                    status BOOLEAN
+                                                    status BOOLEAN,
+                                                    dm_sent BOOLEAN
                                                     )"""
             cursor.execute(sql)
 

@@ -308,7 +308,7 @@
 								<img src="{{ item.image.0 }}">
 								<div class="buy-items__box">
 									<h3>{{ item.name }}</h3>
-									<p>{{ MONEY_UNIT }}{{ item.price }}</p>
+									<p>{{ MONEY_UNIT }}{{ item.price|format_price }}</p>
 									<p style="font-weight: 400;font-size: 14px;margin: 0;">個数: {{ qty }}</p>
 								</div>
 							</li>

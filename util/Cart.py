@@ -74,9 +74,9 @@ class Cart:
             if not self.cart:
                 self.__cached_total = 0.0
             else:
-                self.__cached_total = sum(
+                self.__cached_total = float(sum(
                     Decimal(str(item.get_discounted_price())) * Decimal(str(quantity))
-                    for item, quantity in self.cart.items())
+                    for item, quantity in self.cart.items()))
         return self.__cached_total
 
     def get_amount(self) -> int:
@@ -116,10 +116,7 @@ class Cart:
         :return: 購入可か(在庫0があったらFalse, それ以外はTrueを返却)
         """
 
-        if 0 in [i.get_stock() for i in self.cart]:
-            return False
-        else:
-            return True
+        return all(i.get_stock() >= q for i, q in self.cart.items())
 
     def is_valid_items(self) -> bool:
         """
@@ -171,11 +168,28 @@ class Cart:
         return urllib.parse.quote(json.dumps(self.encode_to_dict()))
 
     def create_reason(self, order_id, used_point=None):
+        """
+        出勤する際の理由を作成します
+
+        :param order_id: オーダーID
+        :param used_point: 使用したポイント
+        :return: 理由
+        """
+
         reason = ", ".join([f"{i.id}({i.price}×{q}個)" for i, q in self.cart.items()])
         if used_point:
             reason += f"(ポイント使用 {used_point}pt: {Decimal(str(used_point)) * per_point}分)"
         reason += f"(注文番号: {order_id})"
         return reason
+
+    def delete_invalid_items(self):
+        """
+        無効な商品(削除されたまたは在庫不足)のものを削除します
+        """
+
+        for i in list(self.cart.keys()):
+            if not i.status or i.get_stock() < self.cart[i]:
+                del self.cart[i]
 
     @staticmethod
     def delete(mc_uuid: str, item: Union[int, 'util.Item']) -> bool:

@@ -352,7 +352,7 @@
 						<form method="get" action="">
 							<div class="item-about__buy-order-number">
 								<p>数量:</p>
-								<input class="item-about__buy-order-number-input" type="number" value="1" id="card_add">
+								<input id="cart_add" class="item-about__buy-order-number-input" type="number" value="1" max="{{ stock }}">
 							</div>
 							<a onclick="location.href=`../buy?item=%7B%22{{ item.id }}%22%3A+${cartNumber}%7D`" class="item-about__buy-order-input">今すぐ買う</a>
 							<a onclick="location.href=`../cart/add/?id={{ item.id }}&qty=${cartNumber}`" class="item-about__buy-order-cart">カートに入れる</a>
@@ -438,7 +438,7 @@
 					<form method="get" action="">
 						<div class="item-about__buy-order-number">
 							<p>数量:</p>
-							<input class="item-about__buy-order-number-input" type="number" value="1" id="card_add">
+							<input class="item-about__buy-order-number-input" type="number" value="1" id="cart_add" max="{{ stock }}">
 						</div>
 						<a
                                 onclick="location.href=`../buy?item=%7B%22{{ item.id }}%22%3A+${cartNumber}%7D`"

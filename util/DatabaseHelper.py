@@ -705,7 +705,7 @@ def increase_sold_count(item_id, qty):
     return False
 
 
-def add_order(mc_uuid, items, delivery_time, order_id, amount, used_point):
+def add_order(mc_uuid, items, order_id, ship_time, delivery_time, amount, used_point):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
@@ -713,12 +713,11 @@ def add_order(mc_uuid, items, delivery_time, order_id, amount, used_point):
             while True:
                 try:
                     sql = """INSERT IGNORE INTO `utazon_order` (  
-                                         `mc_uuid`, `order_item`, `delivers_at` ,`ordered_at`,
-                                         `order_id`, `amount`, `used_point`, `status`, `canceled`
-                                         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                                         `mc_uuid`, `order_item`, `order_id`, `ordered_at`, `ships_at`, `delivers_at`,
+                                         `amount`, `used_point`, `status`, `canceled`, `dm_sent`
+                                         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, TRUE, FALSE, FALSE)"""
                     cursor.execute(sql, (
-                        mc_uuid, items, delivery_time, now, order_id, amount, used_point, True,
-                        False,))
+                        mc_uuid, items, order_id, now, ship_time, delivery_time, amount, used_point))
                 except mysql.connector.Error as err:
                     if err.errno == 1062:
                         continue

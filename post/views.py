@@ -153,3 +153,23 @@ def auth_password(request):
             f"order_listにPOSTメゾットでアクセスされましたがパスワードが違いました(IP:{client_addr})")
         return False
     return True
+
+
+@csrf_exempt
+def ship_complete(request):
+    if not auth_password(request):
+        raise Http404
+
+    uuid = request.POST.get("uuid")
+    order_id = request.POST.get("orderid")
+    print(uuid, order_id)
+
+    discord_id = User.by_mc_uuid(uuid).get_discord_id()
+    print(discord_id)
+
+    asyncio.run_coroutine_threadsafe(
+        bot.send_complete_ship(discord_id, order_id),
+        bot.client.loop
+    )
+
+    return HttpResponse("success")

@@ -26,6 +26,8 @@ def buy(request):
             c = s.get_user().get_cart()
             buy_now = False
 
+        c.delete_invalid_items()
+
         delivery_time = Order.calc_expected_delivery_time
         b = s.get_user().get_balance()
 
@@ -57,6 +59,7 @@ def buy_confirm(request):
 
         items_dict = json.loads(request.GET.get("items"))
         c = Cart.by_id_dict(items_dict)
+        c.delete_invalid_items()
 
         if not c:
             raise Exception("商品が選択されていません")
@@ -66,6 +69,7 @@ def buy_confirm(request):
 
         # お届け時間を計算
         delivers_at = Order.calc_delivery_time()
+        ships_at = Order.calc_ship_time(delivers_at)
 
         # オーダーIDを作成
         order_id = Order.create_order_id()
@@ -100,7 +104,7 @@ def buy_confirm(request):
             i.increase_sold_count(q)  # 販売数追加
 
         # オーダーをdbに保存
-        Order.create(u.mc_uuid, c, delivers_at, order_id, total, point)
+        Order.create(u.mc_uuid, c, ships_at, delivers_at, order_id, total, point)
 
         # カートから削除
         if request.GET.get("buynow") == "False":

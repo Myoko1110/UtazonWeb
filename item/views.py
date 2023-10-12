@@ -1,6 +1,8 @@
+import copy
+import json
 from decimal import getcontext
 
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
@@ -111,9 +113,13 @@ def cart(request):
         c = u.get_cart()
         l = u.get_later()
 
+        deleted_cart = copy.deepcopy(c)
+        deleted_cart.delete_invalid_items()
+
         context = {
             "session": s,
             "cart": c,
+            "deleted_cart": deleted_cart,
             "later": l,
         }
         return render(request, "cart.html", context=context)
@@ -161,14 +167,24 @@ def cart_update(request):
     s = Session.by_request(request)
     if s.is_valid:
 
-        item_id = int(request.GET.get("id"))
-        qty = int(request.GET.get("qty"))
+        item_id = request.GET.get("id")
+        qty = request.GET.get("qty")
         if not item_id or not qty:
             raise Http404
 
+        item_id = int(item_id)
+        qty = int(qty)
+
         Cart.update_qty(s.mc_uuid, item_id, qty)
 
-    return redirect("/cart/")
+        c = s.get_user().get_cart()
+        c.delete_invalid_items()
+        cart_list = {
+            "total": f"{c.get_total():,.2f}",
+            "amount": c.get_amount(),
+        }
+        return HttpResponse(json.dumps(cart_list), content_type="application/json")
+    return HttpResponse("Fail to verify")
 
 
 def later_delete(request):

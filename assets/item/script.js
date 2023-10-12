@@ -26,7 +26,7 @@ $(function () {
         $(this).parent().find("p").css("display", "block");
     });
 
-    $('#card_add').on("input", function () {
+    $(".item-about__buy-order-number-input").on("input", function () {
         cartNumber = $(this).val();
     });
 
@@ -144,7 +144,7 @@ $(window).on("popstate", update);
 function update() {
     if (once) {
         const duration = new Date(Date.now() - startTime);
-        const blob = new Blob(cookie, {type: 'application/json'})
+        const blob = new Blob(cookie, {type: 'application/json'});
         navigator.sendBeacon("/update_browsing_history/?item_id=" + id + "&duration=" + duration.getSeconds(), blob);
     }
 }
@@ -165,10 +165,7 @@ function getCookieArray(){
         let tmp = document.cookie.split('; ');
         for(let i=0;i<tmp.length;i++){
             let data = tmp[i].split('=');
-            if (data[0].startsWith("_Secure-")) {
-                arr[data[0]] = decodeURIComponent(data[1]);
-                break;
-            }
+            arr[data[0]] = decodeURIComponent(data[1]);
         }
     }
     return arr;

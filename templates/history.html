@@ -252,7 +252,7 @@
 						</div>
 						<div class="history-list__info-child">
 							<span>合計</span>
-							<p>{{ MONEY_UNIT }}{{ child.amount }}</p>
+							<p>{{ MONEY_UNIT }}{{ child.amount|format_price }}</p>
 						</div>
 						{% if child.used_point %}
 						<div class="history-list__info-child">

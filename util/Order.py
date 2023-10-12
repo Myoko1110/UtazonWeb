@@ -12,29 +12,33 @@ class Order:
     order_id: str
     mc_uuid: str
     order_item: 'util.Cart'
-    delivers_at: datetime.datetime
     ordered_at: datetime.datetime
+    ships_at: datetime.datetime
+    delivers_at: datetime.datetime
     amount: float
     used_point: int
     status: bool
     canceled: bool
     error: str
 
-    __cached_progress: int = None
+    __cached_progress: float = None
 
     def __init__(self, order_id: str, mc_uuid: str, order_item: 'util.Cart',
-                 delivers_at: datetime, ordered_at: datetime, amount: float,
-                 used_point: int, status: bool, canceled: bool, error: str):
+                 ordered_at: datetime, ships_at: datetime.datetime, delivers_at: datetime,
+                 amount: float, used_point: int, status: bool, canceled: bool, error: str,
+                 dm_sent: bool):
         self.order_id = order_id
         self.mc_uuid = mc_uuid
         self.order_item = order_item
-        self.delivers_at = delivers_at
         self.ordered_at = ordered_at
+        self.ships_at = ships_at
+        self.delivers_at = delivers_at
         self.amount = amount
         self.used_point = used_point
         self.status = status
         self.canceled = canceled
         self.error = error
+        self.dm_sent = dm_sent
 
     def get_purchaser(self) -> Union['util.User', None]:
         """
@@ -45,7 +49,7 @@ class Order:
 
         return util.User.by_mc_uuid(self.mc_uuid)
 
-    def get_delivery_progress(self) -> int:
+    def get_delivery_progress(self) -> float:
         """
         注文の配達の進捗具合を取得します
 
@@ -53,8 +57,10 @@ class Order:
         """
 
         if not self.__cached_progress:
-            self.__cached_progress = round(
-                util.calc_time_percentage(self.ordered_at, self.delivers_at))
+            ship = round(util.calc_time_percentage(self.ordered_at, self.ships_at))
+            deliver = round(util.calc_time_percentage(self.ships_at, self.delivers_at))
+
+            self.__cached_progress = (ship * 3.3 / 10) + (deliver * 6.7 / 10)
         return self.__cached_progress
 
     def will_arrive_today(self) -> bool:
@@ -85,13 +91,15 @@ class Order:
                                             microseconds=0)
 
     @staticmethod
-    def create(mc_uuid: str, items: 'util.Cart', delivers_at: datetime.datetime, order_id: str,
-               total: Union[float, Decimal], point: int) -> bool:
+    def create(mc_uuid: str, items: 'util.Cart', ships_at: datetime.datetime,
+               delivers_at: datetime.datetime, order_id: str, total: Union[float, Decimal],
+               point: int) -> bool:
         """
         注文を作成します
 
         :param mc_uuid: MinecraftのUUID
         :param items: Cart型
+        :param ships_at: 発送時間
         :param delivers_at: 配達時間
         :param order_id: オーダーID
         :param total: トータルの値段(ポイントの使用を含む)
@@ -100,7 +108,7 @@ class Order:
         """
 
         return util.DatabaseHelper.add_order(mc_uuid, json.dumps(items.encode_to_dict()),
-                                             delivers_at, order_id, float(total), point)
+                                             order_id, ships_at, delivers_at, float(total), point)
 
     @staticmethod
     def decode(db_list: str) -> 'util.Cart':
@@ -127,11 +135,13 @@ class Order:
 
         if not r:
             return None
+        print(r)
 
         return [
             Order(i["order_id"], i["mc_uuid"], Order.decode(i["order_item"]),
-                  i["delivers_at"], i["ordered_at"],
-                  i["amount"], i["used_point"], i["status"], i["canceled"], i["error"])
+                  i["ordered_at"], i["ships_at"], i["delivers_at"], i["amount"],
+                  i["used_point"], bool(i["status"]), bool(i["canceled"]), i["error"],
+                  bool(i["dm_sent"]))
             for i in r
         ]
 
@@ -149,8 +159,9 @@ class Order:
         if not r:
             return None
         return Order(r["order_id"], r["mc_uuid"], Order.decode(r["order_item"]),
-                     r["delivers_at"], r["ordered_at"],
-                     r["amount"], r["used_point"], r["status"], r["canceled"], r["error"])
+                     r["ordered_at"], r["ships_at"], r["delivers_at"], r["amount"],
+                     r["used_point"], bool(r["status"]), bool(r["canceled"]), r["error"],
+                     bool(r["dm_sent"]))
 
     @staticmethod
     def create_order_id():
@@ -182,6 +193,22 @@ class Order:
                              + datetime.timedelta(days=1))
 
         return delivery_time
+
+    @staticmethod
+    def calc_ship_time(delivery_time: datetime.datetime):
+        """
+        お届け時間から発送時間を計算します
+
+        :return: 発送時間(datetime型)
+        """
+
+        rand_hour = random.randint(1, 4)
+        rand_minute = random.randint(0, 59)
+
+        ship_time = delivery_time - datetime.timedelta(hours=rand_hour, minutes=rand_minute,
+                                                       seconds=0, microseconds=0)
+
+        return ship_time
 
     @staticmethod
     def calc_expected_delivery_time():

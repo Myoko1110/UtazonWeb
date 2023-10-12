@@ -253,7 +253,7 @@
                                         <div class="cart-sale"><p>{{ item.discount_rate }}%OFF</p><span>タイムセール</span></div>
                                     {% endif %}
                                     {% if not item.status %}
-                                        <p class="cart-product__n">この商品は現在お取扱いできません</p>
+                                        <p class="cart-product__n" style="font-weight: 700; margin: 0; font-size: 15px">この商品は現在お取扱いできません</p>
 									{% elif item.get_stock > 15 %}
 									    <p class="cart-product__y">在庫あり</p>
 									{% elif item.get_stock <= 15 and item.get_stock > 0 %}
@@ -261,10 +261,16 @@
 									{% else %}
 									    <p class="cart-product__n">在庫なし</p>
 									{% endif %}
+                                    {% if item.status and item.get_stock < qty %}
+                                        <p class="cart-product__n" style="font-weight: 700; margin: 0; font-size: 15px">在庫が不足しています</p>
+                                    {% endif %}
 								<div class="cart-product__number">
-									<p>数量:</p>
-									<input class="cart-product__number-input" type="number" value="{{ qty }}" data-id="{{ item.id }}">
-									<a href="delete/?id={{ item.id }}" style="border-left: #d7d7d7 1px solid;margin-left: 20px" class="product__remove">削除</a>
+                                    <div>
+									    <p>数量:</p>
+									    <input class="cart-product__number-input" type="number" value="{{ qty }}" min="1" max="{{ item.get_stock }}">
+                                        <input class="cart-product__update" type="button" value="更新" data-id="{{ item.id }}">
+                                    </div>
+									<a href="delete/?id={{ item.id }}" style="border-left: #d7d7d7 1px solid;" class="product__remove">削除</a>
 									<a href="/cart-to-later/?id={{ item.id }}">あとで買う</a>
 								</div>
 							</div>
@@ -290,16 +296,17 @@
                     <i></i>
                     <p>通常配送無料</p>
                 </div>
-                <h2>小計 ({{ cart.get_amount }} 個の商品) : <span>{{ MONEY_UNIT }}{{ cart.get_total|format_price }}</span></h2>
-                {% if cart.get_amount != 0 %}
-                    {% if not cart.is_valid_items %}
-                        <input class="buy-continue" type="submit" value="無効な商品を削除してください" style="background-color: #cccccc;cursor: not-allowed">
-                    {% elif cart.is_in_stock %}
-                        <input class="buy-continue" type="submit" value="レジに進む" onclick="location.href='/buy'">
-                    {% else %}
-                        <input class="buy-continue" type="submit" value="在庫なしを削除してください" style="background-color: #cccccc;cursor: not-allowed">
-                    {% endif %}
+                <h2>小計 (<span class="buy-amount" style="font-weight: 400">{{ deleted_cart.get_amount }}</span> 個の商品) : <span>{{ MONEY_UNIT }}<span class="buy-total">{{ deleted_cart.get_total|format_price }}</span></span></h2>
+                {% if deleted_cart.get_amount != 0 %}
+                    <input class="buy-continue" type="submit" value="レジに進む" onclick="location.href='/buy'">
                 {% endif %}
+                {% if not cart.is_valid_items %}
+                        <span class="buy-msg">無効な商品は無視されます</span>
+                    {% endif %}
+                    {% if not cart.is_in_stock %}
+                        <span class="buy-msg">在庫が不足している商品は無視されます</span>
+                    {% endif %}
+                <div class="buy-load"></div>
             </div>
 			{% if later %}
 			<div class="later">
@@ -353,16 +360,17 @@
 				<i></i>
 				<p>通常配送無料</p>
 			</div>
-			<h2>小計 ({{ cart.get_amount }} 個の商品) : <span>{{ MONEY_UNIT }}{{ cart.get_total|format_price }}</span></h2>
-			{% if cart.get_amount != 0 %}
-                {% if not cart.is_valid_items %}
-                <input class="buy-continue" type="submit" value="無効な商品を削除してください" style="background-color: #cccccc;cursor: not-allowed">
-                {% elif cart.is_in_stock %}
+            <h2>小計 (<span class="buy-amount" style="font-weight: 400">{{ deleted_cart.get_amount }}</span> 個の商品) : <span>{{ MONEY_UNIT }}<span class="buy-total">{{ deleted_cart.get_total|format_price }}</span></span></h2>
+			{% if deleted_cart.get_amount != 0 %}
                 <input class="buy-continue" type="submit" value="レジに進む" onclick="location.href='/buy'">
-                {% else %}
-                <input class="buy-continue" type="submit" value="在庫なしを削除してください" style="background-color: #cccccc;cursor: not-allowed">
-                {% endif %}
 			{% endif %}
+            {% if not cart.is_valid_items %}
+                <span class="buy-msg">無効な商品は無視されます</span>
+            {% endif %}
+            {% if not cart.is_in_stock %}
+                <span class="buy-msg">在庫が不足している商品は無視されます</span>
+            {% endif %}
+            <div class="buy-load"></div>
 		</div>
 	</div>
 </div>
