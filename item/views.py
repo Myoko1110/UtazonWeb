@@ -23,7 +23,6 @@ def index_view(request):
     fi = Item.get_featured()
 
     # セッションを取得
-    account.deposit_scheduler.deposit_revenues()
     s = Session.by_request(request)
     context = {
         "popular_item": pi,
@@ -48,8 +47,11 @@ def index_view(request):
 
 
 def item(request):
-    item_id = int(request.GET.get("id"))
+    item_id = request.GET.get("id")
+    if not item_id:
+        raise Http404
 
+    item_id = int(item_id)
     i = Item.by_id(item_id)
 
     if not i:
@@ -68,7 +70,6 @@ def item(request):
     }
 
     if s.is_valid:
-        s.get_user().initialize_browsing_history(item_id)
         return render(request, "item.html", context=context)
 
     elif s.is_expire:
@@ -87,6 +88,7 @@ def initialize_browsing_history(request):
     if s.is_valid:
         s.get_user().initialize_browsing_history(item_id)
         return HttpResponse("Success")
+    return HttpResponse("Verify failed")
 
 
 @csrf_exempt
@@ -94,10 +96,13 @@ def update_browsing_history(request):
     if request.method != "POST":
         raise Http404
 
-    item_id = int(request.GET.get("item_id"))
-    duration = int(request.GET.get("duration"))
+    item_id = request.GET.get("item_id")
+    duration = request.GET.get("duration")
     if not item_id or not duration:
         raise Http404
+
+    item_id = int(item_id)
+    duration = int(duration)
 
     s = Session.by_request(request)
     if s.is_valid:
@@ -139,9 +144,10 @@ def cart_delete(request):
     if s.is_valid:
 
         # アイテムIDを指定
-        item_id = int(request.GET.get("id"))
+        item_id = request.GET.get("id")
         if not item_id:
             raise Http404
+        item_id = int(item_id)
 
         Cart.delete(s.mc_uuid, item_id)
 
@@ -153,10 +159,13 @@ def cart_add(request):
     if s.is_valid:
 
         # アイテムIDと数量を指定
-        item_id = int(request.GET.get("id"))
-        qty = int(request.GET.get("qty"))
+        item_id = request.GET.get("id")
+        qty = request.GET.get("qty")
         if not item_id or not qty:
             raise Http404
+
+        item_id = int(item_id)
+        qty = int(qty)
 
         Cart.add(s.mc_uuid, item_id, qty)
 
@@ -175,14 +184,26 @@ def cart_update(request):
         item_id = int(item_id)
         qty = int(qty)
 
-        Cart.update_qty(s.mc_uuid, item_id, qty)
+        i = Item.by_id(item_id)
+        stock = i.get_stock()
+        if stock >= qty:
+            Cart.update_qty(s.mc_uuid, item_id, qty)
+        else:
+            Cart.update_qty(s.mc_uuid, item_id, stock)
 
         c = s.get_user().get_cart()
         c.delete_invalid_items()
+
         cart_list = {
             "total": f"{c.get_total():,.2f}",
             "amount": c.get_amount(),
         }
+        if stock < qty:
+            cart_list["error"] = {
+                "msg": "Shortage",
+                "stock": stock
+            }
+
         return HttpResponse(json.dumps(cart_list), content_type="application/json")
     return HttpResponse("Fail to verify")
 
@@ -191,9 +212,11 @@ def later_delete(request):
     s = Session.by_request(request)
     if s.is_valid:
 
-        item_id = int(request.GET.get("id"))
+        item_id = request.GET.get("id")
         if not item_id:
             raise Http404
+
+        item_id = int(item_id)
 
         Later.delete(s.mc_uuid, item_id)
 
@@ -204,9 +227,11 @@ def later_to_cart(request):
     s = Session.by_request(request)
     if s.is_valid:
 
-        item_id = int(request.GET.get("id"))
+        item_id = request.GET.get("id")
         if not item_id:
             raise Http404
+
+        item_id = int(item_id)
 
         qty = s.get_user().get_later().get_qty(item_id)
 
@@ -220,9 +245,11 @@ def cart_to_later(request):
     s = Session.by_request(request)
     if s.is_valid:
 
-        item_id = int(request.GET.get("id"))
+        item_id = request.GET.get("id")
         if not item_id:
             raise Http404
+
+        item_id = int(item_id)
 
         qty = s.get_user().get_cart().get_qty(item_id)
 
@@ -306,9 +333,10 @@ def review_post(request):
 
 
 def review_star(request):
-    item_id = int(request.GET.get("id"))
+    item_id = request.GET.get("id")
     if not item_id:
         raise Http404
+    item_id = int(item_id)
 
     s = Session.by_request(request)
     if s.is_valid:
@@ -322,9 +350,10 @@ def review_star(request):
 
 
 def review_edit(request):
-    item_id = int(request.GET.get("id"))
+    item_id = request.GET.get("id")
     if not item_id:
         raise Http404
+    item_id = int(item_id)
 
     s = Session.by_request(request)
     if s.is_valid:
@@ -343,9 +372,10 @@ def review_edit(request):
 
 
 def review_edit_post(request):
-    item_id = int(request.GET.get("id"))
+    item_id = request.GET.get("id")
     if not item_id:
         raise Http404
+    item_id = int(item_id)
 
     s = Session.by_request(request)
     if s.is_valid:
@@ -361,11 +391,14 @@ def review_edit_post(request):
 
 
 def helpful(request):
-    item_id = int(request.GET.get("id"))
-    review_id = int(request.GET.get("review_id"))
+    item_id = request.GET.get("id")
+    review_id = request.GET.get("review_id")
 
     if not item_id or not review_id:
         raise Http404
+
+    item_id = int(item_id)
+    review_id = int(review_id)
 
     Review.helpful(item_id, review_id)
 
@@ -450,8 +483,11 @@ def status(request):
         order_id = request.GET.get("id")
         o = Order.by_id(order_id)
 
+        now = datetime.datetime.now()
+
         context = {
             "order": o,
+            "now": now,
             "session": s,
         }
         return render(request, "order-status.html", context=context)

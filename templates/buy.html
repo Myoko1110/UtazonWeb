@@ -308,7 +308,7 @@
 								<img src="{{ item.image.0 }}">
 								<div class="buy-items__box">
 									<h3>{{ item.name }}</h3>
-									<p>{{ MONEY_UNIT }}{{ item.price|format_price }}</p>
+									<p>{{ MONEY_UNIT }}{{ item.get_discounted_price|format_price }}</p>
 									<p style="font-weight: 400;font-size: 14px;margin: 0;">個数: {{ qty }}</p>
 								</div>
 							</li>
@@ -347,7 +347,9 @@
 				<div class="buy-confirm__description">
 					<h3>ご請求額： {{ MONEY_UNIT }}<span data-total="{{ cart.get_total }}">{{ cart.get_total|format_price }}</span></h3>
 					<a>獲得ポイント：<span id="get_point" data-point="{{ cart.get_point }}">{{ cart.get_point|digit_grouping }}</span>pt</a>
-					<p>「注文を確定する」ボタンをクリックすると、注文を受けたことを通知するメッセージがDiscordのダイレクトメッセージに送信されます。商品の購入契約は、商品の発送を通知するメッセージを送信したときに成立します。価格については必ず商品ページおよびこちらをご確認ください。商品の分量の詳細については、商品詳細ページをご確認ください。</p>
+					<p>「注文を確定」ボタンをクリックすると、注文を受けたことを通知するメッセージがDiscordのダイレクトメッセージに送信されます。
+                        商品の購入契約は、商品の発送を通知するダイレクトメッセージを送信したときに成立します。価格については必ず商品ページをご確認ください。
+                        商品の分量の詳細については、商品詳細ページをご確認ください。</p>
 				</div>
 			</div>
 			{% else %}

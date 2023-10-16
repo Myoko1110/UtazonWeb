@@ -187,9 +187,10 @@ class Cart:
         無効な商品(削除されたまたは在庫不足)のものを削除します
         """
 
-        for i in list(self.cart.keys()):
-            if not i.status or i.get_stock() < self.cart[i]:
-                del self.cart[i]
+        if self.cart:
+            for i in list(self.cart.keys()):
+                if not i.status or i.get_stock() < self.cart[i]:
+                    del self.cart[i]
 
     @staticmethod
     def delete(mc_uuid: str, item: Union[int, 'util.Item']) -> bool:

@@ -17,6 +17,7 @@ class User:
     __cached_discord_id: Union[int, None] = None
     __cached_balance: float = 0
     __cached_discord_user: discord.User = None
+    __cached_point: int = 0
 
     def __init__(self, mc_uuid: str):
         self.mc_uuid = mc_uuid
@@ -96,12 +97,15 @@ class User:
 
         :return: ポイント
         """
+        if not self.__cached_point:
+            self.__cached_point = util.DatabaseHelper.get_point(self.mc_uuid)
 
-        r = util.DatabaseHelper.get_point(self.mc_uuid)
-        if not r:
-            return 0
+            if self.__cached_point:
+                self.__cached_point = self.__cached_point[0]
+            else:
+                self.__cached_point = 0
 
-        return r[0]
+        return self.__cached_point
 
     def deduct_points(self, amount: int) -> bool:
         """

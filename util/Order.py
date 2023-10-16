@@ -61,7 +61,7 @@ class Order:
             deliver = round(util.calc_time_percentage(self.ships_at, self.delivers_at))
 
             self.__cached_progress = (ship * 3.3 / 10) + (deliver * 6.7 / 10)
-        return self.__cached_progress
+        return round(self.__cached_progress)
 
     def will_arrive_today(self) -> bool:
         """
@@ -135,7 +135,6 @@ class Order:
 
         if not r:
             return None
-        print(r)
 
         return [
             Order(i["order_id"], i["mc_uuid"], Order.decode(i["order_item"]),

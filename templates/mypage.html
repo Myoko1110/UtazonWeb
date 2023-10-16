@@ -236,6 +236,10 @@
                 <img src="https://crafatar.com/avatars/{{ user.mc_uuid }}?size=150">
                 <div class="mypage-info__text">
                     <div>
+                        <span>Utazonポイント</span>
+                        <p>{{ user.get_point|digit_grouping }}pt</p>
+                    </div>
+                    <div>
                         <span>ユーザー名</span>
                         {% with user.get_mc_id as mcid %}
                         {% if mcid %}
@@ -248,8 +252,20 @@
                     </div>
                     <div>
                         <span>Discord</span>
-                        <p>{{ user.get_discord_display_name }}</p>
-                        <p style="font-size: 11px;color: #8c8c8c">{{ user.get_discord_name }}</p>
+                        {% with user.get_discord_display_name as display_name %}
+                            {% if display_name %}
+                            <p>{{ display_name }}</p>
+                            {% else %}
+                            <p>取得に失敗しました</p>
+                            {% endif %}
+                        {% endwith %}
+                        {% with user.get_discord_name as name %}
+                            {% if name %}
+                            <p style="font-size: 11px;color: #8c8c8c">{{ name }}</p>
+                            {% else %}
+                            <p style="font-size: 11px;color: #8c8c8c">取得に失敗しました</p>
+                            {% endif %}
+                        {% endwith %}
                     </div>
                     <div>
                         <span>出品している商品数</span>

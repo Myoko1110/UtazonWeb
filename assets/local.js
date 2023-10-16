@@ -137,3 +137,7 @@ function close_box() {
 function logout_confirm() {
     $("#logout").css("display", "flex");
 }
+
+function close_balloon(elem) {
+    $(elem).parent().parent().css("display", "none");
+}

@@ -7,9 +7,12 @@ let targetPosition;
 let once = false;
 
 const cookie = getCookieArray()
+const blob = new Blob(cookie, {type: 'application/json'});
+let stock = 0;
 
 $(function () {
     targetPosition = $('.item-about__description-about').offset().top;
+    stock = $(".item").data("stock");
 
     // アイテムの写真を切り替える
     $(".item-about__img-list-img").on("mouseenter", function () {
@@ -138,13 +141,15 @@ $(function () {
     });
 
 });
-$(window).on("beforeunload", update);
-$(window).on("popstate", update);
+$(document).on('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') {
+        update();
+    }
+});
 
 function update() {
     if (once) {
         const duration = new Date(Date.now() - startTime);
-        const blob = new Blob(cookie, {type: 'application/json'});
         navigator.sendBeacon("/update_browsing_history/?item_id=" + id + "&duration=" + duration.getSeconds(), blob);
     }
 }
@@ -159,14 +164,58 @@ function initialize() {
     }
 }
 
-function getCookieArray(){
+function getCookieArray() {
     let arr = [];
-    if(document.cookie !== ''){
+    if (document.cookie !== '') {
         let tmp = document.cookie.split('; ');
-        for(let i=0;i<tmp.length;i++){
+        for (let i = 0; i < tmp.length; i++) {
             let data = tmp[i].split('=');
             arr[data[0]] = decodeURIComponent(data[1]);
         }
     }
     return arr;
+}
+
+function buynow() {
+    if (cartNumber == 0){
+        $(".zero-invalid").css("display", "block");
+        $(".item-about__buy-order-number-input").val(1);
+        cartNumber = 1;
+        setTimeout(function () {
+            $(".zero-invalid").fadeOut(1000);
+        }, 4000);
+
+    } else if (cartNumber <= stock) {
+        location.href = `../buy?item=%7B%22${id}%22%3A+${cartNumber}%7D`
+
+    } else {
+        $(".shortage").css("display", "block");
+        $(".item-about__buy-order-number-input").val(stock);
+        cartNumber = stock;
+        setTimeout(function () {
+            $(".shortage").fadeOut(1000);
+        }, 4000);
+    }
+}
+
+function cart(){
+    if (cartNumber == 0){
+        $(".zero-invalid").css("display", "block");
+        $(".item-about__buy-order-number-input").val(1);
+        cartNumber = 1;
+        setTimeout(function () {
+            $(".zero-invalid").fadeOut(1000);
+        }, 4000);
+
+    } else if (cartNumber <= stock) {
+        location.href=`../cart/add/?id=${id}&qty=${cartNumber}`
+
+    } else {
+        $(".balloon").css("display", "block");
+        $(".item-about__buy-order-number-input").val(stock);
+        cartNumber = stock;
+        setTimeout(function () {
+            $(".balloon").fadeOut(1000);
+        }, 4000);
+    }
 }

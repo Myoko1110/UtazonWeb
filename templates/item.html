@@ -228,7 +228,7 @@
     </header>
 </div>
 <div class="wrapper">
-	<div class="item">
+	<div class="item" data-stock="{{ item.get_stock }}">
 		<div class="item-category">
             {% with item.get_category as category %}
                 {% if category.is_child %}
@@ -293,7 +293,7 @@
                                 {% elif  average < 0.3 %}
                                 <div class="item-about__star-img" style="background-position: -2px -182px;">
                                 {% endif %}
-        
+
                                     <span style="opacity: 0;">5つ星のうち{{ average }}</span>
                                 </div>
                                 <a href="#review">{{ review|length }}個の評価</a>
@@ -350,12 +350,24 @@
 					<div class="item-about__buy-order">
 						{% if stock > 0 and session and status %}
 						<form method="get" action="">
+                            <div class="balloon shortage" style="transform: translateX(40px)">
+                                <div class="balloon-close" style="cursor: pointer">
+                                    <svg onclick="close_balloon(this)" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+                                </div>
+                                <p>在庫が不足しています。現在の在庫数は<span>{{ item.get_stock }}</span>個です。</p>
+                            </div>
+                            <div class="balloon zero-invalid" style="transform: translateX(40px)">
+                                <div class="balloon-close" style="cursor: pointer">
+                                    <svg onclick="close_balloon(this)" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+                                </div>
+                                <p>数量は0にできません。</p>
+                            </div>
 							<div class="item-about__buy-order-number">
 								<p>数量:</p>
-								<input id="cart_add" class="item-about__buy-order-number-input" type="number" value="1" max="{{ stock }}">
+								<input id="cart_add" class="item-about__buy-order-number-input" type="number" value="1" min="1" max="{{ stock }}">
 							</div>
-							<a onclick="location.href=`../buy?item=%7B%22{{ item.id }}%22%3A+${cartNumber}%7D`" class="item-about__buy-order-input">今すぐ買う</a>
-							<a onclick="location.href=`../cart/add/?id={{ item.id }}&qty=${cartNumber}`" class="item-about__buy-order-cart">カートに入れる</a>
+							<a onclick="buynow(this)" class="item-about__buy-order-input">今すぐ買う</a>
+							<a onclick="cart(this)" class="item-about__buy-order-cart">カートに入れる</a>
 						</form>
                         {% elif stock <= 0 or not status %}
 						{% else %}
@@ -437,13 +449,23 @@
 					{% if stock > 0 and session and item.status %}
 					<form method="get" action="">
 						<div class="item-about__buy-order-number">
+                            <div class="balloon shortage">
+                                <div class="balloon-close" style="cursor: pointer">
+                                    <svg onclick="close_balloon(this)" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+                                </div>
+                                <p>在庫が不足しています。現在の在庫数は<span>{{ item.get_stock }}</span>個です。</p>
+                            </div>
+                            <div class="balloon zero-invalid">
+                                <div class="balloon-close" style="cursor: pointer">
+                                    <svg onclick="close_balloon(this)" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+                                </div>
+                                <p>数量は0にできません。</p>
+                            </div>
 							<p>数量:</p>
 							<input class="item-about__buy-order-number-input" type="number" value="1" id="cart_add" max="{{ stock }}">
 						</div>
-						<a
-                                onclick="location.href=`../buy?item=%7B%22{{ item.id }}%22%3A+${cartNumber}%7D`"
-                                class="item-about__buy-order-input">今すぐ買う</a>
-						<a onclick="location.href=`../cart/add/?id={{ item.id }}&qty=${cartNumber}`" class="item-about__buy-order-cart">カートに入れる</a>
+						<a onclick="buynow(this)" class="item-about__buy-order-input">今すぐ買う</a>
+						<a onclick="cart(this)" class="item-about__buy-order-cart">カートに入れる</a>
 					</form>
                     {% elif stock <= 0 or not status %}
 					{% else %}

@@ -198,7 +198,7 @@ html, body {
 
 @media (max-width: 799px) {
     .subwrapper {
-        margin: 10px;
+        margin: 0;
     }
 
     .buy-right {

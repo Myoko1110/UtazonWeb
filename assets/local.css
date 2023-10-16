@@ -855,3 +855,38 @@ footer p {
 .ui-menu::-webkit-scrollbar {
     display: none;
 }
+
+.balloon {
+    position: absolute;
+    width: 240px;
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #fff;
+    border-radius: 8px;
+    filter: drop-shadow(0px 3px 5px rgba(0, 0, 0, 0.2));
+    margin: -125px 0 0 -60px;
+    display: none;
+}
+
+.balloon::before {
+    content: "";
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    width: 0;
+    height: 0;
+    margin-left: -15px;
+    border: 15px solid transparent;
+    border-top-color: #fff;
+    transform: translateY(-2px);
+}
+.balloon p{
+    font-size: 15px;
+}
+.balloon-close{
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 0!important;
+    margin: 10px;
+}

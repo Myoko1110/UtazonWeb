@@ -229,61 +229,74 @@
 </div>
 <div class="wrapper">
 	<div class="status">
-		<a style="font-weight: 700;font-size: 20px;display: flex;align-items: center" href="../">
-			<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
-			戻る
-		</a>
-		<div class="status-title">
-			<div>
-				<p data-status="{{ order.status }}" data-ship="{{ order.dm_sent }}">配送状況</p>
-                {% if order.error %}
-                    {% if order.error == "MailboxFull" %}
-                        <h1>配達できませんでした<span style="font-weight: 400;font-style: italic;font-size: 22px">: 商品を入れるスペースがありません</span></h1>
-                    {% elif order.error == "MailboxNotFound" %}
-                        <h1>配達できませんでした<span style="font-weight: 400;font-style: italic;font-size: 22px">: ポストが見つかりません</span></h1>
+        <div class="status-text">
+            <a style="font-weight: 700;font-size: 20px;display: flex;align-items: center" href="../">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
+                戻る
+            </a>
+            <div class="status-title">
+                <div>
+                    <p data-status="{{ order.status }}" data-ship="{{ order.dm_sent }}">配送状況</p>
+                    {% if order.error %}
+                        {% if order.error == "MailboxFull" %}
+                            <h1>配達できませんでした<span style="font-weight: 400;font-style: italic;font-size: 22px">: 商品を入れるスペースがありません</span></h1>
+                        {% elif order.error == "MailboxNotFound" %}
+                            <h1>配達できませんでした<span style="font-weight: 400;font-style: italic;font-size: 22px">: ポストが見つかりません</span></h1>
+                        {% endif %}
+                    {% elif order.get_delivery_progress == 100 and not order.status %}
+                    <h1>配達済み</h1>
+                    {% elif order.will_arrive_today %}
+                    <h1>本日到着予定</h1>
+                    {% else %}
+                    <h1>{{ order.delivers_at.year }}年{{ order.delivers_at.month }}日{{ order.delivers_at.day }}日 {{ order.delivers_at.hour }}時に配達予定</h1>
                     {% endif %}
-				{% elif order.get_delivery_progress == 100 and not order.status %}
-				<h1>配達済み</h1>
-				{% elif order.will_arrive_today %}
-				<h1>本日到着予定</h1>
-				{% else %}
-				<h1>{{ order.delivers_at.year }}年{{ order.delivers_at.month }}日{{ order.delivers_at.day }}日 {{ order.delivers_at.hour }}時に配達予定</h1>
-				{% endif %}
-			</div>
-			<div>
-				<p>注文番号：{{ order.order_id }}</p>
-				<p>発注日：{{ order.ordered_at.year }}年{{ order.ordered_at.month }}日{{ order.ordered_at.day }}日</p>
-			</div>
-		</div>
-		<div class="status-container">
-		<div class="progress-container">
-    		<div class="progress-bar" id="progress" data-percent="{{ order.get_delivery_progress }}"></div>
-			<div class="milestone" style="left: 0;" id="order1">
-				<div class="milestone-box isActive">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-				</div>
-				<p>注文済み</p>
-			</div>
-			<div class="milestone" style="left: 33%;" id="order2">
-				<div class="milestone-box">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-				</div>
-				<p style="color: #cccccc;">発送済み</p>
-			</div>
-			<div class="milestone" style="left: 66%;" id="order3">
-				<div class="milestone-box">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-				</div>
-				<p style="color: #cccccc;">配達中</p>
-			</div>
-			<div class="milestone" style="left: 100%;" id="order4">
-				<div class="milestone-box">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-				</div>
-				<p style="white-space: nowrap;color: #cccccc;">到着</p>
-			</div>
-  		</div>
-	</div>
+                </div>
+                <div>
+                    <p>注文番号：{{ order.order_id }}</p>
+                    <p>発注日：{{ order.ordered_at.year }}年{{ order.ordered_at.month }}日{{ order.ordered_at.day }}日</p>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-bar__obj">
+                <div class="status-bar__obj-valid" data-percent="{{ order.get_delivery_progress }}"></div>
+            </div>
+            <div class="status-bar__box">
+                <div class="status-bar__box-child" id="order_1">
+                    <div class="check_box">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"></path></svg>
+                    </div>
+                    <div class="check_list">
+                        <p>{{ order.ordered_at.month }}日{{ order.ordered_at.day }}日に注文済み</p>
+                    </div>
+                </div>
+                <div class="status-bar__box-child" id="order_2">
+                    <div class="check_box">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"></path></svg>
+                    </div>
+                    <div class="check_list">
+                        <p>{% if order.dm_sent %}{% if order.ships_at.day == now.day %}本日{% else %}{{ order.ships_at.month }}日{{ order.ships_at.day }}日{% endif %}{% endif %}発送済み</p>
+                    </div>
+                </div>
+                <div class="status-bar__box-child" id="order_3">
+                    <div class="check_box">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"></path></svg>
+                    </div>
+                    <div class="check_list">
+                        <p>配送中</p>
+                    </div>
+                </div>
+                <div class="status-bar__box-child" id="order_4">
+                    <div class="check_box">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"></path></svg>
+                    </div>
+                    <div class="check_list">
+                        <p>{% if order.status %}{% if order.delivers_at.day == now.day %}本日お届け{% elif order.delivers_at.day == now.day|add:"1" %}明日中にお届け{% else %}{{ order.delivers_at.month }}月{{ order.delivers_at.day }}にお届け{% endif %}{% else %}お届け済み{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <footer>
     <div class="footer__link">

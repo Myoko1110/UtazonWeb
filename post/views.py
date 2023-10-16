@@ -162,10 +162,8 @@ def ship_complete(request):
 
     uuid = request.POST.get("uuid")
     order_id = request.POST.get("orderid")
-    print(uuid, order_id)
 
     discord_id = User.by_mc_uuid(uuid).get_discord_id()
-    print(discord_id)
 
     asyncio.run_coroutine_threadsafe(
         bot.send_complete_ship(discord_id, order_id),

@@ -1,33 +1,29 @@
+let progress = 0;
 $(function () {
-    const progressBar = $(".progress-bar");
-    let progress = 0;
+    const progressBar = $(".status-bar__obj-valid");
 
     progress = progressBar.data("percent");
-    progressBar.css("width", `${progress}%`);
+    progressBar.css("height", `${progress}%`);
 
-    console.log(progress)
-    if (progress >= 33 && progress < 66) {
-        if ($(".status-title div p").data("ship") === "True"){
-            $("#order2 p").css("color", "#000");
-            $("#order2 .milestone-box").addClass("isActive");
-        }
-    } else if (progress >= 66 && progress < 100) {
+    $("#order_1 .check_list p").css("color", "#000");
+    $("#order_1 .check_box").addClass("isActive");
+
+    if (progress >= 33) {
         if ($(".status-title div p").data("ship") === "True") {
-            $("#order2 .milestone-box").addClass("isActive");
-            $("#order3 .milestone-box").addClass("isActive");
-            $("#order2 p").css("color", "#000");
-            $("#order3 p").css("color", "#000");
+            $("#order_2 .check_list p").css("color", "#000");
+            $("#order_2 .check_box").addClass("isActive");
         }
-    } else if (progress === 100) {
+    }
+    if (progress >= 66) {
         if ($(".status-title div p").data("ship") === "True") {
-            $("#order2 .milestone-box").addClass("isActive");
-            $("#order3 .milestone-box").addClass("isActive");
-            $("#order2 p").css("color", "#000");
-            $("#order3 p").css("color", "#000");
-            if ($(".status-title div p").data("status") === "True") {
-                $("#order4 .milestone-box").addClass("isActive");
-                $("#order4 p").css("color", "#000");
-            }
+            $("#order_3 .check_list p").css("color", "#000");
+            $("#order_3 .check_box").addClass("isActive");
+        }
+    }
+    if (progress === 100.0) {
+        if ($(".status-title div p").data("ship") === "True" && $(".status-title div p").data("status") === "False") {
+            $("#order_4 .check_list p").css("color", "#000");
+            $("#order_4 .check_box").addClass("isActive");
         }
     }
 
