@@ -1,7 +1,11 @@
 import asyncio
 import json
 import logging
+import os
+import secrets
 
+from django.core.files.storage import FileSystemStorage
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.http import Http404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -171,3 +175,22 @@ def ship_complete(request):
     )
 
     return HttpResponse("success")
+
+
+@csrf_exempt
+def upload_detail_img(request):
+    file: InMemoryUploadedFile = request.FILES.get("image")
+
+    os.makedirs(settings.MEDIA_ROOT / "details", exist_ok=True)
+
+    file_ext = file.name.split(".")[-1]
+    file_path = settings.MEDIA_ROOT / "details" / f"{secrets.token_urlsafe(16)}.{file_ext}"
+    fs = FileSystemStorage().save(file_path, file)
+
+    content = {
+        "success": True,
+        "file": f"/media/{fs}"
+    }
+    print(content)
+
+    return HttpResponse(json.dumps(content), content_type="application/json")

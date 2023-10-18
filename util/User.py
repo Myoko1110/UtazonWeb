@@ -66,7 +66,12 @@ class User:
         """
 
         if not self.__cached_discord_id:
-            self.__cached_discord_id = util.DatabaseHelper.get_discord_id(self.mc_uuid)[0]
+            r = util.DatabaseHelper.get_discord_id(self.mc_uuid)
+            if r:
+                self.__cached_discord_id = r[0]
+            else:
+                self.__cached_discord_id = None
+
         return self.__cached_discord_id
 
     def get_discord_name(self) -> Union[str, None]:

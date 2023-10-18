@@ -1,5 +1,78 @@
 let new_image = [];
 $(document).ready(function () {
+    jQuery.trumbowyg.langs.ja = {
+        viewHTML: "HTML表示",
+        undo: "元に戻す",
+        redo: "やり直す",
+        formatting: "フォーマット",
+        p: "本文",
+        blockquote: "引用",
+        code: "コード",
+        header: "見出し",
+        bold: "太字",
+        italic: "斜体",
+        strikethrough: "取り消し線",
+        underline: "下線",
+        strong: "太字",
+        em: "斜体",
+        del: "取り消し線",
+        superscript: "上付き文字",
+        subscript: "下付き文字",
+        unorderedList: "箇条書き",
+        orderedList: "段落番号",
+        insertImage: "URLから画像を挿入",
+        upload: "画像のアップロード",
+        link: "リンク",
+        createLink: "リンクの作成",
+        unlink: "リンクの削除",
+        justifyLeft: "左揃え",
+        justifyCenter: "中央揃え",
+        justifyRight: "右揃え",
+        justifyFull: "両端揃え",
+        horizontalRule: "横罫線",
+        removeformat: "フォーマットの削除",
+        fullscreen: "全画面表示",
+        close: "閉じる",
+        submit: "送信",
+        reset: "キャンセル",
+        required: "必須",
+        description: "説明",
+        title: "タイトル",
+        text: "テキスト",
+        target: "ターゲット",
+        image: "画像"
+    };
+    $("#editor").trumbowyg({
+        autogrow: true,
+        btnsDef: {
+            image: {
+                dropdown: ['insertImage', 'upload'],
+                ico: 'insertImage'
+            }
+        },
+        lang: "ja",
+        btns: [
+            ['undo', 'redo'],
+            ['formatting'],
+            ['strong', 'em', 'del'],
+            ['superscript', 'subscript'],
+            ['link', 'image'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+            ['fullscreen'],
+        ],
+        plugins: {
+            upload: {
+                serverPath: '/post/upload/',
+                fileFieldName: 'image',
+            }
+        }
+    });
+    const detail = $(".review-value__detail").data("html")
+    if (detail !== "None"){
+        $("#editor").trumbowyg("html", detail);
+    }
+
     function addImageHoverHandlers() {
         $(".review-value-1 .image").hover(
             function () {
@@ -112,6 +185,7 @@ $(document).ready(function () {
             $(".review-value__about").css("display", "none");
             $(".review-value__keyword").css("display", "none");
             $(".review-value__item").css("display", "none");
+            $(".review-value__detail").css("display", "none");
 
         }else if (tab === "画像") {
             $(".review-value__image").css("display", "block");
@@ -122,6 +196,7 @@ $(document).ready(function () {
             $(".review-value__about").css("display", "none");
             $(".review-value__keyword").css("display", "none");
             $(".review-value__item").css("display", "none");
+            $(".review-value__detail").css("display", "none");
 
         }else if (tab === "説明") {
             $(".review-value__about").css("display", "block");
@@ -132,6 +207,18 @@ $(document).ready(function () {
             $(".review-value__category").css("display", "none");
             $(".review-value__image").css("display", "none");
             $(".review-value__item").css("display", "none");
+            $(".review-value__detail").css("display", "none");
+
+        }else if (tab === "詳細") {
+            $(".review-value__detail").css("display", "block");
+
+            $(".review-value__title").css("display", "none");
+            $(".review-value__text").css("display", "none");
+            $(".review-value__category").css("display", "none");
+            $(".review-value__image").css("display", "none");
+            $(".review-value__item").css("display", "none");
+            $(".review-value__about").css("display", "none");
+            $(".review-value__keyword").css("display", "none");
 
         }
     });
@@ -198,6 +285,7 @@ $(document).ready(function () {
             update_image: JSON.stringify(update_image),
             category: selectedCategory,
             item_id: item_id,
+            detail: $("#editor").trumbowyg("html")
         };
         for (let i = 0; i < new_image.length; i++) {
             params.new_image = new_image[i];

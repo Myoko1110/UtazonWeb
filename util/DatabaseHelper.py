@@ -7,21 +7,6 @@ from config import settings
 from item.models import Featured
 
 
-def get_user_view_history_four(mc_uuid):
-    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
-    with cnx:
-        with cnx.cursor(dictionary=True) as cursor:
-            sql = "SELECT item_id FROM utazon_browsinghistory WHERE mc_uuid=%s ORDER BY browsed_at DESC LIMIT 4"
-            cursor.execute(sql, (mc_uuid,))
-
-            # mc_uuidのレコードを取得
-            result = cursor.fetchall()
-
-            if not result:
-                return False
-    return result
-
-
 def add_item_stack(item_id, item_name, item_material, item_enchantment, item_damage, stack_size,
                    stock):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
@@ -32,8 +17,12 @@ def add_item_stack(item_id, item_name, item_material, item_enchantment, item_dam
             cursor.execute(sql, (
                 item_id, item_name, item_material, item_enchantment, item_damage, stack_size,
                 stock))
+            affected_rows = cursor.rowcount
             cnx.commit()
-    return True
+
+            if affected_rows > 0:
+                return True
+    return False
 
 
 def get_item_stack(item_id):
@@ -44,9 +33,6 @@ def get_item_stack(item_id):
             cursor.execute(sql, (item_id,))
             result = cursor.fetchone()
     return result
-
-
-###################################################################
 
 
 def get_cart(mc_uuid):
@@ -180,7 +166,7 @@ def get_item(item_id):
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
             sql = """SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
-                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.category,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.detail, utazon_item.category,
                             utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
                             utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
                             utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
@@ -201,7 +187,7 @@ def get_item_by_list(id_list):
             l = ", ".join(str(i) for i in id_list)
 
             sql = f"""SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
-                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.category,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.detail, utazon_item.category,
                             utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
                             utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
                             utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
@@ -221,7 +207,7 @@ def get_available_item(mc_uuid):
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
             sql = """SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
-                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.category,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.detail, utazon_item.category,
                             utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
                             utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
                             utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
@@ -239,7 +225,7 @@ def get_unavailable_item(mc_uuid):
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
             sql = """SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
-                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.category,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.detail, utazon_item.category,
                             utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
                             utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
                             utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
@@ -252,16 +238,20 @@ def get_unavailable_item(mc_uuid):
     return result
 
 
-def update_item(item_id, item_name, price, image, about, category):
+def update_item(item_id, item_name, price, image, about, detail, category):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor() as cursor:
             now = datetime.datetime.now()
 
-            sql = "UPDATE utazon_item SET item_name=%s, price=%s, image=%s, kind=%s, category=%s, updated_at=%s WHERE item_id=%s"
-            cursor.execute(sql, (item_name, price, image, about, category, now, item_id))
+            sql = "UPDATE utazon_item SET item_name=%s, price=%s, image=%s, kind=%s, detail=%s, category=%s, updated_at=%s WHERE item_id=%s"
+            cursor.execute(sql, (item_name, price, image, about, detail, category, now, item_id))
+            affected_rows = cursor.rowcount
             cnx.commit()
-    return True
+
+            if affected_rows > 0:
+                return True
+    return False
 
 
 def search_item(item_query: str, category: Union['util.Category', None]):
@@ -327,7 +317,7 @@ def get_item_by_category(cat_en):
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
             sql = """SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
-                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.category,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.detail, utazon_item.category,
                             utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
                             utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
                             utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
@@ -827,16 +817,16 @@ def delete_item(item_id):
     return False
 
 
-def create_item(item_id, item_name, price, image, kind, category, search_keyword, mc_uuid):
+def create_item(item_id, item_name, price, image, kind, detail, category, search_keyword, mc_uuid):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     now = datetime.datetime.now()
     with cnx:
         with cnx.cursor() as cursor:
-            sql = """INSERT INTO utazon_item (item_id, item_name, price, image, kind,
+            sql = """INSERT INTO utazon_item (item_id, item_name, price, image, kind, detail,
                      category, sold_count, search_keyword, mc_uuid, created_at, updated_at, status)
-                     VALUES (%s, %s, %s, %s, %s, %s, 0, %s, %s, %s, %s, TRUE)"""
+                     VALUES (%s, %s, %s, %s, %s, %s, %s, 0, %s, %s, %s, %s, TRUE)"""
             cursor.execute(sql,
-                           (item_id, item_name, price, image, kind, category, search_keyword,
+                           (item_id, item_name, price, image, kind, detail, category, search_keyword,
                             mc_uuid, now, now))
             affected_rows = cursor.rowcount
             cnx.commit()
@@ -880,8 +870,12 @@ def delete_session(session_id):
         with cnx.cursor() as cursor:
             sql = "DELETE IGNORE FROM utazon_session WHERE session_id=%s"
             cursor.execute(sql, (session_id,))
+            affected_rows = cursor.rowcount
             cnx.commit()
-    return True
+
+            if affected_rows > 0:
+                return True
+        return False
 
 
 def get_popular_item():

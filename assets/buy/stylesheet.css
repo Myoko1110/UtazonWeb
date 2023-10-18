@@ -216,6 +216,10 @@ html, body {
 
     .buy-confirm__description {
         margin-top: 10px;
+        width: 100%;
+    }
+    .buy-confirm__btn{
+        margin: 0 auto;
     }
 }
 

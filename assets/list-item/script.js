@@ -1,7 +1,74 @@
 let new_image = [];
-$(document).ready(function () {
+$(function () {
+    jQuery.trumbowyg.langs.ja = {
+        viewHTML: "HTML表示",
+        undo: "元に戻す",
+        redo: "やり直す",
+        formatting: "フォーマット",
+        p: "本文",
+        blockquote: "引用",
+        code: "コード",
+        header: "見出し",
+        bold: "太字",
+        italic: "斜体",
+        strikethrough: "取り消し線",
+        underline: "下線",
+        strong: "太字",
+        em: "斜体",
+        del: "取り消し線",
+        superscript: "上付き文字",
+        subscript: "下付き文字",
+        unorderedList: "箇条書き",
+        orderedList: "段落番号",
+        insertImage: "URLから画像を挿入",
+        upload: "画像のアップロード",
+        link: "リンク",
+        createLink: "リンクの作成",
+        unlink: "リンクの削除",
+        justifyLeft: "左揃え",
+        justifyCenter: "中央揃え",
+        justifyRight: "右揃え",
+        justifyFull: "両端揃え",
+        horizontalRule: "横罫線",
+        removeformat: "フォーマットの削除",
+        fullscreen: "全画面表示",
+        close: "閉じる",
+        submit: "送信",
+        reset: "キャンセル",
+        required: "必須",
+        description: "説明",
+        title: "タイトル",
+        text: "テキスト",
+        target: "ターゲット",
+        image: "画像"
+    };
+    $("#editor").trumbowyg({
+        autogrow: true,
+        btnsDef: {
+            image: {
+                dropdown: ['insertImage', 'upload'],
+                ico: 'insertImage'
+            }
+        },
+        lang: "ja",
+        btns: [
+            ['undo', 'redo'],
+            ['formatting'],
+            ['strong', 'em', 'del'],
+            ['superscript', 'subscript'],
+            ['link', 'image'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+            ['fullscreen'],
+        ],
+        plugins: {
+            upload: {
+                serverPath: '/post/upload/',
+                fileFieldName: 'image',
+            }
+        }
+    });
 
-    // 更新用
     function addImageHoverHandlers() {
         $(".review-value-1 .image").hover(
             function () {
@@ -96,7 +163,7 @@ $(document).ready(function () {
         $(this).toggleClass("isSelectIndex");
     });
 
-    $(".review-nav li").on("click", function (){
+    $(".review-nav li").on("click", function () {
         let tab = $(this).text();
         $(".review-nav li").removeClass("isActive");
         $(this).addClass("isActive");
@@ -110,18 +177,20 @@ $(document).ready(function () {
             $(".review-value__about").css("display", "none");
             $(".review-value__keyword").css("display", "none");
             $(".review-value__item").css("display", "none");
+            $(".review-value__detail").css("display", "none");
 
-        }else if (tab === "画像") {
+        } else if (tab === "画像") {
             $(".review-value__image").css("display", "block");
-            
+
             $(".review-value__title").css("display", "none");
             $(".review-value__text").css("display", "none");
             $(".review-value__category").css("display", "none");
             $(".review-value__about").css("display", "none");
             $(".review-value__keyword").css("display", "none");
             $(".review-value__item").css("display", "none");
+            $(".review-value__detail").css("display", "none");
 
-        }else if (tab === "説明") {
+        } else if (tab === "説明") {
             $(".review-value__about").css("display", "block");
             $(".review-value__keyword").css("display", "block");
 
@@ -130,8 +199,9 @@ $(document).ready(function () {
             $(".review-value__category").css("display", "none");
             $(".review-value__image").css("display", "none");
             $(".review-value__item").css("display", "none");
+            $(".review-value__detail").css("display", "none");
 
-        }else if (tab === "アイテム") {
+        } else if (tab === "アイテム") {
             $(".review-value__item").css("display", "block");
 
             $(".review-value__title").css("display", "none");
@@ -140,11 +210,22 @@ $(document).ready(function () {
             $(".review-value__image").css("display", "none");
             $(".review-value__about").css("display", "none");
             $(".review-value__keyword").css("display", "none");
+            $(".review-value__detail").css("display", "none");
+        }else if (tab === "詳細"){
+            $(".review-value__detail").css("display", "block");
+
+            $(".review-value__title").css("display", "none");
+            $(".review-value__text").css("display", "none");
+            $(".review-value__category").css("display", "none");
+            $(".review-value__image").css("display", "none");
+            $(".review-value__about").css("display", "none");
+            $(".review-value__keyword").css("display", "none");
+            $(".review-value__item").css("display", "none");
         }
     });
 
     // 次へ
-    $("#next").on("click", function (){
+    $("#next").on("click", function () {
         $("#title_required").css("display", "none");
         $("#text_required").css("display", "none");
         $("#image_required").css("display", "none");
@@ -201,7 +282,7 @@ $(document).ready(function () {
         $(window).scrollTop(0);
     });
 
-    $("#return").on("click", function (){
+    $("#return").on("click", function () {
         $(".product").css("display", "block");
         $(".caution").css("display", "none");
         $(window).scrollTop(0);
@@ -230,29 +311,29 @@ $(document).ready(function () {
 
         let isAllSame = false;
         let indexList = [];
-        selectedItems.each(function() {
-            if ($(this).data("namespacedkey") !== item0.data("namespacedkey")){
+        selectedItems.each(function () {
+            if ($(this).data("namespacedkey") !== item0.data("namespacedkey")) {
                 isAllSame = true;
             }
-            if ($(this).data("amount") !== item0.data("amount")){
+            if ($(this).data("amount") !== item0.data("amount")) {
                 isAllSame = true;
             }
-            if (JSON.stringify($(this).data("enchantment")) !== JSON.stringify(item0.data("enchantment"))){
+            if (JSON.stringify($(this).data("enchantment")) !== JSON.stringify(item0.data("enchantment"))) {
                 isAllSame = true;
             }
-            if ($(this).data("damage") !== item0.data("damage")){
+            if ($(this).data("damage") !== item0.data("damage")) {
                 isAllSame = true;
             }
             let dataIndex = $(this).data("index");
             indexList.push(dataIndex);
         });
-        if (isAllSame){
+        if (isAllSame) {
             $("#item_same").css("display", "block");
             return;
         }
 
         let res = confirm("商品を出品しますか？")
-        if (!res){
+        if (!res) {
             return;
         }
 
@@ -262,7 +343,8 @@ $(document).ready(function () {
             about: JSON.stringify(inputValues),
             category: category,
             items: JSON.stringify(indexList),
-            keyword: keyword
+            keyword: keyword,
+            detail: $("#editor").trumbowyg("html")
         };
         for (let i = 0; i < new_image.length; i++) {
             params.new_image = new_image[i];

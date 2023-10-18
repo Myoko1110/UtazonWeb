@@ -26,7 +26,7 @@ def get_balance(uuid: str):
             return player_balance
 
     except ConnectionRefusedError:
-        traceback.format_exc()
+        traceback.print_exc()
         return None
 
 
@@ -56,7 +56,7 @@ def withdraw_player(uuid: str, amount: float, action: str, reason: str):
                 return False
 
     except ConnectionRefusedError:
-        traceback.format_exc()
+        traceback.print_exc()
         return False
 
 
@@ -86,6 +86,5 @@ def deposit_player(uuid: str, amount: float, action: str, reason: str):
                 return False
 
     except ConnectionRefusedError:
-        traceback.format_exc()
+        traceback.print_exc()
         return False
-

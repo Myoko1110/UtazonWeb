@@ -703,6 +703,30 @@
     font-weight: 700;
 }
 
+.detail{
+    width: 100%;
+    max-width: 1200px;
+
+}
+
+.detail h2{
+    font-size: 22px;
+}
+.detail-box{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.detail-text{
+    width: 100%;
+    max-width: 1000px;
+}
+.detail-text a{
+    color: #3585ef;
+    text-decoration: underline;
+}
+
 .prev-001,
 .next-001 {
     cursor: pointer;

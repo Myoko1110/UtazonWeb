@@ -112,6 +112,8 @@ def list_item_post(request):
         else:
             keyword = "[]"
 
+        detail = request.POST.get("detail")
+
         waiting_stock = s.get_user().get_waiting_stock()
 
         first_item = waiting_stock[items[0]]
@@ -174,7 +176,7 @@ def list_item_post(request):
                     image_path.append(db)
                     break
 
-        Item.create(item_id, item_name, item_price, image_path, about, c, keyword, s.mc_uuid)
+        Item.create(item_id, item_name, item_price, image_path, about, detail, c, keyword, s.mc_uuid)
         Item.create_stack(item_id, first_item, stock)
 
         s.get_user().update_waiting_stock(waiting_stock)
@@ -299,6 +301,8 @@ def item_edit_post(request):
         except json.JSONDecodeError:
             raise ValueError("image is not json")
 
+        detail = request.POST.get("detail")
+
         new_image = request.POST.getlist('new_image')
         fs = settings.MEDIA_ROOT / 'item' / str(item_id)
         for i in new_image:
@@ -327,7 +331,7 @@ def item_edit_post(request):
                     image.append(db)
                     break
 
-        item.update(item_name, item_price, image, about, c)
+        item.update(item_name, item_price, image, about, detail, c)
         return redirect(f"/item/?id={item_id}")
 
 

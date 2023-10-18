@@ -17,6 +17,7 @@ class Item:
     price: float
     image: list
     kind: list
+    detail: str
     category: str
     sold_count: int
     mc_uuid: str
@@ -28,7 +29,7 @@ class Item:
     __cached_discount_price: Decimal
     __cached_stock: Union[int, None]
 
-    def __init__(self, sale_id, id, name, price, image, kind, category, sold_count, mc_uuid,
+    def __init__(self, sale_id, id, name, price, image, kind, detail, category, sold_count, mc_uuid,
                  search_keyword, created_at, updated_at, status, sale_status, discount_rate,
                  start, end):
 
@@ -39,6 +40,7 @@ class Item:
         self.price = price
         self.image = image
         self.kind = kind
+        self.detail = detail
         self.category = category
         self.sold_count = sold_count
         self.mc_uuid = mc_uuid
@@ -216,7 +218,7 @@ class Item:
 
         return util.DatabaseHelper.delete_item(self.id)
 
-    def update(self, name: str, price: float, image: list, about: list, category: 'util.Category'):
+    def update(self, name: str, price: float, image: list, about: list, detail: str, category: 'util.Category'):
         """
         商品の情報を更新します
 
@@ -228,7 +230,7 @@ class Item:
         :return:
         """
 
-        util.DatabaseHelper.update_item(self.id, name, float(price), json.dumps(image), json.dumps(about), category.english)
+        util.DatabaseHelper.update_item(self.id, name, float(price), json.dumps(image), json.dumps(about), detail, category.english)
 
     @staticmethod
     def search(query: str, category: Union['util.Category', None] = None) -> list['util.Item']:
@@ -244,7 +246,7 @@ class Item:
 
     @staticmethod
     def create(item_id: int, item_name: str, item_price: float, image_path: list[str], about: str,
-               category: 'util.Category', keyword: str, mc_uuid: str):
+               detail: str, category: 'util.Category', keyword: str, mc_uuid: str):
         """
         商品を新規作成します
 
@@ -253,6 +255,7 @@ class Item:
         :param item_price: 値段
         :param image_path: 画像
         :param about: 概要のJSON
+        :param detail: 詳細(html)
         :param category: カテゴリー型
         :param keyword: 検索キーワードのJSON
         :param mc_uuid: MinecraftのUUID
@@ -260,7 +263,7 @@ class Item:
         """
 
         return util.DatabaseHelper.create_item(
-            item_id, item_name, item_price, json.dumps(image_path), about, category.english, keyword, mc_uuid)
+            item_id, item_name, item_price, json.dumps(image_path), about, detail, category.english, keyword, mc_uuid)
 
     @staticmethod
     def create_id():
@@ -371,7 +374,7 @@ class Item:
             else:
                 sale_status = True
         return Item(r["sale_id"], r["item_id"], r["item_name"], r["price"],
-                    json.loads(r["image"]), json.loads(r["kind"]), r["category"],
+                    json.loads(r["image"]), json.loads(r["kind"]), r["detail"], r["category"],
                     r["sold_count"], r["mc_uuid"], r["search_keyword"],
                     r["created_at"], r["updated_at"], bool(r["status"]),
                     sale_status, r["discount_rate"], r["sale_start"], r["sale_end"])

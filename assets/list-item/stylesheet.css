@@ -344,6 +344,11 @@
     }
 }
 
+.trumbowyg-editor a{
+    color: #1272d2;
+    text-decoration: underline;
+}
+
 html, body {
     height: 100%;
 }

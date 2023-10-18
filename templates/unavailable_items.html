@@ -5,19 +5,16 @@
 <head>
     <meta charset="UTF-8">
     <title>マイページ | Utazon.com</title>
-    <link rel="stylesheet" href="{% static 'list-item/stylesheet.css' %}">
+    <link rel="stylesheet" href="{% static 'mypage/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.25.2/ui/trumbowyg.min.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#232f3e">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
-	<script src="{% static 'edit-item/script.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.25.2/trumbowyg.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/upload/trumbowyg.upload.min.js"></script>
+	<script src="{% static 'mypage/script.js' %}"></script>
 </head>
 <body>
 <div class="global-header">
@@ -232,112 +229,80 @@
 </div>
 <div class="wrapper">
 	<div class="subwrapper">
-		<div class="review">
-			<div class="review-title">
-				<h2>商品を編集</h2>
-				<div class="review-title__item">
-					<img src="{{ item.image.0 }}">
-					<p data-id="{{ item.id }}">{{ item.name }}</p>
-				</div>
+		<div class="mypage">
+			<div class="mypage-title">
+				<h2>マイページ</h2>
 			</div>
-            <div class="review-nav">
-                <ul>
-                    <li class="isActive">出品情報</li>
-                    <li class>画像</li>
-                    <li class>説明</li>
-                    <li class>詳細</li>
-                </ul>
-            </div>
-            <form method="post">
-			<div class="review-value">
-				<div class="review-value__title">
-					<h3>商品名<span class="required" id="title_required">必須項目です</span></h3>
-					<input name="name" id="title" type="text" value="{{ item.name }}">
-
+			<div class="mypage-item">
+                {% if item %}
+				<h3>販売停止した商品</h3>
+				<div class="main">
+                    <ul class="main-list">
+						{% for child in item %}
+						<li>
+							<img class="main-img" src="{{ child.image.0 }}" onclick="location.href='/item/?id={{ child.id }}'">
+							<div class="main-info">
+								<a href="/item/?id={{ child.id }}" class="main-name">{{ child.name }}</a>
+                                {% with child.get_review as review %}
+								{% if review.get_average %}
+								<div class="main-star__box">
+									{% if review.get_average >= 4.8 %}
+									<div class="main-star" style="background-position: -2px -2px;">
+									{% elif review.get_average >= 4.3  and review.get_average < 4.8 %}
+									<div class="main-star" style="background-position: -2px -42px;">
+									{% elif review.get_average >= 3.8  and review.get_average < 4.3 %}
+									<div class="main-star" style="background-position: -2px -22px;">
+									{% elif review.get_average >= 3.3  and review.get_average < 3.8 %}
+									<div class="main-star" style="background-position: -2px -82px;">
+									{% elif review.get_average >= 2.8  and review.get_average < 3.3 %}
+									<div class="main-star" style="background-position: -2px -62px;">
+									{% elif review.get_average >= 2.3  and review.get_average < 2.8 %}
+									<div class="main-star" style="background-position: -2px -122px;">
+									{% elif review.get_average >= 1.8  and review.get_average < 2.3 %}
+									<div class="main-star" style="background-position: -2px -102px;">
+									{% elif review.get_average >= 1.3  and review.get_average < 1.8 %}
+									<div class="main-star" style="background-position: -2px -162px;">
+									{% elif review.get_average >= 0.8  and review.get_average < 1.3 %}
+									<div class="main-star" style="background-position: -2px -142px;">
+									{% elif review.get_average >= 0.3  and review.get_average < 0.8 %}
+									<div class="main-star" style="background-position: -2px -202px;">
+									{% elif  review.get_average < 0.3 %}
+									<div class="main-star" style="background-position: -2px -182px;">
+									{% endif %}
+										<span style="opacity: 0;">5つ星のうち{{ review.get_average }}</span>
+									</div>
+									<p>{{ review.get_average|format_review }}</p>
+								</div>
+								{% endif %}
+                                {% endwith %}
+								<div class="main-price">
+								{% if child.sale_status %}
+									<p>タイムセール</p>
+									<a href="../item/?id={{ child.id }}"><span>{{ MONEY_UNIT }}</span>{{ child.get_discounted_price|format_price }}</a><small style="color: #565959;margin-left: 5px">過去価格: <del>{{ MONEY_UNIT }}{{ child.price }}</del></small>
+								{% else %}
+									<a href="../item/?id={{ child.id }}"><span>{{ MONEY_UNIT }}</span>{{ child.price|format_price }}</a>
+								{% endif %}
+								</div>
+							</div>
+						</li>
+						{% endfor %}
+					</ul>
 				</div>
-				<div class="review-value__text">
-					<h3>価格<span class="required" id="text_required">必須項目です</span></h3>
-					<span>{{ MONEY_UNIT }}</span><input name="price" id="text" type="number" step="0.01" value="{{ item.price }}">
-				</div>
-                <div class="review-value__image" style="display: none" data-img="{{ item.encode_image }}">
-                    <h3>画像（5つまで）<span class="required" id="image_required">必須項目です</span></h3>
-                    <div class="review-value__image-list">
-                        <div class="review-value-1"></div>
-                        <div class="review-value-2">
-                            <div class='fileAdd' style='display: flex;justify-content: center;align-items: center'>
-                                <input type='file' id='fileInput' style='display: none' accept='image/png, image/jpeg, image/webp'>
-                                <svg xmlns="http://www.w3.org/2000/svg" height="4em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="review-value__about" style="display: none">
-                    <h3>概要<span class="required" id="about_required">必須項目です</span></h3>
-                    <div class="review-value__about-list">
-                        <div class="review__about-value-1" data-svg="{% static 'list-item/trash-can-solid.svg' %}">
-                            {% for i in item.kind %}
-                            <div class="review-value-1__list">
-                                {% if forloop.counter == 1 %}
-                                <div class="review-value-1__list">
-                                    <input type="text" value="{{ i }}">
-                                </div>
-                                {% else %}
-                                <div class="review-value-1__list">
-                                    <input type="text" value="{{ i }}">
-                                    <img src="{% static 'list-item/trash-can-solid.svg' %}">
-                                </div>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <div class="review__about-value-2">
-                            <a>
-                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="review-value__category" data-category="item.category">
-                    <h3>カテゴリー<span class="required" id="category_required">必須項目です</span></h3>
-                    <ul style="list-style: none">
-                        {% for i, j in category.items %}
-                        <li class="category-list">
-                            {% if j.japanese %}
-                            <div>{{ j.japanese }}</div>
-                            {% if item.category in j.category.keys %}
-                            <ul class="category-child" style="display: block;">
-                            {% else %}
-                            <ul class="category-child">
-                            {% endif %}
-                                {% for key, value in j.category.items %}
-                                {% if key == item.category %}
-                                <li class="category-child_li isSelect" data-en="{{ key }}">{{ value }}</li>
-                                {% else %}
-                                <li class="category-child_li" data-en="{{ key }}">{{ value }}</li>
-                                {% endif %}
-                                {% endfor %}
-                            </ul>
-                            {% else %}
-                            <div>{{ j }}</div>
-                            <ul class="category-child">
-                                <li class="category-child_li" data-en="{{ i }}">{{ j }}</li>
-                            </ul>
-                            {% endif %}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div class="review-value__detail" style="display: none" data-html="{{ item.detail }}">
-                    <h3>詳細</h3>
-                    <textarea id="editor" name="editor"></textarea>
-                </div>
-				<div class="review-value__submit" id="submit">
-					<a>更新</a>
-                    <span class="required" id="cnxError">エラーが発生しました</span>
-				</div>
+                {% else %}
+                <h3>販売停止した商品はありません</h3>
+                {% endif %}
 			</div>
-            </form>
 		</div>
+	</div>
+</div>
+<div class="box" id="delete">
+	<div class="box__box">
+		<div class="box__close">
+			<svg onclick="close_box()" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+		</div>
+		<h1>確認</h1>
+		<p>本当に商品を販売停止・削除しますか？<br>削除したら永遠に復元できません。<br>残りの在庫は約1時間後にポストに配達されます。</p>
+		<a href="" style="background-color: #ad0000">削除する</a>
 	</div>
 </div>
 <footer>

@@ -8,13 +8,16 @@
     <link rel="stylesheet" href="{% static 'list-item/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
 	<link rel="icon" href="{% static 'icon.svg' %}">
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css"/>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.25.2/ui/trumbowyg.min.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#232f3e">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 	<script src="{% static 'local.js' %}"></script>
 	<script src="{% static 'list-item/script.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.25.2/trumbowyg.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/upload/trumbowyg.upload.min.js"></script>
 </head>
 <body>
 <div class="global-header">
@@ -239,6 +242,7 @@
                     <li class>画像</li>
                     <li class>説明</li>
                     <li class>アイテム</li>
+                    <li class>詳細</li>
                 </ul>
             </div>
             <form method="post" class="product">
@@ -303,6 +307,10 @@
                             </li>
                             {% endfor %}
                         </ul>
+                    </div>
+                    <div class="review-value__detail" style="display: none">
+                        <h3>詳細</h3>
+                        <textarea id="editor" name="editor"></textarea>
                     </div>
                     <div class="review-value__item" id="item" style="display: none">
                         <h3 style="margin-top: 0"><span class="review-required">*</span>出品するアイテムを選択<span class="required" id="item_required">1つ以上選択して下さい</span>

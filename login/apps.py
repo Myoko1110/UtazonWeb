@@ -56,6 +56,7 @@ def table_create():
                                                     price DOUBLE,
                                                     image JSON,
                                                     kind JSON,
+                                                    detail VARCHAR(10000),
                                                     category VARCHAR(64),
                                                     purchases_number BIGINT,
                                                     mc_uuid VARCHAR(36),
