@@ -40,7 +40,7 @@ class Later:
         return bool(self.later)
 
     def __str__(self):
-        return "Cart" + str(self.later)
+        return "Later" + str(self.later)
 
     def items(self):
         if not self.later:

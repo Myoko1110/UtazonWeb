@@ -63,6 +63,7 @@ def item(request):
     s = Session.by_request(request)
     context = {
         "item": i,
+        "ReviewType": ReviewType,
         "has_review": s.get_user().has_review(item_id),
         "status": i.status,
         "rand_time": rand_time,

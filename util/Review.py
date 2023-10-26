@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum, auto
 from typing import Union
 
 import util
@@ -15,10 +16,10 @@ class Review:
     helpful: int
     mc_uuid: str
     mc_id: str
-    type: str
+    type: 'ReviewType'
 
     def __init__(self, item_id, id, created_at, updated_at, star, title, value, helpful, mc_uuid,
-                 mc_id, type):
+                 mc_id, type: 'ReviewType'):
         self.item_id = item_id
         self.id = id
         self.created_at = created_at
@@ -40,8 +41,7 @@ class Review:
 
         :return: 通常のレビューか
         """
-
-        return self.type == "REVIEW"
+        return self.type == ReviewType.REVIEW
 
     def is_rating(self) -> bool:
         """
@@ -50,7 +50,7 @@ class Review:
         :return: 評価のみのレビューか
         """
 
-        return self.type == "RATING"
+        return self.type == ReviewType.RATING
 
     @staticmethod
     def add_review(mc_uuid: str, item: Union[int, 'util.Item'], star: int, title: str, value: str) -> bool:
@@ -181,7 +181,11 @@ class Review:
 
         if not r:
             return None
-
         return Review(r["item_id"], r["id"], r["created_at"], r["updated_at"], r["rating"],
                       r["title"], r["value"], r["helpful_votes"], r["mc_uuid"],
-                      util.User.by_mc_uuid(r["mc_uuid"]).get_mc_id(), r["type"])
+                      util.User.by_mc_uuid(r["mc_uuid"]).get_mc_id(), ReviewType(r["type"]))
+
+
+class ReviewType(Enum):
+    REVIEW = "REVIEW"
+    RATING = "RATING"

@@ -16,7 +16,7 @@ from .Later import Later
 from .Order import Order
 from .Paging import Paging
 from .Revenues import Revenues
-from .Review import Review
+from .Review import Review, ReviewType
 from .ReviewList import ReviewList
 from .Session import Session
 from .User import User

@@ -74,6 +74,7 @@ class ReviewList:
         :return: ReviewList型(結果なしはNoneを返却)
         """
 
+        result = []
         if isinstance(item, int):
             result = util.DatabaseHelper.get_review(item)
         elif isinstance(item, util.Item):
@@ -86,7 +87,7 @@ class ReviewList:
 
         i = [util.Review(i["item_id"], i["id"], i["created_at"], i["updated_at"], i["rating"],
                          i["title"], i["value"], i["helpful_votes"], i["mc_uuid"],
-                         util.User(i["mc_uuid"]).get_mc_id(), i["type"])
+                         util.User(i["mc_uuid"]).get_mc_id(), util.ReviewType(i["type"]))
              for i in result]
 
         return ReviewList(i)

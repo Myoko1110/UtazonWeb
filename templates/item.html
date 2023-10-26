@@ -544,7 +544,7 @@
 			{% endif %}
 			<ul class="review-list">
 				{% for child in review %}
-                {% if child.title %}
+                {% if child.is_review %}
 				<li class="review-list__child">
 					<div class="review-list__account">
 						<img class="review-list__account-img" src="https://crafatar.com/avatars/{{ child.mc_uuid }}?size=30">
