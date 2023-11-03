@@ -1,5 +1,6 @@
 import datetime
 import secrets
+from enum import Enum
 from typing import Union
 
 from django.core.handlers.wsgi import WSGIRequest
@@ -22,11 +23,21 @@ class Session:
     is_invalid: bool = False
     is_expire: bool = False
 
+    status: 'SessionStatus'
+
     __cached_user: Union['util.User', None] = None
 
-    def __init__(self, id=None, value=None, mc_uuid=None, access_token=None, login_at=None,
-                 expires_at=None, logged_ip=None,
-                 valid: bool = False, invalid: bool = False, expire: bool = False):
+    def __init__(
+            self,
+            id=None,
+            value=None,
+            mc_uuid=None,
+            access_token=None,
+            login_at=None,
+            expires_at=None,
+            logged_ip=None,
+            status: Union['SessionStatus', None] = None
+    ):
         self.id = id
         self.value = value
         self.mc_uuid = mc_uuid
@@ -34,10 +45,17 @@ class Session:
         self.login_at = login_at
         self.expires_at = expires_at
         self.logged_ip = logged_ip
+        self.status = status
 
-        self.is_valid = valid
-        self.is_invalid = invalid
-        self.is_expire = expire
+        self.is_valid = False
+        self.is_invalid = False
+        self.is_expire = False
+        if status == SessionStatus.VALID:
+            self.is_valid = True
+        elif status == SessionStatus.EXPIRE:
+            self.is_expire = True
+        else:
+            self.is_invalid = True
 
     def __bool__(self):
         return self.is_valid
@@ -97,7 +115,7 @@ class Session:
 
             if save_session:
                 return Session(session_id, session_value, mc_uuid, access_token, now, expires,
-                               client_addr, valid=True)
+                               client_addr, status=SessionStatus.VALID)
             elif save_session.errno == 1062:
                 continue
         return False
@@ -126,15 +144,21 @@ class Session:
                     if now > result["expires_at"]:
                         util.DatabaseHelper.delete_session(child)
                         # 期限切れの処理
-                        return Session(expire=True)
+                        return Session(status=SessionStatus.VALID)
 
                     # 既ログイン処理
                     return Session(result["session_id"], result["session_val"],
                                    result["mc_uuid"], result["access_token"],
                                    result["login_at"], result["expires_at"], result["logged_IP"],
-                                   valid=True)
+                                   status=SessionStatus.VALID)
 
         if "LOGIN_STATUS" in session and session["LOGIN_STATUS"]:
-            return Session(expire=True)
+            return Session(status=SessionStatus.EXPIRE)
         else:
-            return Session(invalid=True)
+            return Session(status=SessionStatus.INVALID)
+
+
+class SessionStatus(Enum):
+    VALID = "VALID"
+    INVALID = "INVALID"
+    EXPIRE = "EXPIRE"

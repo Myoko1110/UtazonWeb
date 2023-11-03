@@ -18,7 +18,10 @@ class Cart:
     __index: int = 0
     __keys: list = None
 
-    def __init__(self, cart: dict['util.Item', int] = None):
+    def __init__(
+            self,
+            cart: dict['util.Item', int] = None
+    ):
         self.cart = cart
 
         if self.cart is not None:

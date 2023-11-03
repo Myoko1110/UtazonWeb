@@ -1,5 +1,5 @@
 import datetime
-from enum import Enum, auto
+from enum import Enum
 from typing import Union
 
 import util
@@ -18,8 +18,20 @@ class Review:
     mc_id: str
     type: 'ReviewType'
 
-    def __init__(self, item_id, id, created_at, updated_at, star, title, value, helpful, mc_uuid,
-                 mc_id, type: 'ReviewType'):
+    def __init__(
+            self,
+            item_id,
+            id,
+            created_at,
+            updated_at,
+            star,
+            title,
+            value,
+            helpful,
+            mc_uuid,
+            mc_id,
+            type: 'ReviewType'
+    ):
         self.item_id = item_id
         self.id = id
         self.created_at = created_at
@@ -53,7 +65,8 @@ class Review:
         return self.type == ReviewType.RATING
 
     @staticmethod
-    def add_review(mc_uuid: str, item: Union[int, 'util.Item'], star: int, title: str, value: str) -> bool:
+    def add_review(mc_uuid: str, item: Union[int, 'util.Item'], star: int, title: str,
+                   value: str) -> bool:
         """
         商品のレビューを追加します
 
@@ -91,7 +104,8 @@ class Review:
             TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
-    def update(mc_uuid: str, item: Union[int, 'util.Item'], star: int, title: str, value: str) -> bool:
+    def update(mc_uuid: str, item: Union[int, 'util.Item'], star: int, title: str,
+               value: str) -> bool:
         """
         商品のレビューを追加します
 

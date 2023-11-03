@@ -17,7 +17,12 @@ class Paging:
     first_index: int = None  # ページング結果の最初のIndex
     last_index: int = None  # ページング結果の最後のIndex
 
-    def __init__(self, result, page, page_length):
+    def __init__(
+            self,
+            result,
+            page,
+            page_length
+    ):
         self.page = page
 
         if result:

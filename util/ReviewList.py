@@ -7,7 +7,10 @@ import util
 class ReviewList:
     reviews: list['util.Review']
 
-    def __init__(self, reviews: list['util.Review']):
+    def __init__(
+            self,
+            reviews: list['util.Review']
+    ):
         self.reviews = reviews
 
     def __getitem__(self, index):

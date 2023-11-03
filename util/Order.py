@@ -23,10 +23,21 @@ class Order:
 
     __cached_progress: float = None
 
-    def __init__(self, order_id: str, mc_uuid: str, order_item: 'util.Cart',
-                 ordered_at: datetime, ships_at: datetime.datetime, delivers_at: datetime,
-                 amount: float, used_point: int, status: bool, canceled: bool, error: str,
-                 dm_sent: bool):
+    def __init__(
+            self,
+            order_id: str,
+            mc_uuid: str,
+            order_item: 'util.Cart',
+            ordered_at: datetime.datetime,
+            ships_at: datetime.datetime,
+            delivers_at: datetime.datetime,
+            amount: float,
+            used_point: int,
+            status: bool,
+            canceled: bool,
+            error: str,
+            dm_sent: bool
+    ):
         self.order_id = order_id
         self.mc_uuid = mc_uuid
         self.order_item = order_item

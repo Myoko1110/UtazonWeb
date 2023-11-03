@@ -12,7 +12,10 @@ class Later:
     __index: int = 0
     __keys: list = None
 
-    def __init__(self, later: dict['util.Item', int] = None):
+    def __init__(
+            self,
+            later: dict['util.Item', int] = None
+    ):
         self.later = later
 
         if self.later is not None:

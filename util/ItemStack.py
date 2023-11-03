@@ -12,8 +12,15 @@ class ItemStack:
     enchantments: list
     stock: int = 0
 
-    def __init__(self, stack_size: int, damage: int, material: str, display_name: str,
-                 enchantments: list, stock: int = 0):
+    def __init__(
+            self,
+            stack_size: int,
+            damage: int,
+            material: str,
+            display_name: str,
+            enchantments: list,
+            stock: int = 0
+    ):
         self.stack_size = stack_size
         self.damage = damage
         self.material = material

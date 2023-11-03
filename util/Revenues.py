@@ -12,8 +12,18 @@ class Revenues:
     total: float
     bought_at: datetime.datetime
     seller: str
-    
-    def __init__(self, id, mc_uuid, item_id, item_price, qty, total, bought_at, seller):
+
+    def __init__(
+            self,
+            id,
+            mc_uuid,
+            item_id,
+            item_price,
+            qty,
+            total,
+            bought_at,
+            seller
+    ):
         self.id = id
         self.mc_uuid = mc_uuid
         self.item_id = item_id

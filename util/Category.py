@@ -11,7 +11,12 @@ class Category:
     is_parent: bool
     is_child: bool
 
-    def __init__(self, en: str, jp: str, is_parent: bool):
+    def __init__(
+            self,
+            en: str,
+            jp: str,
+            is_parent: bool
+    ):
         self.english = en
         self.japanese = jp
 

@@ -22,16 +22,34 @@ class Item:
     sold_count: int
     mc_uuid: str
     search_keyword: list
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
     status: bool
 
     __cached_discount_price: Decimal
     __cached_stock: Union[int, None]
 
-    def __init__(self, sale_id, id, name, price, image, kind, detail, category, sold_count, mc_uuid,
-                 search_keyword, created_at, updated_at, status, sale_status, discount_rate,
-                 start, end):
+    def __init__(
+            self,
+            sale_id: int,
+            id: int,
+            name: str,
+            price: float,
+            image: list,
+            kind: list,
+            detail: str,
+            category: str,
+            sold_count: int,
+            mc_uuid: str,
+            search_keyword: list,
+            created_at: datetime.datetime,
+            updated_at: datetime.datetime,
+            status: bool,
+            sale_status: bool,
+            discount_rate: int,
+            start: datetime.datetime,
+            end: datetime.datetime
+    ):
 
         # itemテーブル関係
         self.sale_id = sale_id
@@ -218,7 +236,8 @@ class Item:
 
         return util.DatabaseHelper.delete_item(self.id)
 
-    def update(self, name: str, price: float, image: list, about: list, detail: str, category: 'util.Category'):
+    def update(self, name: str, price: float, image: list, about: list, detail: str,
+               category: 'util.Category'):
         """
         商品の情報を更新します
 
@@ -230,7 +249,8 @@ class Item:
         :return:
         """
 
-        util.DatabaseHelper.update_item(self.id, name, float(price), json.dumps(image), json.dumps(about), detail, category.english)
+        util.DatabaseHelper.update_item(self.id, name, float(price), json.dumps(image),
+                                        json.dumps(about), detail, category.english)
 
     @staticmethod
     def search(query: str, category: Union['util.Category', None] = None) -> list['util.Item']:
@@ -263,7 +283,8 @@ class Item:
         """
 
         return util.DatabaseHelper.create_item(
-            item_id, item_name, item_price, json.dumps(image_path), about, detail, category.english, keyword, mc_uuid)
+            item_id, item_name, item_price, json.dumps(image_path), about, detail, category.english,
+            keyword, mc_uuid)
 
     @staticmethod
     def create_id():
@@ -282,7 +303,8 @@ class Item:
     @staticmethod
     def create_stack(item_id: int, stack: 'util.ItemStack', stock):
         util.DatabaseHelper.add_item_stack(
-            item_id, stack.display_name, stack.material, json.dumps(stack.enchantments), stack.damage,
+            item_id, stack.display_name, stack.material, json.dumps(stack.enchantments),
+            stack.damage,
             stack.stack_size, stock)
 
     @staticmethod
