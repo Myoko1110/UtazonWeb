@@ -898,5 +898,73 @@ def get_latest_item():
     return result
 
 
+def get_pride(mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = "SELECT * FROM utazon_pride WHERE mc_uuid=%s"
+            cursor.execute(sql, (mc_uuid,))
+            result = cursor.fetchone()
+    return result
+
+
+def get_pride_all():
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = "SELECT * FROM utazon_pride WHERE status=TRUE"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+    return result
+
+
+def disable_pride(mc_uuid):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+
+            sql = "UPDATE utazon_pride SET status=FALSE WHERE mc_uuid=%s"
+            cursor.execute(sql, (mc_uuid,))
+            affected_rows = cursor.rowcount
+            cnx.commit()
+
+            if affected_rows > 0:
+                return True
+        return False
+
+
+def renew_pride(mc_uuid, expires_at):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            now = datetime.datetime.now()
+
+            sql = "UPDATE utazon_pride SET expires_at=%s, updated_at=%s WHERE mc_uuid=%s"
+            cursor.execute(sql, (expires_at, now, mc_uuid,))
+            affected_rows = cursor.rowcount
+            cnx.commit()
+
+            if affected_rows > 0:
+                return True
+        return False
+
+
+def register_pride(mc_uuid, plan, auto, expires):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+
+            now = datetime.datetime.now()
+            sql = """INSERT INTO utazon_pride (mc_uuid, status, plan, registered_at, expires_at, automatically_renew)
+                     VALUES (%s, TRUE, %s, %s, %s, %s)
+                     ON DUPLICATE KEY UPDATE status=TRUE, plan=VALUES(plan), registered_at=VALUES(registered_at), expires_at=VALUES(expires_at), automatically_renew=VALUES(automatically_renew)"""
+            cursor.execute(sql, (mc_uuid, plan, now, expires, auto))
+            affected_rows = cursor.rowcount
+            cnx.commit()
+
+            if affected_rows > 0:
+                return True
+        return False
+
 def get_featured_item():
     return Featured.objects.all()

@@ -16,3 +16,11 @@ return:
 
 revenues:
   allocation_per: 80 #%
+
+# お急ぎ便
+express:
+  price: 10
+
+pride:
+  monthly: 0.1
+  yearly: 10

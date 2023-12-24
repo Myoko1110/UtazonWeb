@@ -25,6 +25,7 @@ urlpatterns = [
     path('buy/', include('buy.urls')),
     path('post/', include('post.urls')),
     path('mypage/', include('account.urls')),
+    path('pride/', include('pride.urls')),
     path('', include('item.urls')),
 ]
 

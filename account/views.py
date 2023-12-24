@@ -50,7 +50,6 @@ def list_item(request):
         return redirect("/login/")
 
 
-@csrf_exempt
 def list_item_post(request):
     if request.method != "POST":
         raise Http404
@@ -244,7 +243,6 @@ def item_edit(request):
         return redirect("/login/")
 
 
-@csrf_exempt
 def item_edit_post(request):
     if request.method != "POST":
         raise Http404
@@ -369,7 +367,6 @@ def item_stock(request):
         return redirect("/login/")
 
 
-@csrf_exempt
 def item_stock_post(request):
     if request.method != "POST":
         raise Http404

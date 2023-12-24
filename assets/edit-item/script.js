@@ -223,7 +223,7 @@ $(document).ready(function () {
         }
     });
 
-    $("#submit").on('click', function () {
+    $("#submit a").on('click', function () {
         $("#title_required").css("display", "none");
         $("#text_required").css("display", "none");
         $("#image_required").css("display", "none");
@@ -298,7 +298,7 @@ $(document).ready(function () {
 
 
 function post(path, params, method = 'post') {
-    const form = document.createElement('form');
+    const form = document.getElementById("post_form");
     form.method = method;
     form.action = path;
 

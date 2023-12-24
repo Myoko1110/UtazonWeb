@@ -1,19 +1,21 @@
 import copy
 import json
-from decimal import getcontext
+import threading
 
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
-import account.deposit_scheduler
+from pride.scheduler import expires_check
 from util import *
+import pride
 
-getcontext().prec = 10
 point_return = Decimal(settings.RETURN_RATE)
 
 
 def index_view(request):
+    #threading.Thread(target=pride.scheduler.expires_check).start()
+
     # バナーを取得
     banner = get_banners()
 
@@ -24,6 +26,7 @@ def index_view(request):
 
     # セッションを取得
     s = Session.by_request(request)
+
     context = {
         "popular_item": pi,
         "latest_item": li,
@@ -57,16 +60,25 @@ def item(request):
     if not i:
         raise Http404
 
-    # お届け日取得
-    rand_time = Order.calc_expected_delivery_time
+    now = datetime.datetime.now()
+
+    rand_time = Order.calc_expected_delivery_time()
+    fastest_time = Order.calc_expected_fastest_delivery_time()
+    count_down = now.replace(hour=15, minute=0, second=0, microsecond=0) - now
+
+    count_down_hours = count_down.seconds // 3600
+    count_down_minutes = (count_down.seconds // 60) % 60
 
     s = Session.by_request(request)
     context = {
         "item": i,
-        "ReviewType": ReviewType,
+        "now": now,
+        "rand_time": rand_time,
+        "fastest_time": fastest_time,
+        "count_down_hours": count_down_hours,
+        "count_down_minutes": count_down_minutes,
         "has_review": s.get_user().has_review(item_id),
         "status": i.status,
-        "rand_time": rand_time,
         "session": s,
     }
 

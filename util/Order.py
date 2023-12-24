@@ -82,7 +82,17 @@ class Order:
         """
 
         now = datetime.datetime.now()
-        return self.delivers_at.year == now.year and self.delivers_at.month == now.month and self.delivers_at.day == now.day
+        return self.delivers_at.date() == now.date()
+
+    def is_shipped(self) -> bool:
+        """
+        すでに発送されたかを取得します
+
+        :return: 発送されたか
+        """
+
+        now = datetime.datetime.now()
+        return self.ships_at <= now
 
     def cancel(self) -> bool:
         """
@@ -193,7 +203,7 @@ class Order:
         """
 
         now = datetime.datetime.now().replace(microsecond=0)
-        if now > datetime.datetime.strptime("13:00:00", "%H:%M:%S"):
+        if now.time() > datetime.time(13, 0, 0):
             delivery_time = (now.replace(hour=random.randint(8, 18), minute=random.randint(0, 59),
                                          second=0, microsecond=0)
                              + datetime.timedelta(days=2))
@@ -201,6 +211,26 @@ class Order:
             delivery_time = (now.replace(hour=random.randint(8, 18), minute=random.randint(0, 59),
                                          second=0, microsecond=0)
                              + datetime.timedelta(days=1))
+
+        return delivery_time
+
+
+    @staticmethod
+    def calc_fastest_delivery_time():
+        """
+        正確な最も早いお届け時間を計算します
+
+        :return: お届け時間(datetime型)
+        """
+
+        now = datetime.datetime.now().replace(microsecond=0)
+        if now.time() > datetime.time(15, 0, 0):
+            delivery_time = (now.replace(hour=random.randint(7, 10), minute=random.randint(0, 59),
+                                         second=0, microsecond=0)
+                             + datetime.timedelta(days=1))
+        else:
+            delivery_time = (now.replace(hour=random.randint(now.hour+3, 20), minute=random.randint(0, 59),
+                                         second=0, microsecond=0))
 
         return delivery_time
 
@@ -212,7 +242,7 @@ class Order:
         :return: 発送時間(datetime型)
         """
 
-        rand_hour = random.randint(1, 4)
+        rand_hour = random.randint(1, 3)
         rand_minute = random.randint(0, 59)
 
         ship_time = delivery_time - datetime.timedelta(hours=rand_hour, minutes=rand_minute,
@@ -229,8 +259,23 @@ class Order:
         """
 
         now = datetime.datetime.now()
-        if now > datetime.datetime.strptime("13:00:00", "%H:%M:%S"):
+        if now.time() > datetime.time(13, 0, 0):
             rand_time = now + datetime.timedelta(days=2)
+        else:
+            rand_time = now + datetime.timedelta(days=1)
+
+        return rand_time
+
+    @staticmethod
+    def calc_expected_fastest_delivery_time():
+        """
+        おおよその最も早いお届け時間を計算します
+
+        :return: お届け時間(datetime型)
+        """
+        now = datetime.datetime.now()
+        if now.time() > datetime.time(15, 0, 0):
+            rand_time = now + datetime.timedelta(hours=random.randint(1, 4))
         else:
             rand_time = now + datetime.timedelta(days=1)
 

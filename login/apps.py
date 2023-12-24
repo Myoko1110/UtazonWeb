@@ -97,7 +97,8 @@ def table_create():
                                                     sale_status BOOLEAN,
                                                     discount_rate INT,
                                                     sale_start DATETIME,
-                                                    sale_end DATETIME
+                                                    sale_end DATETIME,
+                                                    pride_only BOOLEAN
                                                     )"""
             cursor.execute(sql)
 
@@ -180,6 +181,17 @@ def table_create():
                                                     quantity INT,
                                                     created_at DATETIME,
                                                     UNIQUE KEY uq_item (mc_uuid, item_id)
+                                                    )"""
+            cursor.execute(sql)
+
+            sql = """CREATE TABLE IF NOT EXISTS `utazon_pride` (
+                                                    mc_uuid VARCHAR(36),
+                                                    status BOOLEAN,
+                                                    plan vARCHAR(10),
+                                                    registered_at DATETIME,
+                                                    expires_at DATETIME,
+                                                    updated_at DATETIME,
+                                                    automatically_renew BOOLEAN
                                                     )"""
             cursor.execute(sql)
 

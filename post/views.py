@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import bot
 from config import settings
-from util import User, DatabaseHelper
+from util import User
 
 
 @csrf_exempt
@@ -191,6 +191,5 @@ def upload_detail_img(request):
         "success": True,
         "file": f"/media/{fs}"
     }
-    print(content)
 
     return HttpResponse(json.dumps(content), content_type="application/json")

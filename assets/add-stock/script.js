@@ -74,7 +74,7 @@ $(document).ready(function () {
 
 
 function post(path, params, method = 'post') {
-    const form = document.createElement('form');
+    const form = document.getElementById("post_form");
     form.method = method;
     form.action = path;
 

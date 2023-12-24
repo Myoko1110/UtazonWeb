@@ -10,4 +10,7 @@ def context_processor(req):
         "CANCELLATION_FEE": settings.CANCELLATION_FEE,
         "MONEY_UNIT": settings.MONEY_UNIT,
         "CATEGORIES": Category.all(),
+        "EXPRESS_PRICE": settings.EXPRESS_PRICE,
+        "PRIDE_MONTHLY": settings.PRIDE_MONTHLY,
+        "PRIDE_YEARLY": settings.PRIDE_YEARLY,
     }

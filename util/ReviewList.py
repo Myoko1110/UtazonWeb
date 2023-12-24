@@ -39,7 +39,7 @@ class ReviewList:
         :return: 有効なレビュー数
         """
 
-        return sum(1 for i in self.reviews if i.type == "REVIEW")
+        return sum(1 for i in self.reviews if i.type == util.ReviewType.REVIEW)
 
     def count_rating(self) -> int:
         """
@@ -48,7 +48,7 @@ class ReviewList:
         :return: 有効なレビュー数
         """
 
-        return sum(1 for i in self.reviews if i.type == "RATING")
+        return sum(1 for i in self.reviews if i.type == util.ReviewType.RATING)
 
     def has_review(self) -> bool:
         """
@@ -57,7 +57,7 @@ class ReviewList:
         :return: 存在するか
         """
 
-        return any(i.type == "REVIEW" for i in self.reviews)
+        return any(i.type == util.ReviewType.REVIEW for i in self.reviews)
 
     def has_rating(self) -> bool:
         """
@@ -66,7 +66,7 @@ class ReviewList:
         :return: 存在するか
         """
 
-        return any(i.type == "RATING" for i in self.reviews)
+        return any(i.type == util.ReviewType.RATING for i in self.reviews)
 
     @staticmethod
     def by_item_id(item: Union[int, 'util.Item']) -> Union['ReviewList', None]:

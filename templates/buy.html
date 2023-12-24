@@ -5,46 +5,47 @@
 <head>
     <meta charset="UTF-8">
     <title>注文を確定する | Utazon.com</title>
-	<link rel="stylesheet" href="{% static 'buy/stylesheet.css' %}">
+    <link rel="stylesheet" href="{% static 'buy/stylesheet.css' %}">
     <link rel="stylesheet" href="{% static 'local.css' %}">
-	<link rel="icon" href="{% static 'icon.svg' %}">
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'icon.svg' %}">
+    <link rel="stylesheet"
+          href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#232f3e">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/9.0.0/decimal.min.js"></script>
-	<script src="{% static 'local.js' %}"></script>
-	<script src="{% static 'buy/script.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/9.0.0/decimal.min.js"></script>
+    <script src="{% static 'local.js' %}"></script>
+    <script src="{% static 'buy/script.js' %}"></script>
 </head>
 <body>
 <div class="global-header">
-	<div class="nav-mobile__top">
-		<div class="nav-mobile__top-left">
-			<div class="nav-belt__menu">
-					<span></span>
-					<span></span>
-					<span></span>
-			</div>
-			<div class="nav-mobile__top-logo">
-				<a href="/">
-					<img src="{% static 'logo.svg' %}">
-				</a>
-			</div>
-		</div>
-		<a href="/cart">
-	        	<div class="nav-mobile__top-cart">
-		        	<div class="nav-mobile__top-cart-ui">
-			        	<img src="{% static 'cart.png' %}">
-						{% if session.is_valid %}
-			        	<p>{{ session.get_user.get_cart_length }}</p>
-						{% else %}
-						<p>0</p>
-						{% endif %}
-		        	</div>
-	        	</div>
-			</a>
-	</div>
+    <div class="nav-mobile__top">
+        <div class="nav-mobile__top-left">
+            <div class="nav-belt__menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-mobile__top-logo">
+                <a href="/">
+                    <img src="{% static 'logo.svg' %}">
+                </a>
+            </div>
+        </div>
+        <a href="/cart">
+            <div class="nav-mobile__top-cart">
+                <div class="nav-mobile__top-cart-ui">
+                    <img src="{% static 'cart.png' %}">
+                    {% if session.is_valid %}
+                        <p>{{ session.get_user.get_cart_length }}</p>
+                    {% else %}
+                        <p>0</p>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+    </div>
     <header>
         <div class="nav-belt">
             <div class="nav-belt__logo">
@@ -53,335 +54,400 @@
                 </a>
             </div>
             {% if session.is_invalid %}
-            <a href="https://discord.gg/d9Knvc9JCr" class="nav-link">
+                <a href="https://discord.gg/d9Knvc9JCr" class="nav-link">
             {% endif %}
             <div class="nav-belt__address">
                 {% if session.is_valid %}
-                <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
-	            <div class="nav-belt__address-dir">
-		            <div class="nav-belt__address-name">
-			            <p class="nav-belt__address-to">お届け先</p>
-		            </div>
-		            <div class="nav-belt__address-number">
-						<h1>1-0001仮</h1>
-		            </div>
-	            </div>
+                    <img class="nav-belt__address-map" src="{% static 'pin.svg' %}">
+                    <div class="nav-belt__address-dir">
+                        <div class="nav-belt__address-name">
+                            <p class="nav-belt__address-to">お届け先</p>
+                        </div>
+                        <div class="nav-belt__address-number">
+                            <h1>1-0001仮</h1>
+                        </div>
+                    </div>
                 {% else %}
-	            <div class="nav-belt__address-dir">
-		            <div class="nav-belt__address-name">
-			            <p class="nav-belt__address-to">まだ参加してない？</p>
-		            </div>
-		            <div class="nav-belt__address-number">
-						<h1>Discord鯖に参加</h1>
-		            </div>
-	            </div>
+                    <div class="nav-belt__address-dir">
+                        <div class="nav-belt__address-name">
+                            <p class="nav-belt__address-to">まだ参加してない？</p>
+                        </div>
+                        <div class="nav-belt__address-number">
+                            <h1>Discord鯖に参加</h1>
+                        </div>
+                    </div>
                 {% endif %}
             </div>
             {% if session.is_invalid %}
-            </a>
+                </a>
             {% endif %}
             <div class="nav-belt__search">
-	            <form id="search">
-		            <select class="nav-belt__search-select">
-						<option value="all">すべて</option>
-						{% for en, jp in CATEGORIES.items %}
-			            <option value="{{ en }}"{% if category == en %} selected{% endif %}>{{ jp }}</option>
-						{% endfor %}
-		            </select>
-	                <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com" value="{{ query }}" id="search_query">
-		            <label class="nav-belt__search-label">
-			            <input class="nav-belt__search-submit" type="submit" value="">
-			            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960"><path d="M796 935 533 672q-30 26-69.959 40.5T378 727q-108.162 0-183.081-75Q120 577 120 471t75-181q75-75 181.5-75t181 75Q632 365 632 471.15 632 514 618 554q-14 40-42 75l264 262-44 44ZM377 667q81.25 0 138.125-57.5T572 471q0-81-56.875-138.5T377 275q-82.083 0-139.542 57.5Q180 390 180 471t57.458 138.5Q294.917 667 377 667Z"/></svg>
-		            </label>
-	            </form>
+                <form id="search">
+                    <select class="nav-belt__search-select">
+                        <option value="all">すべて</option>
+                        {% for en, jp in CATEGORIES.items %}
+                            <option value="{{ en }}"{% if category == en %} selected{% endif %}>{{ jp }}</option>
+                        {% endfor %}
+                    </select>
+                    <input class="nav-belt__search-input" type="text" placeholder="検索 Utazon.com" value="{{ query }}"
+                           id="search_query">
+                    <label class="nav-belt__search-label">
+                        <input class="nav-belt__search-submit" type="submit" value="">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960">
+                            <path d="M796 935 533 672q-30 26-69.959 40.5T378 727q-108.162 0-183.081-75Q120 577 120 471t75-181q75-75 181.5-75t181 75Q632 365 632 471.15 632 514 618 554q-14 40-42 75l264 262-44 44ZM377 667q81.25 0 138.125-57.5T572 471q0-81-56.875-138.5T377 275q-82.083 0-139.542 57.5Q180 390 180 471t57.458 138.5Q294.917 667 377 667Z"/>
+                        </svg>
+                    </label>
+                </form>
                 <div class="nav-belt__search-background"></div>
             </div>
-						{% if session.is_valid %}
-			<a href="/mypage" class="nav-link">
-                <div class="nav-belt__account">
-                    {% with session.get_user.get_mc_id as mcid %}
-                    {% if mcid %}
-                    <p>{{ session.get_user.get_mc_id }}さん</p>
-                    {% endif %}
-                    {% endwith %}
-		        	<h1>マイページ</h1>
-	        	</div>
-			</a>
-			{% else %}
-			<a href="/login" class="nav-link">
-                <div class="nav-belt__account">
-					<p>ゲストさん</p>
-		        	<h1>ログイン</h1>
-	        	</div>
-			</a>
-			{% endif %}
-			<a href="/history" class="nav-link">
-	        	<div class="nav-belt__returns">
-		        	<p>閲覧履歴もこちら<p>
-		        	<h1>履歴</h1>
-	        	</div>
-			</a>
-			<a href="/cart" class="nav-link">
-	        	<div class="nav-belt__cart">
-		        	<div class="nav-belt__cart-ui">
-			        	<img src="{% static 'cart.png' %}">
-						{% if session.is_valid %}
-			        	<p>{{ session.get_user.get_cart_length }}</p>
-						{% else %}
-						<p>0</p>
-						{% endif %}
-		        	</div>
-		        	<div class="nav-belt__cart-text">
-			        	<h1>カート</h1>
-		        	</div>
-	        	</div>
-			</a>
+            {% if session.is_valid %}
+                <a href="/mypage" class="nav-link">
+                    <div class="nav-belt__account">
+                        {% with session.get_user.get_mc_id as mcid %}
+                            {% if mcid %}
+                                <p>{{ mcid }}さん</p>
+                            {% endif %}
+                        {% endwith %}
+                        <h1>マイページ</h1>
+                    </div>
+                </a>
+            {% else %}
+                <a href="/login" class="nav-link">
+                    <div class="nav-belt__account">
+                        <p>ゲストさん</p>
+                        <h1>ログイン</h1>
+                    </div>
+                </a>
+            {% endif %}
+            <a href="/history" class="nav-link">
+                <div class="nav-belt__returns">
+                    <p>閲覧履歴もこちら</p>
+                    <h1>履歴</h1>
+                </div>
+            </a>
+            <a href="/cart" class="nav-link">
+                <div class="nav-belt__cart">
+                    <div class="nav-belt__cart-ui">
+                        <img src="{% static 'cart.png' %}">
+                        {% if session.is_valid %}
+                            <p>{{ session.get_user.get_cart_length }}</p>
+                        {% else %}
+                            <p>0</p>
+                        {% endif %}
+                    </div>
+                    <div class="nav-belt__cart-text">
+                        <h1>カート</h1>
+                    </div>
+                </div>
+            </a>
         </div>
-	    <div class="nav-main">
-			<div class="nav-main__category">
-				<a class="nav-main__point">Utazonポイント:
+        <div class="nav-main">
+            <div class="nav-main__category">
+                <a class="nav-main__point">Utazonポイント:
                     {% if session.is_valid %}
-                    <span>{{ session.get_user.get_point|digit_grouping }}</span>
+                        <span>{{ session.get_user.get_point|digit_grouping }}</span>
                     {% else %}
-                    <span>0</span>
+                        <span>0</span>
                     {% endif %}
                 </a>
-				<!--<a class="nav-main__category-child">ヘルプ</a>
-				<a class="nav-main__category-child">プライム</a>-->
-				{% for en, jp in CATEGORIES.items %}
-				<a class="nav-main__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
-				{% endfor %}
-				<a class="nav-main__category-child" href="/history">再度購入</a>
-			</div>
-	    </div>
-		<nav class="nav-mobile">
-			<div class="nav-mobile__account">
-				{% if session.is_valid %}
-				<p>{{ session.get_user.get_mc_id }}さん</p>
-				<a href="/mypage/">マイページ</a>
-				{% else %}
-				<p>ゲストさん</p>
-				<a href="login">ログイン</a>
-				{% endif %}
-			</div>
-			<div class="nav-mobile__logo">
+                <!--<a class="nav-main__category-child">ヘルプ</a>
+                <a class="nav-main__category-child">プライム</a>-->
+                {% for en, jp in CATEGORIES.items %}
+                    <a class="nav-main__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
+                {% endfor %}
+                <a class="nav-main__category-child" href="/history">再度購入</a>
+            </div>
+        </div>
+        <nav class="nav-mobile">
+            <div class="nav-mobile__account">
+                {% if session.is_valid %}
+                    <p>{{ mcid }}さん</p>
+                    <a href="/mypage/">マイページ</a>
+                {% else %}
+                    <p>ゲストさん</p>
+                    <a href="/login">ログイン</a>
+                {% endif %}
+            </div>
+            <div class="nav-mobile__logo">
                 <a href="/" class="nav-link">
                     <img src="{% static 'logo-black.svg' %}">
                 </a>
             </div>
-			<div class="nav-mobile__address">
-				<img class="nav-mobile__address-map" src="{% static 'pin-black.svg' %}">
-				<div class="nav-mobile__address-dir">
-					<div class="nav-mobile__address-name">
-						<p class="nav-mobile__address-to">お届け先</p>
-					</div>
-					<div class="nav-mobile__address-number">
-						{% if session.is_valid %}
-						<h1>1-0001仮</h1>
-						{% else %}
-						<h1>ログイン</h1>
-						{% endif %}
-					</div>
-				</div>
-			</div>
-			<a href="/history">
-	        	<div class="nav-mobile__returns">
-		        	<p>閲覧履歴もこちら<p>
-		        	<h1>注文履歴・閲覧履歴</h1>
-	        	</div>
-			</a>
-			<a href="/cart">
-	        	<div class="nav-mobile__cart">
-		        	<div class="nav-mobile__cart-ui">
-			        	<img src="{% static 'cart-black.png' %}">
-						{% if session.is_valid %}
-			        	<p>{{ session.get_user.get_cart_length }}</p>
-						{% else %}
-						<p>0</p>
-						{% endif %}
-		        	</div>
-		        	<div class="nav-mobile__cart-text">
-			        	<h1>カート</h1>
-		        	</div>
-	        	</div>
-			</a>
-			<div>
+            <div class="nav-mobile__address">
+                <img class="nav-mobile__address-map" src="{% static 'pin-black.svg' %}">
+                <div class="nav-mobile__address-dir">
+                    <div class="nav-mobile__address-name">
+                        <p class="nav-mobile__address-to">お届け先</p>
+                    </div>
+                    <div class="nav-mobile__address-number">
+                        {% if session.is_valid %}
+                            <h1>1-0001仮</h1>
+                        {% else %}
+                            <h1>ログイン</h1>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <a href="/history">
+                <div class="nav-mobile__returns">
+                    <p>閲覧履歴もこちら</p>
+                    <h1>注文履歴・閲覧履歴</h1>
+                </div>
+            </a>
+            <a href="/cart">
+                <div class="nav-mobile__cart">
+                    <div class="nav-mobile__cart-ui">
+                        <img src="{% static 'cart-black.png' %}">
+                        {% if session.is_valid %}
+                            <p>{{ session.get_user.get_cart_length }}</p>
+                        {% else %}
+                            <p>0</p>
+                        {% endif %}
+                    </div>
+                    <div class="nav-mobile__cart-text">
+                        <h1>カート</h1>
+                    </div>
+                </div>
+            </a>
+            <div>
                 <a class="nav-mobile__point">Utazonポイント:
-                {% if session.is_valid %}
-				<span>{{ session.get_user.get_point|digit_grouping }}</span>
-                {% else %}
-                <span>0</span>
-                {% endif %}
+                    {% if session.is_valid %}
+                        <span>{{ session.get_user.get_point|digit_grouping }}</span>
+                    {% else %}
+                        <span>0</span>
+                    {% endif %}
                 </a>
 
-			</div>
-			<div class="nav-mobile__category">
-				<p>カテゴリー</p>
-				<div class="nav-mobile__list">
-					{% for en, jp in CATEGORIES.items %}
-					<a class="nav-mobile__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
-					{% endfor %}
-					<a class="nav-mobile__category-child" href="/history">再度購入</a>
-				</div>
-			</div>
-		</nav>
-		<div class="nav-mobile__background"></div>
+            </div>
+            <div class="nav-mobile__category">
+                <p>カテゴリー</p>
+                <div class="nav-mobile__list">
+                    {% for en, jp in CATEGORIES.items %}
+                        <a class="nav-mobile__category-child" href="/category/?name={{ en }}">{{ jp }}</a>
+                    {% endfor %}
+                    <a class="nav-mobile__category-child" href="/history">再度購入</a>
+                </div>
+            </div>
+        </nav>
+        <div class="nav-mobile__background"></div>
     </header>
 </div>
 <div class="wrapper">
-	<div class="subwrapper">
-		<div class="buy">
+    <div class="subwrapper">
+        <div class="buy">
             {% if cart.is_valid_items or cart|length %}
-			<div class="buy-title">
-				<h2>レジ</h2>
-				{% if buy_now %}
-				<a>{{ cart.get_amount }}点の商品</a>
-				{% else %}
-				<a href="/cart">{{ cart|length }}点の商品</a>
-				{% endif %}
-			</div>
-			{% if cart.get_amount %}
-			<div class="buy-receive buy-list">
-				<div class="buy-left">
-					<h3 class="buy-subtitle">
-						<span>1</span>
-						<span>お届け先</span>
-					</h3>
-				</div>
-				<div class="buy-right">
-					<p>{{ session.get_user.get_mc_id }}</p>
-					<p>1-0001</p>
-					<p>〇〇県 〇〇市〇〇丁目</p>
-					<p>1-1-1</p>
-				</div>
-			</div>
-			<div class="buy-balance buy-list">
-				<div class="buy-left">
-					<h3 class="buy-subtitle">
-						<span>2</span>
-						<span>残高</span>
-					</h3>
-				</div>
-				{% if balance is None %}
-				<div class="buy-right" style="display: flex">
-					<p>
-						<span class="buy-balance__money">サーバーへの接続に失敗しました</span>
-                        <span style="font-size: 14px;display: block;margin-left: 10px;">時間をおいてから再度お試しください。問題が続くようであれば、運営にお問い合わせ下さい。</span>
-					</p>
-				{% elif balance >= cart.get_total %}
-				<div class="buy-right" style="display: flex;align-items: center;">
-					<p>
-						<span>購入後の残高</span>
-					</p>
-					<div class="buy-right__box">
-						<p>
-							<span class="buy-balance__money">{{ MONEY_UNIT }}<span id="player_balance" data-float="{{ balance }}">{{ balance|format_price }}</span></span>
-						</p>
-						<p style="margin: 0 0 0 20px">
-							<span>→</span>
-							<span class="buy-balance__money">{{ MONEY_UNIT }}<span id="after_balance">{{ after_balance|format_price }}</span></span>
-						</p>
-					</div>
-				{% else %}
-				<div class="buy-right">
-					<p>
-						<span>残高</span>
-						<span class="buy-balance__money">{{ MONEY_UNIT }}{{ balance|format_price }}</span>
-					</p>
-					<p style="color: #b12704;font-weight: 700">残高不足です</p>
-				{% endif %}
-				</div>
-			</div>
-			<div class="buy-schedule buy-list">
-				<div class="buy-left">
-					<h3 class="buy-subtitle">
-						<span>3</span>
-						<span>商品情報</span>
-					</h3>
-				</div>
-				<div class="buy-right">
-					<h3 class="buy-schedule__date">{{ rand_time.year }}年{{ rand_time.month }}月{{ rand_time.day }}日にお届け</h3>
-					<div class="buy-items" data-items="{{ cart.encode_to_percent_encoding }}">
-						<ul>
-							{% for item, qty in cart.items %}
-							<li class="buy-items__list">
-								<img src="{{ item.image.0 }}">
-								<div class="buy-items__box">
-									<h3>{{ item.name }}</h3>
-									<p>{{ MONEY_UNIT }}{{ item.get_discounted_price|format_price }}</p>
-									<p style="font-weight: 400;font-size: 14px;margin: 0;">個数: {{ qty }}</p>
-								</div>
-							</li>
-							{% endfor %}
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="buy-point buy-list">
-				<div class="buy-left">
-					<h3 class="buy-subtitle">
-						<span>4</span>
-						<span>ポイント</span>
-					</h3>
-					<p>※1ptあたり{{ MONEY_UNIT }}{{ POINT_PER }}</p>
-				</div>
-				<div class="buy-right">
-					<p>Utazonポイント：<span class="point" data-perpoint="{{ POINT_PER }}" data-return="{{ RETURN_PERCENT }}">{{ session.get_user.get_point|digit_grouping }}</span></p>
-					<span>ポイントを使用：</span><input class="buy-point__input" type="number" value="0" id="card_add" min="0" max="{{ session.get_user.get_point|digit_grouping }}">
-					<p style="font-size: 12px;color: #ad0000;display: none" id="error1">請求額を超えています</p>
-					<p style="font-size: 12px;color: #ad0000;display: none" id="error2">使用できるポイントを超えています</p>
-					<p style="font-size: 12px;color: #ad0000;display: none" id="error3">ポイントは整数値しか使用できません</p>
-				</div>
-			</div>
-			<div class="buy-confirm">
-                <div class="buy-confirm__btn">
-                {% if balance is None %}
-                    <a id="order_confirm" style="cursor: not-allowed;background-color: #f3f3f3;color: #d5d5d5;display: block;" data-buynow="fail to connect">注文を確定</a>
-                    <span style="font-size: 14px;display: block;margin-left: 10px;">サーバーへの接続に失敗しました</span>
-				{% elif balance >= cart.get_total %}
-					<a id="order_confirm" style="cursor: pointer" data-buynow="{{ buy_now }}">注文を確定</a>
-                {% else %}
-                    <a id="order_confirm" style="cursor: not-allowed;background-color: #f3f3f3;color: #d5d5d5;display: block;" data-buynow="{{ buy_now }}">注文を確定</a>
-				{% endif %}
-                </div>
-				<div class="buy-confirm__description">
-					<h3>ご請求額： {{ MONEY_UNIT }}<span data-total="{{ cart.get_total }}">{{ cart.get_total|format_price }}</span></h3>
-					<a>獲得ポイント：<span id="get_point" data-point="{{ cart.get_point }}">{{ cart.get_point|digit_grouping }}</span>pt</a>
-					<p>「注文を確定」ボタンをクリックすると、注文を受けたことを通知するメッセージがDiscordのダイレクトメッセージに送信されます。
-                        商品の購入契約は、商品の発送を通知するダイレクトメッセージを送信したときに成立します。価格については必ず商品ページをご確認ください。
-                        商品の分量の詳細については、商品詳細ページをご確認ください。</p>
-				</div>
-			</div>
-			{% else %}
-			<h3>商品がありません</h3>
-			{% endif %}
+                {% with session.get_user.get_pride as prime %}
+                    <div class="buy-title" data-prime="{{ prime.status }}">
+                        <h2>レジ</h2>
+                        {% if buy_now %}
+                            <a>{{ cart.get_amount }}点の商品</a>
+                        {% else %}
+                            <a href="/cart">{{ cart|length }}点の商品</a>
+                        {% endif %}
+                    </div>
+                    {% if cart.get_amount %}
+                        <div class="buy-receive buy-list">
+                            <div class="buy-left">
+                                <h3 class="buy-subtitle">
+                                    <span>1</span>
+                                    <span>お届け先</span>
+                                </h3>
+                            </div>
+                            <div class="buy-right">
+                                <p>{{ session.get_user.get_mc_id }}</p>
+                                <p>1-0001</p>
+                                <p>〇〇県 〇〇市〇〇丁目</p>
+                                <p>1-1-1</p>
+                            </div>
+                        </div>
+                        <div class="buy-balance buy-list">
+                            <div class="buy-left">
+                                <h3 class="buy-subtitle">
+                                    <span>2</span>
+                                    <span>残高</span>
+                                </h3>
+                            </div>
+                            {% if balance is None %}
+                                <div class="buy-right" style="display: flex">
+                                    <p>
+                                        <span class="buy-balance__money">サーバーへの接続に失敗しました</span>
+                                        <span style="font-size: 14px;display: block;margin-left: 10px;">時間をおいてから再度お試しください。問題が続くようであれば、運営にお問い合わせ下さい。</span>
+                                    </p>
+                                </div>
+                            {% elif balance >= cart.get_total %}
+                                <div class="buy-right" style="display: flex;align-items: center;">
+                                    <p>
+                                        <span>購入後の残高</span>
+                                    </p>
+                                    <div class="buy-right__box">
+                                        <p>
+                                    <span class="buy-balance__money">{{ MONEY_UNIT }}<span id="player_balance"
+                                                                                           data-float="{{ balance }}">{{ balance|format_price }}</span></span>
+                                        </p>
+                                        <p style="margin: 0 0 0 20px">
+                                            <span>→</span>
+                                            <span class="buy-balance__money">{{ MONEY_UNIT }}<span
+                                                    id="after_balance">{{ after_balance|format_price }}</span></span>
+                                        </p>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="buy-right">
+                                    <p>
+                                        <span>残高</span>
+                                        <span class="buy-balance__money">{{ MONEY_UNIT }}{{ balance|format_price }}</span>
+                                    </p>
+                                    <p style="color: #b12704;font-weight: 700">残高不足です</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="buy-schedule buy-list">
+                            <div class="buy-left">
+                                <h3 class="buy-subtitle">
+                                    <span>3</span>
+                                    <span>商品情報</span>
+                                </h3>
+                            </div>
+                            <div class="buy-right" data-date="{{ fastest_time.date }}">
+                                <h3 class="buy-schedule__date">
+                                    {{ rand_time.year }}年{{ rand_time.month }}月{{ rand_time.day }}日にお届け
+                                </h3>
+                                <div class="buy-items" data-items="{{ cart.encode_to_percent_encoding }}">
+                                    <ul>
+                                        {% for item, qty in cart.items %}
+                                            <li class="buy-items__list">
+                                                <img src="{{ item.image.0 }}">
+                                                <div class="buy-items__box">
+                                                    <h3>{{ item.name }}</h3>
+                                                    <p>
+                                                        {{ MONEY_UNIT }}{{ item.get_discounted_price|format_price }}</p>
+                                                    <p style="font-weight: 400;font-size: 14px;margin: 0;">
+                                                        個数: {{ qty }}</p>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="buy-way">
+                                    <h3>配送方法</h3>
+                                    <div class="buy-way__radio" data-express="{{ EXPRESS_PRICE }}">
+                                        <div>
+                                            <input class="buy-way__radio-input" type="radio" value="prime" name="way"
+                                                    {% if prime.status %}
+                                                   checked{% endif %}>
+                                            <label>無料のお急ぎ便<img src="{% static 'pride_check.svg' %}"
+                                                                      style="margin-left: 5px"></label>
+                                        </div>
+                                        <div>
+                                            <input class="buy-way__radio-input" type="radio" value="normal" name="way"
+                                                    {% if not prime.status %}
+                                                   checked{% endif %}>
+                                            <label>無料 通常配送<span
+                                                    class="buy-way__radio-date">{{ rand_time.month }}月{{ rand_time.day }}日</span></label>
+                                        </div>
+                                        <div>
+                                            <input class="buy-way__radio-input" type="radio" value="express" name="way">
+                                            <label>{{ MONEY_UNIT }}{{ EXPRESS_PRICE|format_price }} お急ぎ便<span
+                                                    class="buy-way__radio-date">{{ fastest_time.month }}月{{ fastest_time.day }}日</span></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="buy-point buy-list">
+                            <div class="buy-left">
+                                <h3 class="buy-subtitle">
+                                    <span>4</span>
+                                    <span>ポイント</span>
+                                </h3>
+                                <p>※1ptあたり{{ MONEY_UNIT }}{{ POINT_PER }}</p>
+                            </div>
+                            <div class="buy-right">
+                                <p>Utazonポイント：<span class="point" data-perpoint="{{ POINT_PER }}"
+                                                        data-return="{{ RETURN_PERCENT }}">{{ session.get_user.get_point|digit_grouping }}</span>
+                                </p>
+                                <span>ポイントを使用：</span><input class="buy-point__input" type="number"
+                                                                   value="0"
+                                                                   id="card_add" min="0"
+                                                                   max="{{ session.get_user.get_point|digit_grouping }}">
+                                <p style="font-size: 12px;color: #ad0000;display: none" id="error1">
+                                    請求額を超えています</p>
+                                <p style="font-size: 12px;color: #ad0000;display: none" id="error2">
+                                    使用できるポイントを超えています</p>
+                                <p style="font-size: 12px;color: #ad0000;display: none" id="error3">
+                                    ポイントは整数値しか使用できません</p>
+                            </div>
+                        </div>
+                        <div class="buy-confirm">
+                            <div class="buy-confirm__btn">
+                                {% if balance is None %}
+                                    <a id="order_confirm"
+                                       style="cursor: not-allowed;background-color: #f3f3f3;color: #d5d5d5;display: block;"
+                                       data-buynow="fail to connect">注文を確定</a>
+                                    <span style="font-size: 14px;display: block;margin-left: 10px;">サーバーへの接続に失敗しました</span>
+                                {% elif balance >= cart.get_total %}
+                                    <a id="order_confirm" style="cursor: pointer"
+                                       data-buynow="{{ buy_now }}">注文を確定</a>
+                                {% else %}
+                                    <a id="order_confirm"
+                                       style="cursor: not-allowed;background-color: #f3f3f3;color: #d5d5d5;display: block;"
+                                       data-buynow="{{ buy_now }}">注文を確定</a>
+                                {% endif %}
+                            </div>
+                            <div class="buy-confirm__description">
+                                <h3>ご請求額： {{ MONEY_UNIT }}<span
+                                        data-total="{{ cart.get_total }}">{{ cart.get_total|format_price }}</span>
+                                </h3>
+                                <a>獲得ポイント：<span id="get_point"
+                                                      data-point="{{ cart.get_point }}">{{ cart.get_point|digit_grouping }}</span>pt</a>
+                                <p>「注文を確定」ボタンをクリックすると、注文を受けたことを通知するメッセージがDiscordのダイレクトメッセージに送信されます。
+                                    商品の購入契約は、商品の発送を通知するダイレクトメッセージを送信したときに成立します。価格については必ず商品ページをご確認ください。
+                                    商品の分量の詳細については、商品詳細ページをご確認ください。</p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <h3>商品がありません</h3>
+                    {% endif %}
+                    </div>
+                {% endwith %}
             {% else %}
-            <h3>無効な商品が指定されています</h3>
+                <h3>無効な商品が指定されています</h3>
             {% endif %}
-		</div>
-	</div>
+    </div>
 </div>
+<form method="POST" id="post_form">{% csrf_token %}</form>
 <footer>
     <div class="footer__link">
         <ul>
             <li class="footer__link-list">
                 <a href="https://www.utakatamc.net/">
                     <div>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" fill="#ffffff"><path d="M480-80q-84 0-157-31.5T196-197q-54-54-85-127.5T80-482q0-84 31-156.5T196-765q54-54 127-84.5T480-880q84 0 157 30.5T764-765q54 54 85 126.5T880-482q0 84-31 157.5T764-197q-54 54-127 85.5T480-80Zm0-58q35-36 58.5-82.5T577-331H384q14 60 37.5 108t58.5 85Zm-85-12q-25-38-43-82t-30-99H172q38 71 88 111.5T395-150Zm171-1q72-23 129.5-69T788-331H639q-13 54-30.5 98T566-151ZM152-391h159q-3-27-3.5-48.5T307-482q0-25 1-44.5t4-43.5H152q-7 24-9.5 43t-2.5 45q0 26 2.5 46.5T152-391Zm221 0h215q4-31 5-50.5t1-40.5q0-20-1-38.5t-5-49.5H373q-4 31-5 49.5t-1 38.5q0 21 1 40.5t5 50.5Zm275 0h160q7-24 9.5-44.5T820-482q0-26-2.5-45t-9.5-43H649q3 35 4 53.5t1 34.5q0 22-1.5 41.5T648-391Zm-10-239h150q-33-69-90.5-115T565-810q25 37 42.5 80T638-630Zm-254 0h194q-11-53-37-102.5T480-820q-32 27-54 71t-42 119Zm-212 0h151q11-54 28-96.5t43-82.5q-75 19-131 64t-91 115Z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960"
+                             fill="#ffffff">
+                            <path d="M480-80q-84 0-157-31.5T196-197q-54-54-85-127.5T80-482q0-84 31-156.5T196-765q54-54 127-84.5T480-880q84 0 157 30.5T764-765q54 54 85 126.5T880-482q0 84-31 157.5T764-197q-54 54-127 85.5T480-80Zm0-58q35-36 58.5-82.5T577-331H384q14 60 37.5 108t58.5 85Zm-85-12q-25-38-43-82t-30-99H172q38 71 88 111.5T395-150Zm171-1q72-23 129.5-69T788-331H639q-13 54-30.5 98T566-151ZM152-391h159q-3-27-3.5-48.5T307-482q0-25 1-44.5t4-43.5H152q-7 24-9.5 43t-2.5 45q0 26 2.5 46.5T152-391Zm221 0h215q4-31 5-50.5t1-40.5q0-20-1-38.5t-5-49.5H373q-4 31-5 49.5t-1 38.5q0 21 1 40.5t5 50.5Zm275 0h160q7-24 9.5-44.5T820-482q0-26-2.5-45t-9.5-43H649q3 35 4 53.5t1 34.5q0 22-1.5 41.5T648-391Zm-10-239h150q-33-69-90.5-115T565-810q25 37 42.5 80T638-630Zm-254 0h194q-11-53-37-102.5T480-820q-32 27-54 71t-42 119Zm-212 0h151q11-54 28-96.5t43-82.5q-75 19-131 64t-91 115Z"/>
+                        </svg>
                     </div>
                 </a>
             </li>
             <li class="footer__link-list">
                 <a href="https://discord.gg/d9Knvc9JCr">
                     <div>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="25px" viewBox="0 0 640 512" fill="#ffffff"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M524.531,69.836a1.5,1.5,0,0,0-.764-.7A485.065,485.065,0,0,0,404.081,32.03a1.816,1.816,0,0,0-1.923.91,337.461,337.461,0,0,0-14.9,30.6,447.848,447.848,0,0,0-134.426,0,309.541,309.541,0,0,0-15.135-30.6,1.89,1.89,0,0,0-1.924-.91A483.689,483.689,0,0,0,116.085,69.137a1.712,1.712,0,0,0-.788.676C39.068,183.651,18.186,294.69,28.43,404.354a2.016,2.016,0,0,0,.765,1.375A487.666,487.666,0,0,0,176.02,479.918a1.9,1.9,0,0,0,2.063-.676A348.2,348.2,0,0,0,208.12,430.4a1.86,1.86,0,0,0-1.019-2.588,321.173,321.173,0,0,1-45.868-21.853,1.885,1.885,0,0,1-.185-3.126c3.082-2.309,6.166-4.711,9.109-7.137a1.819,1.819,0,0,1,1.9-.256c96.229,43.917,200.41,43.917,295.5,0a1.812,1.812,0,0,1,1.924.233c2.944,2.426,6.027,4.851,9.132,7.16a1.884,1.884,0,0,1-.162,3.126,301.407,301.407,0,0,1-45.89,21.83,1.875,1.875,0,0,0-1,2.611,391.055,391.055,0,0,0,30.014,48.815,1.864,1.864,0,0,0,2.063.7A486.048,486.048,0,0,0,610.7,405.729a1.882,1.882,0,0,0,.765-1.352C623.729,277.594,590.933,167.465,524.531,69.836ZM222.491,337.58c-28.972,0-52.844-26.587-52.844-59.239S193.056,219.1,222.491,219.1c29.665,0,53.306,26.82,52.843,59.239C275.334,310.993,251.924,337.58,222.491,337.58Zm195.38,0c-28.971,0-52.843-26.587-52.843-59.239S388.437,219.1,417.871,219.1c29.667,0,53.307,26.82,52.844,59.239C470.715,310.993,447.538,337.58,417.871,337.58Z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="25px" viewBox="0 0 640 512"
+                             fill="#ffffff">
+                            <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                            <path d="M524.531,69.836a1.5,1.5,0,0,0-.764-.7A485.065,485.065,0,0,0,404.081,32.03a1.816,1.816,0,0,0-1.923.91,337.461,337.461,0,0,0-14.9,30.6,447.848,447.848,0,0,0-134.426,0,309.541,309.541,0,0,0-15.135-30.6,1.89,1.89,0,0,0-1.924-.91A483.689,483.689,0,0,0,116.085,69.137a1.712,1.712,0,0,0-.788.676C39.068,183.651,18.186,294.69,28.43,404.354a2.016,2.016,0,0,0,.765,1.375A487.666,487.666,0,0,0,176.02,479.918a1.9,1.9,0,0,0,2.063-.676A348.2,348.2,0,0,0,208.12,430.4a1.86,1.86,0,0,0-1.019-2.588,321.173,321.173,0,0,1-45.868-21.853,1.885,1.885,0,0,1-.185-3.126c3.082-2.309,6.166-4.711,9.109-7.137a1.819,1.819,0,0,1,1.9-.256c96.229,43.917,200.41,43.917,295.5,0a1.812,1.812,0,0,1,1.924.233c2.944,2.426,6.027,4.851,9.132,7.16a1.884,1.884,0,0,1-.162,3.126,301.407,301.407,0,0,1-45.89,21.83,1.875,1.875,0,0,0-1,2.611,391.055,391.055,0,0,0,30.014,48.815,1.864,1.864,0,0,0,2.063.7A486.048,486.048,0,0,0,610.7,405.729a1.882,1.882,0,0,0,.765-1.352C623.729,277.594,590.933,167.465,524.531,69.836ZM222.491,337.58c-28.972,0-52.844-26.587-52.844-59.239S193.056,219.1,222.491,219.1c29.665,0,53.306,26.82,52.843,59.239C275.334,310.993,251.924,337.58,222.491,337.58Zm195.38,0c-28.971,0-52.843-26.587-52.843-59.239S388.437,219.1,417.871,219.1c29.667,0,53.307,26.82,52.844,59.239C470.715,310.993,447.538,337.58,417.871,337.58Z"/>
+                        </svg>
                     </div>
                 </a>
             </li>
             <li class="footer__link-list">
                 <a href="https://github.com/UtakataNetwork">
                     <div>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 496 512" fill="#ffffff"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 496 512"
+                             fill="#ffffff">
+                            <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                            <path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/>
+                        </svg>
                     </div>
                 </a>
             </li>
@@ -394,16 +460,53 @@
     <p>&copy; 2023 UtakataNetwork</p>
 </footer>
 {% if session.is_expire %}
-<div class="box" id="expires">
-	<div class="box__box">
-		<div class="box__close">
-			<svg onclick="close_box()" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
-		</div>
-		<h1>期限切れ</h1>
-		<p>セッションの期限が切れました。お手数ですが、もう一度ログインをお願いいたします。</p>
-		<a href="/login">ログイン</a>
-	</div>
-</div>
+    <div class="box" id="expires">
+        <div class="box__box">
+            <div class="box__close">
+                <svg onclick="close_box()" xmlns="http://www.w3.org/2000/svg" height="1em"
+                     viewBox="0 0 384 512">
+                    <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+                </svg>
+            </div>
+            <h1>期限切れ</h1>
+            <p>セッションの期限が切れました。お手数ですが、もう一度ログインをお願いいたします。</p>
+            <a href="/login">ログイン</a>
+        </div>
+    </div>
 {% endif %}
+<div class="box" id="pride" style="display: none">
+    <div class="box__box">
+        <div class="box__close">
+            <svg id="pride_close" xmlns="http://www.w3.org/2000/svg" height="1em"
+                 viewBox="0 0 384 512">
+                <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+            </svg>
+        </div>
+        <div class="box__logo">
+            <img src="{% static 'pride.svg' %}">
+        </div>
+        <div class="box__inner">
+            <h3>無料のお急ぎ便を今回のご注文からご利用いただけます</h3>
+            <div>
+                <h4>プライドに登録して特典を楽しもう（{{ MONEY_UNIT }}{{ PRIDE_YEARLY|format_price }}/年）</h4>
+                <ul class="box__pride-list">
+                    <li>
+                        <h5>無料の配送特典使い放題</h5>
+                        <p>無料のお急ぎ便</p>
+                    </li>
+                    <li>
+                        <h5>会員限定のお得なセール</h5>
+                    </li>
+                </ul>
+                <div class="box__pride-btns">
+                    <a class="box__pride-btn1">Prideに登録しない</a>
+                    <a class="box__pride-btn2" href="/pride/register/?redirect={{ path }}">次に進む（登録する）</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

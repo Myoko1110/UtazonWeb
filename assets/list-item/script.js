@@ -305,7 +305,7 @@ $(function () {
         });
 
         let category = selectedCategory.data("en");
-        let hostUrl = location.protocol + '//' + location.host + "/mypage/list_item/post/";
+        let hostUrl = "/mypage/list_item/post/";
 
         const item0 = selectedItems.eq(0);
 
@@ -357,7 +357,7 @@ $(function () {
 
 
 function post(path, params, method = 'post') {
-    const form = document.createElement('form');
+    const form = document.getElementById("post_form");
     form.method = method;
     form.action = path;
 

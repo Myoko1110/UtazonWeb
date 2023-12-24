@@ -41,7 +41,7 @@
 .buy-list {
     display: flex;
     margin: 20px 0 0;
-    padding: 20px 0 0;
+    padding: 20px 0;
 }
 
 @media (max-width: 800px) {
@@ -66,7 +66,7 @@
 
 .buy-point {
     border-top: 1px solid #e8e8e8;
-    margin: 0 0 20px;
+    margin: 20px 0;
 }
 
 .buy-schedule__date {
@@ -298,4 +298,13 @@ html, body {
     justify-content: center;
     align-items: center;
     color: #000!important;
+}
+#order_confirm{
+    text-align: center;
+}
+#order_confirm.isInvalid{
+    cursor: not-allowed!important;
+    background-color: #f3f3f3;
+    color: #d5d5d5;
+    display: block;
 }

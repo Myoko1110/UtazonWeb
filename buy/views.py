@@ -1,5 +1,6 @@
 import asyncio
 import json
+import urllib.parse
 from decimal import ROUND_DOWN, getcontext
 
 from django.http import Http404
@@ -28,7 +29,9 @@ def buy(request):
 
         c.delete_invalid_items()
 
-        delivery_time = Order.calc_expected_delivery_time
+        delivery_time = Order.calc_expected_delivery_time()
+        fastest_time = Order.calc_expected_fastest_delivery_time()
+
         b = s.get_user().get_balance()
 
         if b is not None:
@@ -42,7 +45,9 @@ def buy(request):
             "balance": b,
             "buy_now": buy_now,
             "rand_time": delivery_time,
+            "fastest_time": fastest_time,
             "session": s,
+            "path": request.get_full_path(),
         }
         return render(request, "buy.html", context=context)
 
@@ -51,13 +56,15 @@ def buy(request):
 
 
 def buy_confirm(request):
-    if not request.GET.get("items"):
+    if request.method != "POST":
+        raise Http404
+
+    if not request.POST.get("items"):
         raise Http404
 
     s = Session.by_request(request)
     if s.is_valid:
-
-        items_dict = json.loads(request.GET.get("items"))
+        items_dict = json.loads(urllib.parse.unquote(request.POST.get("items")))
         c = Cart.by_id_dict(items_dict)
         c.delete_invalid_items()
 
@@ -67,8 +74,13 @@ def buy_confirm(request):
         if not c.is_valid_items():
             raise Exception("無効な商品が指定されました")
 
+        shipping_method = request.POST.get("shipping")
+
         # お届け時間を計算
-        delivers_at = Order.calc_delivery_time()
+        if shipping_method == "prime" or shipping_method == "express":
+            delivers_at = Order.calc_fastest_delivery_time()
+        else:
+            delivers_at = Order.calc_delivery_time()
         ships_at = Order.calc_ship_time(delivers_at)
 
         # オーダーIDを作成
@@ -78,7 +90,10 @@ def buy_confirm(request):
 
         # ポイント関係
         total = Decimal(str(c.get_total()))
-        point = float(request.GET.get("point"))
+        if shipping_method == "express":
+            total += settings.EXPRESS_PRICE
+
+        point = float(request.POST.get("point"))
         if point != 0.0:
             if not point.is_integer():
                 raise Exception("ポイントが整数値ではありません")
@@ -107,7 +122,7 @@ def buy_confirm(request):
         Order.create(u.mc_uuid, c, ships_at, delivers_at, order_id, total, point)
 
         # カートから削除
-        if request.GET.get("buynow") == "False":
+        if request.POST.get("buynow") == "False":
             u.reset_cart()
 
         # ポイント付与
@@ -119,11 +134,14 @@ def buy_confirm(request):
             bot.client.loop
         )
 
+        now = datetime.datetime.now()
+
         context = {
             "session": s,
             "order_id": order_id,
             "delivers_at": delivers_at,
             "cart": c,
+            "now": now,
         }
 
         return render(request, "buy-confirm.html", context=context)

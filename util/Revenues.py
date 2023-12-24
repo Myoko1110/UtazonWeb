@@ -35,10 +35,23 @@ class Revenues:
 
     @staticmethod
     def get() -> list['Revenues']:
+        """
+        収入情報を取得します
+
+        :return: 収入情報
+        """
+
         r = util.DatabaseHelper.get_revenues()
         return [Revenues(i["id"], i["mc_uuid"], i["item_id"], i["item_price"], i["qty"],
                          i["total"], i["bought_at"], i["seller_uuid"]) for i in r]
 
     @staticmethod
     def delete(seller_uuid: str) -> bool:
+        """
+        収入情報を削除します
+
+        :param seller_uuid: MinecraftのUUID
+        :return: 成功したか
+        """
+
         return util.DatabaseHelper.delete_revenues(seller_uuid)

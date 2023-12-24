@@ -41,23 +41,18 @@ def withdraw_player(uuid: str, amount: float, action: str, reason: str):
     :return: お金が出金されたか(キャンセルされた場合や接続失敗した場合はFalseを返却)
     """
 
-    try:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((socket_host, int(socket_port)))
-            send_value = ["withdrawPlayer", uuid, str(amount), action, reason]
-            s.sendall(json.dumps(send_value).encode())
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((socket_host, int(socket_port)))
+        send_value = ["withdrawPlayer", uuid, str(amount), action, reason]
+        s.sendall(json.dumps(send_value).encode())
 
-            received_data = s.recv(1024).decode()
-            if received_data == "Invalid UUID":
-                return False
-            elif received_data == "Success":
-                return True
-            else:
-                return False
-
-    except ConnectionRefusedError:
-        traceback.print_exc()
-        return False
+        received_data = s.recv(1024).decode()
+        if received_data == "Invalid UUID":
+            return False
+        elif received_data == "1":
+            return True
+        else:
+            return False
 
 
 def deposit_player(uuid: str, amount: float, action: str, reason: str):
@@ -80,7 +75,7 @@ def deposit_player(uuid: str, amount: float, action: str, reason: str):
             received_data = s.recv(1024).decode()
             if received_data == "Invalid UUID":
                 return False
-            elif received_data == "Success":
+            elif received_data == "1":
                 return True
             else:
                 return False

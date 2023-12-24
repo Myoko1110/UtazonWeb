@@ -1,3 +1,4 @@
+import datetime
 import json
 from decimal import Decimal
 from typing import Union
@@ -11,9 +12,8 @@ import util
 
 class User:
     mc_uuid: str
-    point: int
 
-    __cached_mc_id: Union[str, None] = None
+    __cached_mc_id: Union[str, bool, None] = None
     __cached_discord_id: Union[int, None] = None
     __cached_balance: float = 0
     __cached_discord_user: discord.User = None
@@ -29,19 +29,34 @@ class User:
         :return: MCID
         """
 
+        if self.__cached_mc_id is False:
+            return None
         if self.__cached_mc_id:
             return self.__cached_mc_id
 
-        profile = requests.get(
-            f"https://sessionserver.mojang.com/session/minecraft/profile/{self.mc_uuid}")
-        if profile.status_code != 200:
+        try:
+            profile = requests.get(
+                f"https://sessionserver.mojang.com/session/minecraft/profile/{self.mc_uuid}",
+                timeout=0.5)
+            if profile.status_code != 200:
+                self.__cached_mc_id = False
+                return None
+
+        except requests.Timeout:
+            self.__cached_mc_id = False
             return None
+        except requests.ConnectionError:
+            self.__cached_mc_id = False
+            return None
+
         profile = profile.json()
         if "name" in profile:
 
             self.__cached_mc_id = profile["name"]
-            return profile["name"]
+            return self.__cached_mc_id
+
         else:
+            self.__cached_mc_id = False
             return None
 
     def get_discord(self) -> Union['discord.User', None]:
@@ -175,6 +190,15 @@ class User:
 
         return util.Order.by_mc_uuid(self.mc_uuid)
 
+    def get_pride(self) -> 'util.Pride':
+        """
+        Prime型を取得します
+
+        :return: Prime型
+        """
+
+        return util.Pride.by_mc_uuid(self.mc_uuid)
+
     def get_review(self, item: Union[int, 'util.Item']) -> Union['util.Review', None]:
         """
         ユーザーの指定されたアイテムのレビューを取得します
@@ -269,7 +293,8 @@ class User:
         :return: Item型のリスト
         """
 
-        return [util.Item.by_id(i[0]) for i in util.DatabaseHelper.get_browsing_history(self.mc_uuid)]
+        return [util.Item.by_id(i[0]) for i in
+                util.DatabaseHelper.get_browsing_history(self.mc_uuid)]
 
     def get_available_items(self) -> Union[list[Union['util.Item', None]], None]:
         """
@@ -346,6 +371,7 @@ class User:
         :param action: 簡単な理由
         :param reason: 出金する理由
         :return: お金が出金されたか(キャンセルされた場合や接続失敗した場合はFalseを返却)
+        :raises ConnectionRefusedError: 接続に失敗したときに返します
         """
 
         return util.SocketHelper.withdraw_player(self.mc_uuid, float(amount), action, reason)
@@ -361,6 +387,25 @@ class User:
         """
 
         return util.SocketHelper.deposit_player(self.mc_uuid, float(amount), action, reason)
+
+    def register_pride(self, plan: 'util.PridePlan', auto_update: bool) -> bool:
+        """
+        Prideに登録します
+
+        :param plan: プラン
+        :param auto_update: 自動更新
+        :return: 成功したか
+        """
+
+        now = datetime.datetime.now()
+
+        if plan == util.PridePlan.MONTHLY:
+            now += datetime.timedelta(days=30)
+        else:
+            now += datetime.timedelta(days=365)
+
+        expires = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        return util.DatabaseHelper.register_pride(self.mc_uuid, plan.name, auto_update, expires)
 
     @staticmethod
     def by_mc_uuid(mc_uuid) -> Union['User', None]:

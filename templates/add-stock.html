@@ -100,7 +100,7 @@
                 <div class="nav-belt__account">
                     {% with session.get_user.get_mc_id as mcid %}
                     {% if mcid %}
-                    <p>{{ session.get_user.get_mc_id }}さん</p>
+                    <p>{{ mcid }}さん</p>
                     {% endif %}
                     {% endwith %}
 		        	<h1>マイページ</h1>
@@ -116,7 +116,7 @@
 			{% endif %}
 			<a href="/history" class="nav-link">
 	        	<div class="nav-belt__returns">
-		        	<p>閲覧履歴もこちら<p>
+		        	<p>閲覧履歴もこちら</p>
 		        	<h1>履歴</h1>
 	        	</div>
 			</a>
@@ -156,7 +156,7 @@
 		<nav class="nav-mobile">
 			<div class="nav-mobile__account">
 				{% if session.is_valid %}
-				<p>{{ session.get_user.get_mc_id }}さん</p>
+				<p>{{ mcid }}さん</p>
 				<a href="/mypage/">マイページ</a>
 				{% else %}
 				<p>ゲストさん</p>
@@ -185,7 +185,7 @@
 			</div>
 			<a href="/history">
 	        	<div class="nav-mobile__returns">
-		        	<p>閲覧履歴もこちら<p>
+		        	<p>閲覧履歴もこちら</p>
 		        	<h1>注文履歴・閲覧履歴</h1>
 	        	</div>
 			</a>
@@ -310,6 +310,7 @@
 		</div>
 	</div>
 </div>
+<form method="POST" id="post_form">{% csrf_token %}</form>
 <footer>
     <div class="footer__link">
         <ul>

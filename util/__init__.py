@@ -18,8 +18,9 @@ from .Paging import Paging
 from .Revenues import Revenues
 from .Review import Review, ReviewType
 from .ReviewList import ReviewList
-from .Session import Session
+from .Session import Session, SessionStatus
 from .User import User
+from .Pride import Pride, PridePlan
 
 return_rate = Decimal(settings.RETURN_RATE)
 
@@ -41,6 +42,7 @@ def get_banners():
 
     :return: バナーのパス
     """
+
     pc_record = Banner.objects.filter(view_type='pc').aggregate(Max('id'))["id__max"]
     pc_img = get_object_or_404(Banner, id=pc_record)
 

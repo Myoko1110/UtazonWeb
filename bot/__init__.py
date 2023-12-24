@@ -40,7 +40,7 @@ async def send_order_confirm(discord_id, order_id, item, delivers_at):
 
     global delivery_status_url
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="ご注文が確定されました",
         color=discord.Colour.green(),
@@ -76,7 +76,7 @@ async def send_order_cancel(discord_id, order_id, item):
 
     global order_history_url
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="ご注文がキャンセルされました",
         color=discord.Colour.red(),
@@ -85,8 +85,9 @@ async def send_order_cancel(discord_id, order_id, item):
                     + f"注文履歴は[こちら]({order_history_url})からご確認ください。"
     )
     embed.set_footer(text="またのご利用をお待ちしております。")
+
     order_item = ""
-    for i in item:
+    for i in item.keys():
         if len(i.name) > 33:
             order_item += f"・{i.name[:33]}...\n"
         else:
@@ -105,7 +106,7 @@ async def send_mailbox_full(discord_id, order_id):
     :param order_id: オーダーID
     """
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="商品の配達ができませんでした",
         color=discord.Colour.yellow(),
@@ -126,7 +127,7 @@ async def send_mailbox_notfound(discord_id, order_id):
     :param order_id: オーダーID
     """
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="商品の配達ができませんでした",
         color=discord.Colour.yellow(),
@@ -149,7 +150,7 @@ async def send_complete_order(discord_id, order_id):
 
     global order_history_url
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="商品が配達が完了しました",
         color=discord.Colour.blue(),
@@ -172,7 +173,7 @@ async def send_complete_ship(discord_id, order_id):
 
     global order_history_url
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="商品が発送されました",
         color=0x1abc9c,
@@ -195,7 +196,7 @@ async def send_redelivery(discord_id, order_id):
 
     global order_history_url
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="注文の再配達を承りました",
         color=discord.Colour.green(),
@@ -217,7 +218,7 @@ async def send_stock(discord_id, item):
 
     global order_history_url
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="出品中の商品の在庫が少なくなっています",
         color=discord.Colour.orange(),
@@ -236,7 +237,7 @@ async def send_returnstock_item_notfound(discord_id):
     :param discord_id: DiscordID
     """
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="在庫返却の配達ができませんでした",
         color=discord.Colour.red(),
@@ -253,7 +254,7 @@ async def send_returnstock_mailbox_full(discord_id):
     :param discord_id: DiscordID
     """
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="在庫返却の配達ができませんでした",
         color=discord.Colour.yellow(),
@@ -271,7 +272,7 @@ async def send_returnstock_mailbox_notfound(discord_id):
     :param discord_id: DiscordID
     """
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="在庫返却の配達ができませんでした",
         color=discord.Colour.yellow(),
@@ -292,7 +293,7 @@ async def send_complete_returnstock(discord_id):
 
     global order_history_url
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="在庫返却の配達が完了しました",
         color=discord.Colour.blue(),
@@ -312,7 +313,7 @@ async def send_returnstock_confirm(discord_id):
 
     global order_history_url
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="在庫返却を承りました",
         color=discord.Colour.blue(),
@@ -323,6 +324,41 @@ async def send_returnstock_confirm(discord_id):
     await author.send(embed=embed)
 
 
+async def send_automatically_renew(discord_id):
+    """
+    Utazonプライドの自動更新をDMに送信します
+
+    :param discord_id:
+    """
+
+    author = client.get_user(discord_id)
+    embed = discord.Embed(
+        title="Utazonプライドの更新完了が完了しました",
+        color=0xffffff,
+        description="Utazonプライドの更新完了が完了しましたことをお知らせいたします。引き続き、プライドの特典をお楽しみください。"
+    )
+    embed.set_footer(text="またのご利用をお待ちしております。")
+
+    await author.send(embed=embed)
+
+
+async def fail_automatically_renew(discord_id):
+    """
+    Utazonプライドの自動更新をDMに送信します
+
+    :param discord_id:
+    """
+
+    author = client.get_user(discord_id)
+    embed = discord.Embed(
+        title="Utazonプライドの更新完了に失敗しました",
+        color=discord.Colour.red(),
+        description="Utazonプライドの更新が残高不足のため失敗しました。Prideを継続する場合はもう一度登録していただくようお願い致します。"
+    )
+    embed.set_footer(text="またのご利用をお待ちしております。")
+
+    await author.send(embed=embed)
+
 async def send_security(discord_id):
     """
     新しいログインをDMで送信します
@@ -330,7 +366,7 @@ async def send_security(discord_id):
     :param discord_id: DiscordID
     """
 
-    author = await client.fetch_user(discord_id)
+    author = client.get_user(discord_id)
     embed = discord.Embed(
         title="新しいログイン",
         color=0x5fbcd3,
