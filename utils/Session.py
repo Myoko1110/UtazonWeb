@@ -2,18 +2,19 @@ import datetime
 import secrets
 from enum import Enum
 from typing import Union
+from uuid import UUID
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render
 
-import util
+import utils
 from config import settings
 
 
 class Session:
     id: str
     value: str
-    mc_uuid: str
+    mc_uuid: UUID
     access_token: str
     login_at: datetime
     expires_at: datetime
@@ -25,7 +26,7 @@ class Session:
 
     status: 'SessionStatus'
 
-    __cached_user: Union['util.User', None] = None
+    __cached_user: Union['utils.User', None] = None
 
     def __init__(
             self,
@@ -60,7 +61,7 @@ class Session:
     def __bool__(self):
         return self.is_valid
 
-    def get_user(self) -> Union['util.User', None]:
+    def get_user(self) -> Union['utils.User', None]:
         """
         User型を取得します
 
@@ -68,7 +69,7 @@ class Session:
         """
 
         if not self.__cached_user:
-            self.__cached_user = util.User.by_mc_uuid(self.mc_uuid)
+            self.__cached_user = utils.User.by_mc_uuid(self.mc_uuid)
         return self.__cached_user
 
     @staticmethod
@@ -92,11 +93,11 @@ class Session:
         return response
 
     @staticmethod
-    def save(mc_uuid: str, access_token: str, client_addr: str) -> Union['Session', bool]:
+    def save(mc_uuid: UUID, access_token: str, client_addr: str) -> Union['Session', bool]:
         """
         セッションを保存します
 
-        :param mc_uuid: MinecraftのUUID
+        :param mc_uuid: MinecraftUUID
         :param access_token: DiscordAPIのアクセストークン
         :param client_addr: ログインされたIP
         :return: User型(失敗した場合はFalseを返却)
@@ -109,8 +110,8 @@ class Session:
             session_id = f"_Secure-{secrets.token_urlsafe(32)}"
             session_value = f"{secrets.token_urlsafe(128)}"
 
-            save_session = util.DatabaseHelper.save_session(
-                session_id, session_value, mc_uuid, access_token, now, expires, client_addr
+            save_session = utils.DatabaseHelper.save_session(
+                session_id, session_value, str(mc_uuid), access_token, now, expires, client_addr
             )
 
             if save_session:
@@ -121,7 +122,7 @@ class Session:
         return False
 
     @staticmethod
-    def by_request(request: WSGIRequest) -> 'util.Session':
+    def by_request(request: WSGIRequest) -> 'utils.Session':
         """
         DjangoのWSGIRequest型からSession型を返却します
 
@@ -134,7 +135,7 @@ class Session:
         for child in session:
             if child.startswith("_Secure-"):
 
-                result = util.DatabaseHelper.get_session(child, session[child])
+                result = utils.DatabaseHelper.get_session(child, session[child])
 
                 if not result:
                     continue
@@ -142,13 +143,13 @@ class Session:
                     # 有効期限の確認
                     now = datetime.datetime.now()
                     if now > result["expires_at"]:
-                        util.DatabaseHelper.delete_session(child)
+                        utils.DatabaseHelper.delete_session(child)
                         # 期限切れの処理
                         return Session(status=SessionStatus.VALID)
 
                     # 既ログイン処理
                     return Session(result["session_id"], result["session_val"],
-                                   result["mc_uuid"], result["access_token"],
+                                   UUID(result["mc_uuid"]), result["access_token"],
                                    result["login_at"], result["expires_at"], result["logged_IP"],
                                    status=SessionStatus.VALID)
 

@@ -1,0 +1,155 @@
+{% load static %}
+{% load formatter %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Utazon管理パネル</title>
+    <link rel="stylesheet" href="{% static 'admin-index/stylesheet.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="main">
+    <header>
+        <div>
+            <div class="header-logo">
+                <a href="/admin/">
+                    <img src="{% static 'icon.svg' %}">
+                    <h1>管理パネル</h1>
+                </a>
+            </div>
+            <div class="header-nav">
+                <ul>
+                    <li class="is-active">
+                        <div class="header-nav__bar"></div>
+                        <a href="/admin/">
+                            <div class="header-nav__box">
+                                <div class="header-nav__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.-->
+                                        <path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>
+                                    </svg>
+                                </div>
+                                <div class="header-nav-title">
+                                    <p>ダッシュボード</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class>
+                        <div class="header-nav__bar"></div>
+                        <a href="/admin/items/">
+                            <div class="header-nav__box">
+                                <div class="header-nav__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14"
+                                         viewBox="0 0 448 512">
+                                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.-->
+                                        <path d="M0 80V229.5c0 17 6.7 33.3 18.7 45.3l176 176c25 25 65.5 25 90.5 0L418.7 317.3c25-25 25-65.5 0-90.5l-176-176c-12-12-28.3-18.7-45.3-18.7H48C21.5 32 0 53.5 0 80zm112 32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
+                                    </svg>
+                                </div>
+                                <div class="header-nav-title">
+                                    <p>商品</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class>
+                        <div class="header-nav__bar"></div>
+                        <a href="/admin/banner/">
+                            <div class="header-nav__box">
+                                <div class="header-nav__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14"
+                                         viewBox="0 0 448 512">
+                                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.-->
+                                        <path d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"/>
+                                    </svg>
+                                </div>
+                                <div class="header-nav-title">
+                                    <p>バナー</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="header-nav">
+                <ul>
+                    <li class>
+                        <div class="header-nav__bar"></div>
+                        <a href="/">
+                            <div class="header-nav__box">
+                                <div class="header-nav__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16"
+                                         viewBox="0 0 512 512">
+                                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.-->
+                                        <path d="M459.5 440.6c9.5 7.9 22.8 9.7 34.1 4.4s18.4-16.6 18.4-29V96c0-12.4-7.2-23.7-18.4-29s-24.5-3.6-34.1 4.4L288 214.3V256v41.7L459.5 440.6zM256 352V256 128 96c0-12.4-7.2-23.7-18.4-29s-24.5-3.6-34.1 4.4l-192 160C4.2 237.5 0 246.5 0 256s4.2 18.5 11.5 24.6l192 160c9.5 7.9 22.8 9.7 34.1 4.4s18.4-16.6 18.4-29V352z"/>
+                                    </svg>
+                                </div>
+                                <div class="header-nav-title">
+                                    <p>サイトに戻る</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class>
+                        <div class="header-nav__bar"></div>
+                        <a href="/admin/logout/">
+                            <div class="header-nav__box">
+                                <div class="header-nav__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16"
+                                         viewBox="0 0 512 512">
+                                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.-->
+                                        <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/>
+                                    </svg>
+                                </div>
+                                <div class="header-nav-title">
+                                    <p>ログアウト</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <div class="index">
+        <h1 class="index-title">ダッシュボード</h1>
+        <section class="index-counter">
+            <div class="index-counter__available">
+                <p class="index-counter__label">販売中の商品数</p>
+                <h2 class="index-counter__number">10</h2>
+            </div>
+        </section>
+        <section class="index-orders">
+            <h3>注文状況</h3>
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>注文番号</th>
+                    <th>注文者</th>
+                    <th>合計</th>
+                    <th>購入商品</th>
+                    <th>注文日時</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in order %}
+                    <tr>
+                        <td>{{ i.order_id }}</td>
+                        <td>{{ i.buyer.get_mc_id }}</td>
+                        <td>{{ MONEY_UNIT }}{{ i.amount }}</td>
+                        <td>{{ i.order_item.to_dict }}</td>
+                        <td>{{ i.ordered_at }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </div>
+</div>
+</body>
+</html>

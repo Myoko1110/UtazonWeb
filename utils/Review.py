@@ -1,8 +1,9 @@
 import datetime
 from enum import Enum
 from typing import Union
+from uuid import UUID
 
-import util
+import utils
 
 
 class Review:
@@ -14,7 +15,7 @@ class Review:
     title: str
     value: str
     helpful: int
-    mc_uuid: str
+    mc_uuid: UUID
     mc_id: str
     type: 'ReviewType'
 
@@ -44,8 +45,27 @@ class Review:
         self.mc_id = mc_id
         self.type = type
 
+    def __dict__(self):
+        return {
+            "item_id": self.item_id,
+            "id": self.id,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "star": self.star,
+            "title": self.title,
+            "value": self.value,
+            "helpful": self.helpful,
+            "mc_uuid": self.mc_uuid,
+            "mc_id": self.mc_id,
+            "type": self.type,
+        }
+
     def __str__(self):
-        return f"Review{{id: {self.id}, item_id: {self.item_id}}}"
+        return "Review" + str(self.__dict__())
+
+    def __repr__(self):
+        return (f"Review({self.item_id.__repr__()}, {self.id.__repr__()}, {self.created_at.__repr__()}, {self.updated_at.__repr__()}, {self.star.__repr__()}, "
+                f"{self.title.__repr__()}, {self.value.__repr__()}, {self.helpful.__repr__()}, {self.mc_uuid.__repr__()}, {self.mc_id.__repr__()}, {self.type.__repr__()})")
 
     def is_review(self) -> bool:
         """
@@ -65,12 +85,12 @@ class Review:
         return self.type == ReviewType.RATING
 
     @staticmethod
-    def add_review(mc_uuid: str, item: Union[int, 'util.Item'], star: int, title: str,
+    def add_review(mc_uuid: UUID, item: Union[int, 'utils.Item'], star: int, title: str,
                    value: str) -> bool:
         """
         商品のレビューを追加します
 
-        :param mc_uuid: MinecraftのUUID
+        :param mc_uuid: MinecraftUUID
         :param item: アイテムIDまたはItem型
         :param star: 評価
         :param title: レビューのタイトル
@@ -79,37 +99,45 @@ class Review:
         """
 
         if isinstance(item, int):
-            return util.DatabaseHelper.add_review(mc_uuid, item, star, title, value, "REVIEW")
-        elif isinstance(item, util.Item):
-            return util.DatabaseHelper.add_review(mc_uuid, item.id, star, title, value, "REVIEW")
+            return utils.DatabaseHelper.add_review(
+                str(mc_uuid), item, star, title, value, ReviewType.REVIEW.name
+            )
+        elif isinstance(item, utils.Item):
+            return utils.DatabaseHelper.add_review(
+                str(mc_uuid), item.id, star, title, value, ReviewType.REVIEW.name
+            )
         else:
             TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
-    def add_rating(mc_uuid: str, item: Union[int, 'util.Item'], star: int) -> bool:
+    def add_rating(mc_uuid: UUID, item: Union[int, 'utils.Item'], star: int) -> bool:
         """
         商品の評価を追加します
 
-        :param mc_uuid: MinecraftのUUID
+        :param mc_uuid: MinecraftUUID
         :param item: アイテムIDまたはItem型
         :param star: 評価
         :return: 成功したか
         """
 
         if isinstance(item, int):
-            return util.DatabaseHelper.add_review(mc_uuid, item, star, None, None, "RATING")
-        elif isinstance(item, util.Item):
-            return util.DatabaseHelper.add_review(mc_uuid, item.id, star, None, None, "RATING")
+            return utils.DatabaseHelper.add_review(
+                str(mc_uuid), item, star, None, None, ReviewType.RATING.name
+            )
+        elif isinstance(item, utils.Item):
+            return utils.DatabaseHelper.add_review(
+                str(mc_uuid), item.id, star, None, None, ReviewType.RATING.name
+            )
         else:
             TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
-    def update(mc_uuid: str, item: Union[int, 'util.Item'], star: int, title: str,
+    def update(mc_uuid: UUID, item: Union[int, 'utils.Item'], star: int, title: str,
                value: str) -> bool:
         """
         商品のレビューを追加します
 
-        :param mc_uuid: MinecraftのUUID
+        :param mc_uuid: MinecraftUUID
         :param item: アイテムIDまたはItem型
         :param star: 評価
         :param title: レビューのタイトル
@@ -118,14 +146,14 @@ class Review:
         """
 
         if isinstance(item, int):
-            return util.DatabaseHelper.update_review(mc_uuid, item, star, title, value)
-        elif isinstance(item, util.Item):
-            return util.DatabaseHelper.update_review(mc_uuid, item.id, star, title, value)
+            return utils.DatabaseHelper.update_review(str(mc_uuid), item, star, title, value)
+        elif isinstance(item, utils.Item):
+            return utils.DatabaseHelper.update_review(str(mc_uuid), item.id, star, title, value)
         else:
             TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
-    def helpful(item: Union[int, 'util.Item'], review_id: int) -> bool:
+    def helpful(item: Union[int, 'utils.Item'], review_id: int) -> bool:
         """
         商品のレビューに役に立ったを追加します
 
@@ -135,69 +163,69 @@ class Review:
         """
 
         if isinstance(item, int):
-            return util.DatabaseHelper.helpful_review(item, review_id)
-        elif isinstance(item, util.Item):
-            return util.DatabaseHelper.helpful_review(item.id, review_id)
+            return utils.DatabaseHelper.helpful_review(item, review_id)
+        elif isinstance(item, utils.Item):
+            return utils.DatabaseHelper.helpful_review(item.id, review_id)
         else:
             TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
-    def has_review(mc_uuid: str, item: int) -> bool:
+    def has_review(mc_uuid: UUID, item: int) -> bool:
         """
         レビューが存在するか取得します
 
-        :param mc_uuid: MinecraftのUUID
+        :param mc_uuid: MinecraftUUID
         :param item: アイテムIDまたはItem型
         :return: 存在するか
         """
 
         if isinstance(item, int):
-            return bool(util.DatabaseHelper.check_review(mc_uuid, item)[0])
-        elif isinstance(item, util.Item):
-            return bool(util.DatabaseHelper.check_review(mc_uuid, item.id)[0])
+            return bool(utils.DatabaseHelper.check_review(str(mc_uuid), item)[0])
+        elif isinstance(item, utils.Item):
+            return bool(utils.DatabaseHelper.check_review(str(mc_uuid), item.id)[0])
         else:
             TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
-    def has_rating(mc_uuid: str, item: Union[int, 'util.Item']) -> bool:
+    def has_rating(mc_uuid: UUID, item: Union[int, 'utils.Item']) -> bool:
         """
         レビューが存在するか取得します
 
-        :param mc_uuid: MinecraftのUUID
+        :param mc_uuid: MinecraftUUID
         :param item: アイテムIDまたはItem型
         :return: 存在するか
         """
 
         if isinstance(item, int):
-            return bool(util.DatabaseHelper.check_rating(mc_uuid, item)[0])
-        elif isinstance(item, util.Item):
-            return bool(util.DatabaseHelper.check_rating(mc_uuid, item.id)[0])
+            return bool(utils.DatabaseHelper.check_rating(str(mc_uuid), item)[0])
+        elif isinstance(item, utils.Item):
+            return bool(utils.DatabaseHelper.check_rating(str(mc_uuid), item.id)[0])
         else:
             TypeError(f"'{type(item)}'は使用できません")
 
     @staticmethod
-    def by_mc_uuid(mc_uuid: str, item: Union[int, 'util.Item']) -> Union['Review', None]:
+    def by_mc_uuid(mc_uuid: UUID, item: Union[int, 'utils.Item']) -> Union['Review', None]:
         """
         UUIDと指定されたアイテムIDからレビューを取得します
 
-        :param mc_uuid: MinecraftのUUID
+        :param mc_uuid: MinecraftUUID
         :param item: アイテムIDまたはItem型
         :return: Review型
         """
 
         r = None
         if isinstance(item, int):
-            r = util.DatabaseHelper.get_review_by_mc_uuid(mc_uuid, item)
-        elif isinstance(item, util.Item):
-            r = util.DatabaseHelper.get_review_by_mc_uuid(mc_uuid, item.id)
+            r = utils.DatabaseHelper.get_review_by_mc_uuid(str(mc_uuid), item)
+        elif isinstance(item, utils.Item):
+            r = utils.DatabaseHelper.get_review_by_mc_uuid(str(mc_uuid), item.id)
         else:
             TypeError(f"'{type(item)}'は使用できません")
 
         if not r:
             return None
         return Review(r["item_id"], r["id"], r["created_at"], r["updated_at"], r["rating"],
-                      r["title"], r["value"], r["helpful_votes"], r["mc_uuid"],
-                      util.User.by_mc_uuid(r["mc_uuid"]).get_mc_id(), ReviewType(r["type"]))
+                      r["title"], r["value"], r["helpful_votes"], UUID(r["mc_uuid"]),
+                      utils.User.by_mc_uuid(r["mc_uuid"]).mc_id, ReviewType(r["type"]))
 
 
 class ReviewType(Enum):

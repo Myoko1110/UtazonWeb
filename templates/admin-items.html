@@ -1,0 +1,355 @@
+{% load static %}
+{% load formatter %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Utazon管理パネル</title>
+    <link rel="stylesheet" href="{% static 'admin-items/stylesheet.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Roboto:wght@400;700&display=swap"
+          rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="{% static 'admin-items/script.js' %}"></script>
+</head>
+<body>
+<div class="main">
+    <header>
+        <div>
+            <div class="header-logo">
+                <a href="/admin/">
+                    <img src="{% static 'icon.svg' %}">
+                    <h1>管理パネル</h1>
+                </a>
+            </div>
+            <div class="header-nav">
+                <ul>
+                    <li class>
+                        <div class="header-nav__bar"></div>
+                        <a href="/admin/">
+                            <div class="header-nav__box">
+                                <div class="header-nav__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.-->
+                                        <path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>
+                                    </svg>
+                                </div>
+                                <div class="header-nav-title">
+                                    <p>ダッシュボード</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="is-active">
+                        <div class="header-nav__bar"></div>
+                        <a href="/admin/items/">
+                            <div class="header-nav__box">
+                                <div class="header-nav__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14"
+                                         viewBox="0 0 448 512">
+                                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.-->
+                                        <path d="M0 80V229.5c0 17 6.7 33.3 18.7 45.3l176 176c25 25 65.5 25 90.5 0L418.7 317.3c25-25 25-65.5 0-90.5l-176-176c-12-12-28.3-18.7-45.3-18.7H48C21.5 32 0 53.5 0 80zm112 32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
+                                    </svg>
+                                </div>
+                                <div class="header-nav-title">
+                                    <p>商品</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class>
+                        <div class="header-nav__bar"></div>
+                        <a href="/admin/banner/">
+                            <div class="header-nav__box">
+                                <div class="header-nav__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14"
+                                         viewBox="0 0 448 512">
+                                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.-->
+                                        <path d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"/>
+                                    </svg>
+                                </div>
+                                <div class="header-nav-title">
+                                    <p>バナー</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="header-nav">
+                <ul>
+                    <li class>
+                        <div class="header-nav__bar"></div>
+                        <a href="/">
+                            <div class="header-nav__box">
+                                <div class="header-nav__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16"
+                                         viewBox="0 0 512 512">
+                                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.-->
+                                        <path d="M459.5 440.6c9.5 7.9 22.8 9.7 34.1 4.4s18.4-16.6 18.4-29V96c0-12.4-7.2-23.7-18.4-29s-24.5-3.6-34.1 4.4L288 214.3V256v41.7L459.5 440.6zM256 352V256 128 96c0-12.4-7.2-23.7-18.4-29s-24.5-3.6-34.1 4.4l-192 160C4.2 237.5 0 246.5 0 256s4.2 18.5 11.5 24.6l192 160c9.5 7.9 22.8 9.7 34.1 4.4s18.4-16.6 18.4-29V352z"/>
+                                    </svg>
+                                </div>
+                                <div class="header-nav-title">
+                                    <p>サイトに戻る</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class>
+                        <div class="header-nav__bar"></div>
+                        <a href="/admin/logout/">
+                            <div class="header-nav__box">
+                                <div class="header-nav__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16"
+                                         viewBox="0 0 512 512">
+                                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.-->
+                                        <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/>
+                                    </svg>
+                                </div>
+                                <div class="header-nav-title">
+                                    <p>ログアウト</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <div class="index">
+        <h1 class="index-title">販売中の商品</h1>
+        <section class="index-sales">
+            <div class="index-sales__view">
+                <div class="index-sales__view-tools">
+                    <div>
+                        <input type="button" value="セールを設定" id="setSale" disabled>
+                        <input type="button" value="セールを終了" id="endSale" disabled>
+                        <input type="button" value="編集" id="edit" disabled>
+                        <input class="button-warn" type="button" value="販売停止" id="stop" disabled>
+                    </div>
+                    <div style="display: flex">
+                        <label class="selectbox-3">
+                            並び替え
+                            <select>
+                                <option value="id">ID</option>
+                                <option value="price-asc">価格低い順</option>
+                                <option value="price-desc">価格高い順</option>
+                                <option value="sold-count">販売個数</option>
+                            </select>
+                        </label>
+                        <div class="index-sales__view-tools-search">
+                            <form class="tools-form">
+                                <input type="text" placeholder="検索">
+                                <button type="submit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.-->
+                                        <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!--
+                <div class="index-sales__paging">
+                    <p>{ item.get_first_index }}-{ item.get_last_index }} / { item.result_length }}件</p>
+                    <a{ if item.has_prev %} href="?page={ item.get_prev }}" class="is-active"{ endif %}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z"/></svg>
+                    </a>
+                    <a{ if item.has_next %} href="?page={ item.get_next }}" class="is-active"{ endif %}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg>
+                    </a>
+                </div>-->
+                <table border="1">
+                    <thead>
+                    <tr>
+                        <th><input type="checkbox" class="index-sales__all"></th>
+                        <th></th>
+                        <th>ID</th>
+                        <th>商品名</th>
+                        <th>在庫</th>
+                        <th>価格</th>
+                        <th>セール価格</th>
+                        <th>割引率</th>
+                        <th>開始日時</th>
+                        <th>終了日時</th>
+                        <th>セール種類</th>
+                        <th>販売者</th>
+                    </tr>
+                    </thead>
+                    <tbody class="index-sales__view-tbody" data-moneyunit="{{ MONEY_UNIT }}">
+                    </tbody>
+                </table>
+            </div>
+            <div class="index-sales__confirm" style="display: none">
+                <h3>以下の商品のセールを終了します</h3>
+                <p style="font-size: 12px">※セール中でない商品は無効となります</p>
+                <table border="1" data-moneyunit="{{ MONEY_UNIT }}"
+                       style="height: calc(100% - 87px);margin-bottom: 10px">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>ID</th>
+                        <th>商品名</th>
+                        <th>在庫</th>
+                        <th>価格</th>
+                        <th>セール価格</th>
+                        <th>割引率</th>
+                        <th>開始時間</th>
+                        <th>終了時間</th>
+                        <th>セール種類</th>
+                        <th>販売者</th>
+                    </tr>
+                    </thead>
+                    <tbody class="index-sales__confirm-tbody">
+                    </tbody>
+                </table>
+                <div class="index-tools">
+                    <input class="index-sales__btn index-sales__prev" type="button" value="戻る" id="endSalePrev">
+                    <input class="index-sales__btn index-sales__submit" type="button" value="セールを終了"
+                           id="endSaleConfirm">
+                </div>
+            </div>
+            <div class="index-sales__delete" style="display: none">
+                <h3>以下の商品の販売を終了します</h3>
+                <p style="font-size: 12px">※セール中の商品は無効となります</p>
+                <table border="1" data-moneyunit="{{ MONEY_UNIT }}"
+                       style="height: calc(100% - 870px);margin-bottom: 10px">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>ID</th>
+                        <th>商品名</th>
+                        <th>在庫</th>
+                        <th>価格</th>
+                        <th>セール価格</th>
+                        <th>割引率</th>
+                        <th>開始日時</th>
+                        <th>終了日時</th>
+                        <th>セール種類</th>
+                        <th>販売者</th>
+                    </tr>
+                    </thead>
+                    <tbody class="index-sales__confirm-tbody">
+                    </tbody>
+                </table>
+                <div class="index-tools">
+                    <input class="index-sales__btn index-sales__delprev" type="button" value="戻る" id="stopPrev">
+                    <input class="index-sales__btn index-sales__stopsell" type="button" value="販売停止"
+                           id="stopConfirm">
+                </div>
+            </div>
+            <div class="index-sales__sale1" style="display: none">
+                <h3>セール内容</h3>
+                <div class="index-sale__about">
+                    <div class="index-sale__about-section">
+                        <div class="index-sale__about-title">
+                            <p>割引率</p>
+                            <p class="index-sale__about-err outOfRange" style="display: none">
+                                1~100の間で設定してください</p>
+                            <p class="index-sale__about-err requiredItem1" style="display: none">必須項目です</p>
+                        </div>
+                        <div style="display: flex;align-items: center">
+                            <input type="number" min="1" max="100" id="discountRate">%
+                        </div>
+                    </div>
+                    <div class="index-sale__about-section">
+                        <div class="index-sale__about-title">
+                            <p>開始日時</p>
+                            <p class="index-sale__about-err requiredItem2" style="display: none">必須項目です</p>
+                        </div>
+                        <input type="datetime-local" id="startDate">
+                    </div>
+                    <div class="index-sale__about-section">
+                        <div class="index-sale__about-title">
+                            <p>終了日時</p>
+                            <p class="index-sale__about-err requiredItem3" style="display: none">必須項目です</p>
+                        </div>
+                        <input type="datetime-local" id="endDate">
+                    </div>
+                    <div class="index-sale__about-section">
+                        <div class="index-sale__about-title">
+                            <p>セール種類</p>
+                        </div>
+                        <select id="prideOnly">
+                            <option value="通常セール">通常セール</option>
+                            <option value="限定セール">限定セール</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="index-tools">
+                    <input class="index-sales__btn index-sales__prev2" type="button" value="戻る" id="setSalePrev1">
+                    <input class="index-sales__btn index-sales__next2" type="button" value="次へ" id="setSaleNext">
+                </div>
+            </div>
+            <div class="index-sales__sale2" style="display: none">
+                <h3>以下の内容でセールを追加します</h3>
+                <div class="index-sale__abouts">
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td class="index-sale__title">割引率</td>
+                            <td><label id="confirm_discountRate"></label>%</td>
+                        </tr>
+                        <tr>
+                            <td class="index-sale__title">開始日時</td>
+                            <td id="confirm_startDate"></td>
+                        </tr>
+                        <tr>
+                            <td class="index-sale__title">終了日時</td>
+                            <td id="confirm_endDate"></td>
+                        </tr>
+                        <tr>
+                            <td class="index-sale__title">セール種類</td>
+                            <td id="confirm_prideOnly"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="index-sale__item">
+                    <table border="1" data-moneyunit="{{ MONEY_UNIT }}" style="height: 100%;margin-bottom: 10px">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>ID</th>
+                            <th>商品名</th>
+                            <th>在庫</th>
+                            <th>価格</th>
+                            <th>セール価格</th>
+                            <th>割引率</th>
+                            <th>開始日時</th>
+                            <th>終了日時</th>
+                            <th>セール種類</th>
+                            <th>販売者</th>
+                        </tr>
+                        </thead>
+                        <tbody class="index-sale__item-tbody">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="index-tools">
+                    <input class="index-sales__btn index-sales__prev3" type="button" value="戻る" id="setSalePrev2">
+                    <input class="index-sales__btn index-sales__sunmit" type="button" value="追加" id="setSaleConfirm">
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<form method="post" action="stop/" style="display: none;" id="stopForm">{% csrf_token %}
+    <input name="item" type="text" class="item">
+</form>
+<form method="post" action="sale/end/" style="display: none;" id="endSaleForm">{% csrf_token %}
+    <input name="item" type="text" class="item">
+</form>
+<form method="post" action="sale/set/" style="display: none;" id="setSaleForm">{% csrf_token %}
+    <input name="items" type="text" id="form-items">
+    <input name="discountRate" type="number" id="form-discountRate">
+    <input name="startDate" type="text" id="form-startDate">
+    <input name="endDate" type="text" id="form-endDate">
+    <input name="prideOnly" type="number" id="form-prideOnly">
+</form>
+</body>
+</html>

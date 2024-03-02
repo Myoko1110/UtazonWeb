@@ -170,7 +170,7 @@ def get_item(item_id):
                             utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
                             utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
                             utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
-                            utazon_sale.sale_end FROM utazon_item
+                            utazon_sale.sale_end, utazon_sale.is_pride_only FROM utazon_item
                          LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
                          WHERE utazon_item.item_id=%s"""
             cursor.execute(sql, (item_id,))
@@ -191,7 +191,7 @@ def get_item_by_list(id_list):
                             utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
                             utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
                             utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
-                            utazon_sale.sale_end FROM utazon_item
+                            utazon_sale.sale_end, utazon_sale.is_pride_only FROM utazon_item
                          LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
                          WHERE utazon_item.item_id IN ({l})
                          ORDER BY FIELD(utazon_item.item_id, {l})"""
@@ -211,7 +211,7 @@ def get_available_item(mc_uuid):
                             utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
                             utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
                             utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
-                            utazon_sale.sale_end FROM utazon_item
+                            utazon_sale.sale_end, utazon_sale.is_pride_only FROM utazon_item
                          LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
                          WHERE utazon_item.mc_uuid=%s AND utazon_item.status=TRUE"""
             cursor.execute(sql, (mc_uuid,))
@@ -229,10 +229,46 @@ def get_unavailable_item(mc_uuid):
                             utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
                             utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
                             utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
-                            utazon_sale.sale_end FROM utazon_item
+                            utazon_sale.sale_end, utazon_sale.is_pride_only FROM utazon_item
                          LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
                          WHERE utazon_item.mc_uuid=%s AND utazon_item.status=FALSE"""
             cursor.execute(sql, (mc_uuid,))
+
+            result = cursor.fetchall()
+    return result
+
+
+def get_discounting_item():
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = """SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.detail, utazon_item.category,
+                            utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
+                            utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
+                            utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
+                            utazon_sale.sale_end, utazon_sale.is_pride_only FROM utazon_item
+                         LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
+                         WHERE utazon_sale.sale_status=TRUE"""
+            cursor.execute(sql)
+
+            result = cursor.fetchall()
+    return result
+
+
+def get_active_item():
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = """SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.detail, utazon_item.category,
+                            utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
+                            utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
+                            utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
+                            utazon_sale.sale_end, utazon_sale.is_pride_only FROM utazon_item
+                         LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
+                         WHERE utazon_item.status=TRUE"""
+            cursor.execute(sql)
 
             result = cursor.fetchall()
     return result
@@ -254,7 +290,7 @@ def update_item(item_id, item_name, price, image, about, detail, category):
     return False
 
 
-def search_item(item_query: str, category: Union['util.Category', None]):
+def search_item(item_query: str, category: Union['utils.Category', None]):
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
@@ -268,11 +304,11 @@ def search_item(item_query: str, category: Union['util.Category', None]):
                 for i in c:
 
                     sql = """SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
-                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.category,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.detail, utazon_item.category,
                             utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
                             utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
                             utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
-                            utazon_sale.sale_end FROM utazon_item
+                            utazon_sale.sale_end, utazon_sale.is_pride_only FROM utazon_item
                                  LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
                                  WHERE MATCH(utazon_item.item_name) AGAINST(%s)
                                      AND utazon_item.category=%s AND utazon_item.status=TRUE"""
@@ -289,11 +325,11 @@ def search_item(item_query: str, category: Union['util.Category', None]):
 
             else:
                 sql = """SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
-                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.category,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.detail, utazon_item.category,
                             utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
                             utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
                             utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
-                            utazon_sale.sale_end FROM utazon_item
+                            utazon_sale.sale_end, utazon_sale.is_pride_only FROM utazon_item
                              LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
                              WHERE MATCH(utazon_item.item_name) AGAINST(%s)
                                  AND utazon_item.status=TRUE"""
@@ -321,13 +357,46 @@ def get_item_by_category(cat_en):
                             utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
                             utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
                             utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
-                            utazon_sale.sale_end FROM utazon_item
+                            utazon_sale.sale_end, utazon_sale.is_pride_only FROM utazon_item
                      LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
                      WHERE category=%s AND status=TRUE"""
             cursor.execute(sql, (cat_en,))
 
             result = cursor.fetchall()
     return result
+
+
+def set_sale(item_id, discount_rate, start, end, pride_only):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = """INSERT INTO `utazon_sale`
+                         (item_id, sale_status, discount_rate, sale_start, sale_end, is_pride_only)
+                     VALUES (%s, TRUE, %s, %s, %s, %s)
+                     ON DUPLICATE KEY UPDATE
+                         discount_rate=VALUES(discount_rate), sale_status=TRUE, sale_start=VALUES(sale_start), sale_end=VALUES(sale_end), is_pride_only=VALUES(is_pride_only)"""
+            cursor.execute(sql, (item_id, discount_rate, start, end, pride_only))
+            affected_rows = cursor.rowcount
+            cnx.commit()
+
+            if affected_rows > 0:
+                return True
+    return False
+
+
+def end_sale(item_id):
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor() as cursor:
+            sql = "UPDATE utazon_sale SET sale_status=FALSE WHERE item_id=%s"
+
+            cursor.execute(sql, (item_id,))
+            affected_rows = cursor.rowcount
+            cnx.commit()
+
+            if affected_rows > 0:
+                return True
+    return False
 
 
 def add_review(mc_uuid, item_id, star, title, value, type):
@@ -445,6 +514,17 @@ def get_orders(mc_uuid):
         with cnx.cursor(dictionary=True) as cursor:
             sql = "SELECT * FROM utazon_order WHERE mc_uuid=%s ORDER BY ordered_at DESC"
             cursor.execute(sql, (mc_uuid,))
+
+            result = cursor.fetchall()
+    return result
+
+
+def get_all_orders():
+    cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
+    with cnx:
+        with cnx.cursor(dictionary=True) as cursor:
+            sql = "SELECT * FROM utazon_order WHERE status=TRUE"
+            cursor.execute(sql)
 
             result = cursor.fetchall()
     return result
@@ -882,7 +962,14 @@ def get_popular_item():
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
-            sql = "SELECT * FROM utazon_item WHERE status=TRUE ORDER BY sold_count DESC LIMIT 4"
+            sql = """SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.detail, utazon_item.category,
+                            utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
+                            utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
+                            utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
+                            utazon_sale.sale_end, utazon_sale.is_pride_only FROM utazon_item
+                     LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
+                     WHERE status=TRUE ORDER BY sold_count DESC LIMIT 4"""
             cursor.execute(sql)
             result = cursor.fetchall()
     return result
@@ -892,7 +979,14 @@ def get_latest_item():
     cnx = mysql.connector.connect(**settings.DATABASE_CONFIG["utazon"])
     with cnx:
         with cnx.cursor(dictionary=True) as cursor:
-            sql = "SELECT * FROM utazon_item WHERE status=TRUE ORDER BY sale_id DESC LIMIT 4"
+            sql = """SELECT utazon_item.sale_id, utazon_item.item_id, utazon_item.item_name,
+                            utazon_item.price, utazon_item.image, utazon_item.kind, utazon_item.detail, utazon_item.category,
+                            utazon_item.sold_count, utazon_item.mc_uuid, utazon_item.search_keyword,
+                            utazon_item.created_at, utazon_item.updated_at, utazon_item.status,
+                            utazon_sale.sale_status, utazon_sale.discount_rate, utazon_sale.sale_start,
+                            utazon_sale.sale_end, utazon_sale.is_pride_only FROM utazon_item
+                     LEFT JOIN utazon_sale ON utazon_item.item_id = utazon_sale.item_id
+                     WHERE status=TRUE ORDER BY sale_id DESC LIMIT 4"""
             cursor.execute(sql)
             result = cursor.fetchall()
     return result

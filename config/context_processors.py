@@ -1,5 +1,5 @@
 from config import settings
-from util import Category
+from utils import Category
 
 
 def context_processor(req):

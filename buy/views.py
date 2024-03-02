@@ -7,8 +7,8 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 
 import bot
-import util
-from util import *
+import utils
+from utils import *
 
 getcontext().prec = 10
 per_point = Decimal(settings.POINT_PER)
@@ -24,7 +24,7 @@ def buy(request):
             c = Cart.by_id_dict(json.loads(item))
             buy_now = True
         else:
-            c = s.get_user().get_cart()
+            c = s.get_user().cart
             buy_now = False
 
         c.delete_invalid_items()
@@ -32,10 +32,10 @@ def buy(request):
         delivery_time = Order.calc_expected_delivery_time()
         fastest_time = Order.calc_expected_fastest_delivery_time()
 
-        b = s.get_user().get_balance()
+        b = s.get_user().balance
 
         if b is not None:
-            after_balance = Decimal(str(b)) - Decimal(str(c.get_total()))
+            after_balance = Decimal(str(b)) - Decimal(str(c.total))
         else:
             after_balance = 0
 
@@ -71,7 +71,7 @@ def buy_confirm(request):
         if not c:
             raise Exception("商品が選択されていません")
 
-        if not c.is_valid_items():
+        if not c.are_valid_items():
             raise Exception("無効な商品が指定されました")
 
         shipping_method = request.POST.get("shipping")
@@ -89,7 +89,7 @@ def buy_confirm(request):
         u = s.get_user()
 
         # ポイント関係
-        total = Decimal(str(c.get_total()))
+        total = Decimal(str(c.total))
         if shipping_method == "express":
             total += settings.EXPRESS_PRICE
 
@@ -126,11 +126,11 @@ def buy_confirm(request):
             u.reset_cart()
 
         # ポイント付与
-        u.add_points(util.calc_point(total))
+        u.add_points(utils.calc_point(total))
 
         # DM送信
         asyncio.run_coroutine_threadsafe(
-            bot.send_order_confirm(u.get_discord_id(), order_id, c, delivers_at),
+            bot.send_order_confirm(u.discord_id, order_id, c, delivers_at),
             bot.client.loop
         )
 
@@ -172,11 +172,15 @@ def buy_cancel(request):
         # 理由作成し、入金
         reason = (f"注文番号: {order_id}" +
                   f"(入金額: {o.amount}の{deposit_rate}%(キャンセル料{settings.CANCELLATION_FEE}%))")
-        deposit_player = u.deposit(deposit_price,
-                                   "ウェブショップ『Utazon』からのキャンセルに伴う返金", reason)
 
-        # エラーが出たらリダイレクト
-        if not deposit_player:
+        try:
+            deposit_player = u.deposit(deposit_price,
+                                       "ウェブショップ『Utazon』からのキャンセルに伴う返金", reason)
+            # エラーが出たらリダイレクト
+            if not deposit_player:
+                return redirect("/history/?error=true")
+
+        except ConnectionRefusedError:
             return redirect("/history/?error=true")
 
         # 在庫を戻す
@@ -184,7 +188,7 @@ def buy_cancel(request):
 
         # DM送信
         asyncio.run_coroutine_threadsafe(
-            bot.send_order_cancel(s.get_user().get_discord_id(), order_id, o.order_item),
+            bot.send_order_cancel(s.get_user().discord_id, order_id, o.order_item),
             bot.client.loop)
 
         # オーダーキャンセル
@@ -210,7 +214,7 @@ def buy_redelivery(request):
 
         # DM送信
         asyncio.run_coroutine_threadsafe(
-            bot.send_redelivery(s.get_user().get_discord_id(), order_id),
+            bot.send_redelivery(s.get_user().discord_id, order_id),
             bot.client.loop)
 
         o.redelivery()

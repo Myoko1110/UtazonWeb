@@ -147,7 +147,7 @@
 
 .item-about__buy-price span {
     font-size: 13px;
-    margin: 6px 5px 0;
+    margin: 6px 5px 0 0;
 }
 
 .item-about__buy-price h1 {
@@ -706,7 +706,7 @@
 .detail{
     width: 100%;
     max-width: 1200px;
-
+    padding: 0 20px;
 }
 
 .detail h2{

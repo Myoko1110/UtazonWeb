@@ -9,7 +9,7 @@ from config import settings
 from item.models import Banner
 from . import DatabaseHelper, SocketHelper
 from .Cart import Cart
-from .Category import Category
+from .Category import Category, CategoryType
 from .Item import Item
 from .ItemStack import ItemStack
 from .Later import Later
@@ -19,6 +19,7 @@ from .Revenues import Revenues
 from .Review import Review, ReviewType
 from .ReviewList import ReviewList
 from .Session import Session, SessionStatus
+from .Sale import Sale
 from .User import User
 from .Pride import Pride, PridePlan
 

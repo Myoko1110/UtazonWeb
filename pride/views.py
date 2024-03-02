@@ -1,8 +1,7 @@
 from django.http import Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 
-import util
-from util import *
+from utils import *
 
 
 def pride(request):
@@ -18,7 +17,7 @@ def pride(request):
 def register(request):
     s = Session.by_request(request)
     if s.is_valid:
-        b = s.get_user().get_balance()
+        b = s.get_user().balance
 
         context = {
             "balance": b,
@@ -37,14 +36,14 @@ def register_confirm(request):
     if s.is_valid:
         u = s.get_user()
 
-        p = u.get_pride()
+        p = u.pride
         if p and p.status:
             raise Exception("すでにPrideに登録されています")
 
         plan = PridePlan(request.POST.get("plan"))
 
         dps = u.deposit(plan.pricing, "ウェブショップ『Utazon』でPrideへの加入",
-                            f"YEARLY({plan.pricing}/{plan.jp}額)")
+                        f"YEARLY({plan.pricing}/{plan.jp}額)")
 
         if not dps:
             raise Exception("出金に失敗しました")

@@ -36,7 +36,7 @@
                 <div class="nav-mobile__top-cart-ui">
                     <img src="{% static 'cart.png' %}">
                     {% if session.is_valid %}
-                        <p>{{ session.get_user.get_cart_length }}</p>
+                        <p>{{ session.get_user.cart|length }}</p>
                     {% else %}
                         <p>0</p>
                     {% endif %}
@@ -102,7 +102,7 @@
             {% if session.is_valid %}
                 <a href="/mypage" class="nav-link">
                     <div class="nav-belt__account">
-                        {% with session.get_user.get_mc_id as mcid %}
+                        {% with session.get_user.mc_id as mcid %}
                             {% if mcid %}
                                 <p>{{ mcid }}さん</p>
                             {% endif %}
@@ -129,7 +129,7 @@
                     <div class="nav-belt__cart-ui">
                         <img src="{% static 'cart.png' %}">
                         {% if session.is_valid %}
-                            <p>{{ session.get_user.get_cart_length }}</p>
+                            <p>{{ session.get_user.cart|length }}</p>
                         {% else %}
                             <p>0</p>
                         {% endif %}
@@ -144,7 +144,7 @@
             <div class="nav-main__category">
                 <a class="nav-main__point">Utazonポイント:
                     {% if session.is_valid %}
-                        <span>{{ session.get_user.get_point|digit_grouping }}</span>
+                        <span>{{ session.get_user.point|digit_grouping }}</span>
                     {% else %}
                         <span>0</span>
                     {% endif %}
@@ -160,8 +160,9 @@
         <nav class="nav-mobile">
             <div class="nav-mobile__account">
                 {% if session.is_valid %}
-                    <p>{{ mcid }}さん</p>
-                    <a href="/mypage/">マイページ</a>
+				    {% with session.get_user.mc_id as mc_id %}
+				    <p>{{ mc_id }}さん</p>
+                    {% endwith %}
                 {% else %}
                     <p>ゲストさん</p>
                     <a href="/login">ログイン</a>
@@ -198,7 +199,7 @@
                     <div class="nav-mobile__cart-ui">
                         <img src="{% static 'cart-black.png' %}">
                         {% if session.is_valid %}
-                            <p>{{ session.get_user.get_cart_length }}</p>
+                            <p>{{ session.get_user.cart|length }}</p>
                         {% else %}
                             <p>0</p>
                         {% endif %}
@@ -211,7 +212,7 @@
             <div>
                 <a class="nav-mobile__point">Utazonポイント:
                     {% if session.is_valid %}
-                        <span>{{ session.get_user.get_point|digit_grouping }}</span>
+                        <span>{{ session.get_user.point|digit_grouping }}</span>
                     {% else %}
                         <span>0</span>
                     {% endif %}

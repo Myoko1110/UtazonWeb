@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from util import *
+from utils import *
 
 allocation_per = Decimal(str(settings.ALLOCATION_PER)) / Decimal(100)
 
@@ -46,8 +46,11 @@ def deposit_revenues():
 
         reason = ", ".join(reason_list) + f"(入金額: {value['total']}の{settings.ALLOCATION_PER}%)"
 
-        if User.by_mc_uuid(seller).deposit(total, "ウェブショップ『Utazon』からの売上入金", reason):
-            Revenues.delete(seller)
+        try:
+            if User.by_mc_uuid(seller).deposit(total, "ウェブショップ『Utazon』からの売上入金", reason):
+                Revenues.delete(seller)
+        except ConnectionRefusedError:
+            continue
 
 
 def start():

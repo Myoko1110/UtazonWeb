@@ -3,9 +3,9 @@ import logging
 import requests
 from django.shortcuts import redirect, render
 
-import util
+import utils
 from config import settings
-from util import Session, User
+from utils import Session, User
 
 
 def login(request):
@@ -145,7 +145,7 @@ def logout(request):
         if key.startswith("_Secure-"):
             response.delete_cookie(key)
 
-            util.DatabaseHelper.delete_session(key)
+            utils.DatabaseHelper.delete_session(key)
 
     response.delete_cookie("LOGIN_STATUS")
 

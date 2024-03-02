@@ -1,20 +1,17 @@
 import copy
 import json
-import threading
 
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
-from pride.scheduler import expires_check
-from util import *
-import pride
+from utils import *
 
 point_return = Decimal(settings.RETURN_RATE)
 
 
 def index_view(request):
-    #threading.Thread(target=pride.scheduler.expires_check).start()
+    # threading.Thread(target=pride.scheduler.expires_check).start()
 
     # バナーを取得
     banner = get_banners()
@@ -36,8 +33,8 @@ def index_view(request):
     }
     if s.is_valid:
         # 閲覧履歴取得
-        browsing_history = s.get_user().get_browsing_history_recently()
-        context["browsing_history"] = browsing_history[:4]
+        bh = s.get_user().browsing_history_recently
+        context["browsing_history"] = bh[:4]
 
         # 既ログイン処理
         return render(request, "index.html", context=context)
@@ -93,7 +90,7 @@ def item(request):
 
 
 def initialize_browsing_history(request):
-    item_id = request.GET.get("item_id")
+    item_id = int(request.GET.get("item_id"))
     if not item_id:
         raise Http404
 
@@ -128,8 +125,8 @@ def cart(request):
     s = Session.by_request(request)
     if s.is_valid:
         u = s.get_user()
-        c = u.get_cart()
-        l = u.get_later()
+        c = u.cart
+        l = u.later
 
         deleted_cart = copy.deepcopy(c)
         deleted_cart.delete_invalid_items()
@@ -198,18 +195,18 @@ def cart_update(request):
         qty = int(qty)
 
         i = Item.by_id(item_id)
-        stock = i.get_stock()
+        stock = i.stock
         if stock >= qty:
-            Cart.update_qty(s.mc_uuid, item_id, qty)
+            Cart.update_quantity(s.mc_uuid, item_id, qty)
         else:
-            Cart.update_qty(s.mc_uuid, item_id, stock)
+            Cart.update_quantity(s.mc_uuid, item_id, stock)
 
-        c = s.get_user().get_cart()
+        c = s.get_user().cart
         c.delete_invalid_items()
 
         cart_list = {
-            "total": f"{c.get_total():,.2f}",
-            "amount": c.get_amount(),
+            "total": f"{c.total:,.2f}",
+            "amount": c.quantity,
         }
         if stock < qty:
             cart_list["error"] = {
@@ -246,7 +243,7 @@ def later_to_cart(request):
 
         item_id = int(item_id)
 
-        qty = s.get_user().get_later().get_qty(item_id)
+        qty = s.get_user().later.get_quantity(item_id)
 
         Later.delete(s.mc_uuid, item_id)
         Cart.add(s.mc_uuid, item_id, qty)
@@ -264,7 +261,7 @@ def cart_to_later(request):
 
         item_id = int(item_id)
 
-        qty = s.get_user().get_cart().get_qty(item_id)
+        qty = s.get_user().cart.get_quantity(item_id)
 
         Cart.delete(s.mc_uuid, item_id)
         Later.add(s.mc_uuid, item_id, qty)
@@ -449,7 +446,7 @@ def history(request):
     if s.is_valid:
         page = int(request.GET.get("page", 1))
 
-        p = Paging(s.get_user().get_order(), page, 10)
+        p = Paging(s.get_user().order, page, 10)
 
         context = {
             "paging": p,
@@ -474,7 +471,7 @@ def browsing_history(request):
         page = int(request.GET.get("page", 1))
 
         # 閲覧履歴を取得し、アイテム情報を取得
-        r = s.get_user().get_browsing_history()
+        r = s.get_user().browsing_history
         p = Paging(r, page, 10)
 
         p.result = Item.by_id_list(p.result)

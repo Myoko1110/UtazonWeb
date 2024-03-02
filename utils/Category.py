@@ -1,38 +1,55 @@
+from enum import Enum
 from typing import Union
 
-import util
+import utils
 from config import settings
 
 
 class Category:
     english: str
     japanese: str
-
-    is_parent: bool
-    is_child: bool
+    type: 'CategoryType'
 
     def __init__(
             self,
             en: str,
             jp: str,
-            is_parent: bool
+            type: 'CategoryType',
     ):
         self.english = en
         self.japanese = jp
+        self.type = type
 
-        self.is_parent = is_parent
-        if is_parent:
-            self.is_child = False
-        else:
-            self.is_child = True
+    def __dict__(self):
+        return {
+            "english": self.english,
+            "japanese": self.japanese,
+            "type": self.type,
+        }
 
     def __str__(self):
-        if self.is_parent:
-            type = "PARENT"
-        else:
-            type = "CHILD"
+        return "Category" + str(self.__dict__())
 
-        return f"Category{{type: {type}, english: {self.english}, japanese: {self.japanese}}}"
+    def __repr__(self):
+        return f"Category({self.english.__repr__()}, {self.japanese.__repr__()}, {self.type.__repr__()})"
+
+    def is_parent(self) -> bool:
+        """
+        親カテゴリーか取得します
+
+        :return: 親カテゴリーか
+        """
+
+        return self.type == CategoryType.PARENT
+
+    def is_child(self) -> bool:
+        """
+        子カテゴリーか取得します
+
+        :return: 子カテゴリーか
+        """
+
+        return self.type == CategoryType.CHILD
 
     def get_parent(self) -> Union['Category', None]:
         """
@@ -41,12 +58,12 @@ class Category:
         :return: 親のCategory型(参照元が親カテゴリーの場合はNoneを返却)
         """
 
-        if self.is_parent:
+        if self.type == CategoryType.PARENT:
             return None
         for key, value in settings.CATEGORIES.items():
             for i, j in value["category"].items():
                 if i == self.english:
-                    return Category(key, value["japanese"], True)
+                    return Category(key, value["japanese"], CategoryType.PARENT)
 
         return None
 
@@ -57,29 +74,29 @@ class Category:
         :return: 子のCategory型のリスト(参照元が子カテゴリーの場合はNoneを返却)
         """
 
-        if self.is_child:
+        if self.type == CategoryType.CHILD:
             return None
         array = []
         for key, value in settings.CATEGORIES[self.english]["category"].items():
-            array.append(Category(key, value, False))
+            array.append(Category(key, value, CategoryType.CHILD))
 
         return array
 
-    def get_item(self) -> list['util.Item']:
+    def get_item(self) -> list['utils.Item']:
         """
         カテゴリーのアイテムを取得します
 
         :return: カテゴリーのアイテム
         """
 
-        if self.is_parent:
+        if self.type == CategoryType.PARENT:
             # 子カテゴリーを取得 -> 子カテゴリーからアイテム取得 -> 複数の結果を同じ変数に入れる
-            return [util.Item.by_db(j) for i in self.get_child()
-                    for j in util.DatabaseHelper.get_item_by_category(i.english)]
+            return [utils.Item.by_db(j) for i in self.get_child()
+                    for j in utils.DatabaseHelper.get_item_by_category(i.english)]
 
         else:
-            return [util.Item.by_db(i)
-                    for i in util.DatabaseHelper.get_item_by_category(self.english)]
+            return [utils.Item.by_db(i)
+                    for i in utils.DatabaseHelper.get_item_by_category(self.english)]
 
     @staticmethod
     def by_english(english: str) -> Union['Category', None]:
@@ -93,14 +110,14 @@ class Category:
         for key, value in settings.CATEGORIES.items():
             if key == english:
                 try:
-                    return Category(key, value["japanese"], True)
+                    return Category(key, value["japanese"], CategoryType.PARENT)
                 except TypeError:
-                    return Category(key, value, True)
+                    return Category(key, value, CategoryType.PARENT)
 
             if isinstance(value, dict):
                 for i, j in value["category"].items():
                     if i == english:
-                        return Category(i, j, False)
+                        return Category(i, j, CategoryType.CHILD)
         return None
 
     @staticmethod
@@ -114,11 +131,11 @@ class Category:
 
         for key, value in settings.CATEGORIES.items():
             if value == japanese:
-                return Category(key, value, True)
+                return Category(key, value, CategoryType.PARENT)
 
             for i, j in value["category"].items():
                 if j == japanese:
-                    return Category(i, j, False)
+                    return Category(i, j, CategoryType.CHILD)
         return None
 
     @staticmethod
@@ -139,3 +156,8 @@ class Category:
                 pass
 
         return result
+
+
+class CategoryType(Enum):
+    PARENT = "PARENT"
+    CHILD = "CHILD"

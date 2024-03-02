@@ -1,7 +1,8 @@
 import json
 from typing import Union
+from uuid import UUID
 
-import util
+import utils
 
 
 class ItemStack:
@@ -28,6 +29,23 @@ class ItemStack:
         self.enchantments = enchantments
         self.stock = stock
 
+    def __dict__(self):
+        return {
+            "stack_size": self.stack_size,
+            "damage": self.damage,
+            "material": self.material,
+            "display_name": self.display_name,
+            "enchantments": self.enchantments,
+            "stock": self.stock,
+        }
+
+    def __str__(self):
+        return "ItemStack" + str(self.__dict__())
+
+    def __repr__(self):
+        return (f"ItemStack({self.stack_size.__repr__()}, {self.damage.__repr__()}, {self.material.__repr__()}, {self.display_name.__repr__()}, "
+                f"{self.enchantments.__repr__()}, {self.stack_size.__repr__()})")
+
     def encode(self):
         """
         データベースに保存するようにエンコードします
@@ -44,7 +62,7 @@ class ItemStack:
         }
 
     @staticmethod
-    def by_item_id(item: Union[int, 'util.Item']) -> Union['ItemStack', None]:
+    def by_item_id(item: Union[int, 'utils.Item']) -> Union['ItemStack', None]:
         """
         ItemStackを取得します
 
@@ -53,9 +71,9 @@ class ItemStack:
         """
         r = {}
         if isinstance(item, int):
-            r = util.DatabaseHelper.get_item_stack(item)
-        elif isinstance(item, util.Item):
-            r = util.DatabaseHelper.get_item_stack(item.id)
+            r = utils.DatabaseHelper.get_item_stack(item)
+        elif isinstance(item, utils.Item):
+            r = utils.DatabaseHelper.get_item_stack(item.id)
         else:
             TypeError(f"'{type(item)}'は使用できません")
 
@@ -66,15 +84,15 @@ class ItemStack:
                          r["item_display_name"], json.loads(r["item_enchantments"]), r["stock"])
 
     @staticmethod
-    def by_mc_uuid(mc_uuid: str) -> list[Union['ItemStack', None]]:
+    def by_mc_uuid(mc_uuid: UUID) -> list[Union['ItemStack', None]]:
         """
         待機ストックを取得します
 
-        :param mc_uuid: MinecraftのUUID
+        :param mc_uuid: MinecraftUUID
         :return: ItemStack型
         """
 
-        r = util.DatabaseHelper.get_waiting_stock(mc_uuid)
+        r = utils.DatabaseHelper.get_waiting_stock(str(mc_uuid))
         if not r:
             return [None for _ in range(54)]
 

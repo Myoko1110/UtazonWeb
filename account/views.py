@@ -7,13 +7,12 @@ import secrets
 
 from django.http import Http404
 from django.shortcuts import redirect, render
-from django.views.decorators.csrf import csrf_exempt
 
 import bot
-from util import *
+from utils import *
 
 
-async def mypage(request):
+def mypage(request):
     s = Session.by_request(request)
     if s.is_valid:
         u = s.get_user()
@@ -33,7 +32,7 @@ async def mypage(request):
 def list_item(request):
     s = Session.by_request(request)
     if s.is_valid:
-        waiting_stock = s.get_user().get_waiting_stock()
+        waiting_stock = s.get_user().waiting_stock
         error = request.GET.get("error")
 
         context = {
@@ -113,7 +112,7 @@ def list_item_post(request):
 
         detail = request.POST.get("detail")
 
-        waiting_stock = s.get_user().get_waiting_stock()
+        waiting_stock = s.get_user().waiting_stock
 
         first_item = waiting_stock[items[0]]
 
@@ -175,7 +174,8 @@ def list_item_post(request):
                     image_path.append(db)
                     break
 
-        Item.create(item_id, item_name, item_price, image_path, about, detail, c, keyword, s.mc_uuid)
+        Item.create(item_id, item_name, item_price, image_path, about, detail, c, keyword,
+                    s.mc_uuid)
         Item.create_stack(item_id, first_item, stock)
 
         s.get_user().update_waiting_stock(waiting_stock)
@@ -185,7 +185,7 @@ def list_item_post(request):
 def available(request):
     s = Session.by_request(request)
     if s.is_valid:
-        available_items = s.get_user().get_available_items()
+        available_items = s.get_user().available_items
 
         error = request.GET.get("error")
 
@@ -205,7 +205,7 @@ def available(request):
 def unavailable(request):
     s = Session.by_request(request)
     if s.is_valid:
-        available_items = s.get_user().get_unavailable_items()
+        available_items = s.get_user().unavailable_items
 
         context = {
             "item": available_items,
@@ -336,7 +336,7 @@ def item_edit_post(request):
 def item_stock(request):
     s = Session.by_request(request)
     if s.is_valid:
-        waiting_stock = s.get_user().get_waiting_stock()
+        waiting_stock = s.get_user().waiting_stock
 
         item_id = request.GET.get("id")
         if not item_id:
@@ -387,7 +387,7 @@ def item_stock_post(request):
         index = json.loads(index)
         u = s.get_user()
 
-        waiting_stock = u.get_waiting_stock()
+        waiting_stock = u.waiting_stock
         item_stack = item.get_item_stack()
 
         item_amount = item_stack.stack_size
@@ -471,11 +471,11 @@ def item_return_post(request):
         if i.mc_uuid != s.mc_uuid or not i.status:
             raise Http404
 
-        if i.get_stock() < amount:
+        if i.stock < amount:
             raise ValueError("返却するには在庫が不足しています")
 
         i.return_stock(amount)
         asyncio.run_coroutine_threadsafe(
-            bot.send_returnstock_confirm(s.get_user().get_discord_id()),
+            bot.send_returnstock_confirm(s.get_user().discord_id),
             bot.client.loop)
         return redirect("/mypage/available/")
